@@ -1,0 +1,192 @@
+  console.log
+    10TallCell
+    10Wide10TallCell
+    10WideCell
+    10_15_20Wide
+    15TallCell
+    15Wide15TallCell
+    15WideCell
+    20TallCell
+    20Wide20TallCell
+    20WideCell
+    5TallCell
+    5Wide5TallCell
+    5WideCell
+    5_15_20Wide
+    5x5With10Tall
+    doubleCell
+    doubleTallCell
+    doubleWideCell
+    doubleWideWithDoubleTall
+    doubleWith5Wide
+    fiveDoubleTriple
+    fiveDoubleWide
+    fiveTripleWide
+    fiveUnitCells
+    fiveUnitOneDoubleWide
+    fiveUnitOneTripleWide
+    four5Wide
+    fourDoubleTriple
+    fourDoubleTwoTriple
+    fourDoubleWide
+    fourTripleWide
+    fourUnitCells
+    fourUnitDoubleTriple
+    fourUnitOneDoubleWide
+    fourUnitOneTripleWide
+    fourUnitTwoDoubleWide
+    fourUnitTwoTripleWide
+    one5Two10Wide
+    oneDoubleFiveTriple
+    oneDoubleFourTriple
+    oneDoubleThree5Wide
+    oneDoubleThreeTripleWide
+    oneTripleThree5Wide
+    oneTripleTwo10Wide
+    oneTripleTwo5Wide
+    oneUnitDoubleThreeTriple
+    oneUnitDoubleWTwoTripleWide
+    oneUnitDoubleWourTriple
+    oneUnitFiveDoubleWide
+    oneUnitFiveTripleWide
+    oneUnitFourDoubleTriple
+    oneUnitFourDoubleWide
+    oneUnitFourTripleWide
+    oneUnitThree5Wide
+    oneUnitThreeDoubleTriple
+    oneUnitThreeDoubleTwoTriple
+    oneUnitThreeDoubleWide
+    oneUnitThreeTripleWide
+    oneUnitTripleTwot5Wide
+    oneUnitTwo10Wide
+    oneUnitTwo15Wide
+    oneUnitTwo20Wide
+    oneUnitTwo5Wide
+    oneUnitTwoDoubleThreeTriple
+    oneUnitTwoDoubleTripleWide
+    oneUnitTwoDoubleTwoTriple
+    oneUnitTwoTriple5Wide
+    oneUnitTwoTripleWide
+    sixDoubleWide
+    sixTripleWide
+    sixUnitCells
+    three15Wide
+    three20Wide
+    three5Wide
+    threeDoubleOne5Wide
+    threeDoubleOneTripleWide
+    threeDoubleThreeTriple
+    threeDoubleTwoTriple
+    threeTripleOne5Wide
+    threeTripleWide
+    threeUnitCells
+    threeUnitDoubleTriple
+    threeUnitDoubleTwoTriple
+    threeUnitOne5Wide
+    threeUnitOneDoubleWide
+    threeUnitOneTripleWide
+    threeUnitThreeDoubleWide
+    threeUnitThreeTripleWide
+    threeUnitTwoDoubleTriple
+    threeUnitTwoDoubleWide
+    threeUnitTwoTripleWide
+    tripleCell
+    tripleTallCell
+    tripleWideCell
+    tripleWith10Wide
+    two10Tall
+    two10Wide
+    two10x10
+    two15x15
+    two20x20
+    two5OneWide
+    two5Tall
+    two5Wide
+    two5x5
+    twoDouble
+    twoDoubleFourTriple
+    twoDoubleTall
+    twoDoubleThreeTriple
+    twoDoubleTwo5Wide
+    twoDoubleTwoTripleWide
+    twoDoubleWide
+    twoTriple
+    twoTripleOne10Wide
+    twoTripleOne5Wide
+    twoTripleTall
+    twoTripleTwo5Wide
+    twoTripleWide
+    twoUnitCells
+    twoUnitDouble5Wide
+    twoUnitDoubleThreeTriple
+    twoUnitDoubleTripleWide
+    twoUnitDoubleWoTriple
+    twoUnitFourDoubleWide
+    twoUnitFourTripleWide
+    twoUnitOne10Wide
+    twoUnitOne15Wide
+    twoUnitOne20Wide
+    twoUnitOne5Wide
+    twoUnitOneTripleWide
+    twoUnitThreeDoubleTriple
+    twoUnitThreeDoubleWide
+    twoUnitThreeTripleWide
+    twoUnitTriple5Wide
+    twoUnitTwo5Wide
+    twoUnitTwoDoubleTriple
+    twoUnitTwoDoubleTwoTriple
+    twoUnitTwoDoubleWide
+    twoUnitTwoTripleWide
+    unit10And15Wide
+    unit10And20Wide
+    unit15And20Wide
+    unit5And15Wide
+    unit5And20Wide
+    unitCell
+    unitCellWith10Tall
+    unitCellWith10Wide
+    unitCellWith10x10
+    unitCellWith15Wide
+    unitCellWith20Wide
+    unitCellWith5Tall
+    unitCellWith5Wide
+    unitCellWith5x5
+    unitCellWithDouble
+    unitCellWithDoubleTall
+    unitCellWithDoubleWide
+    unitCellWithTriple
+    unitCellWithTripleTall
+    unitCellWithTripleWide
+    unitDoubleTriple5Wide
+    unitTriple5Wide
+
+      at Object.<anonymous> (src/core/gridCSS/integration/mui/checkSectionsOverlap.test.ts:75:9)
+
+  console.log
+    [
+      {
+        severity: 'warning',
+        origin: 'CSSLayout',
+        issue: {
+          code: 'OVERLAP_NOT_ALLOWED',
+          message: 'Boxes xs::header::block_1 and xs::content::block_2 are overlapping.',
+          details: [Object]
+        }
+      }
+    ]
+
+      at Object.<anonymous> (src/core/gridCSS/integration/mui/checkSectionsOverlap.test.ts:79:17)
+
+PASS src/core/gridCSS/integration/mui/checkSectionsOverlap.test.ts
+  checkSectionsOverlap
+    ✓ warns when overlapPolicy='warn' and two boxes overlap at the same breakpoint (16 ms)
+    ✓ errors when overlapPolicy='error' and two boxes overlap at the same breakpoint
+    ✓ does NOT report overlap when boxes only touch edges (end === start) (1 ms)
+    ✓ checks overlaps per-breakpoint only (overlap at xs, no overlap at md => 1 diagnostic)
+    ✓ details rects match the source coords (1 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       5 passed, 5 total
+Snapshots:   0 total
+Time:        2.129 s
+Ran all test suites matching checkSectionsOverlap.test.ts.
