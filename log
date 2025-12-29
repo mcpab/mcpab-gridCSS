@@ -1,0 +1,59 @@
+ts-jest[config] (WARN) [94mmessage[0m[90m TS151001: [0mIf you have issues related to imports, you should consider setting `esModuleInterop` to `true` in your TypeScript configuration file (usually `tsconfig.json`). See https://blogs.msdn.microsoft.com/typescript/2018/01/31/announcing-typescript-2-7/#easier-ecmascript-module-interoperability for more information.
+ts-jest[config] (WARN) [94mmessage[0m[90m TS151001: [0mIf you have issues related to imports, you should consider setting `esModuleInterop` to `true` in your TypeScript configuration file (usually `tsconfig.json`). See https://blogs.msdn.microsoft.com/typescript/2018/01/31/announcing-typescript-2-7/#easier-ecmascript-module-interoperability for more information.
+ts-jest[config] (WARN) [94mmessage[0m[90m TS151001: [0mIf you have issues related to imports, you should consider setting `esModuleInterop` to `true` in your TypeScript configuration file (usually `tsconfig.json`). See https://blogs.msdn.microsoft.com/typescript/2018/01/31/announcing-typescript-2-7/#easier-ecmascript-module-interoperability for more information.
+ts-jest[config] (WARN) [94mmessage[0m[90m TS151001: [0mIf you have issues related to imports, you should consider setting `esModuleInterop` to `true` in your TypeScript configuration file (usually `tsconfig.json`). See https://blogs.msdn.microsoft.com/typescript/2018/01/31/announcing-typescript-2-7/#easier-ecmascript-module-interoperability for more information.
+ts-jest[config] (WARN) [94mmessage[0m[90m TS151001: [0mIf you have issues related to imports, you should consider setting `esModuleInterop` to `true` in your TypeScript configuration file (usually `tsconfig.json`). See https://blogs.msdn.microsoft.com/typescript/2018/01/31/announcing-typescript-2-7/#easier-ecmascript-module-interoperability for more information.
+ts-jest[config] (WARN) [94mmessage[0m[90m TS151001: [0mIf you have issues related to imports, you should consider setting `esModuleInterop` to `true` in your TypeScript configuration file (usually `tsconfig.json`). See https://blogs.msdn.microsoft.com/typescript/2018/01/31/announcing-typescript-2-7/#easier-ecmascript-module-interoperability for more information.
+ts-jest[config] (WARN) [94mmessage[0m[90m TS151001: [0mIf you have issues related to imports, you should consider setting `esModuleInterop` to `true` in your TypeScript configuration file (usually `tsconfig.json`). See https://blogs.msdn.microsoft.com/typescript/2018/01/31/announcing-typescript-2-7/#easier-ecmascript-module-interoperability for more information.
+PASS src/templates/__tests__/getLayout.test.ts
+PASS src/boxDesign/__test__/layoutToTx.test.ts
+FAIL src/boxDesign/__test__/CSSLayout.integration.test.ts
+  ● Test suite failed to run
+
+    [96msrc/box/boxPositions.ts[0m:[93m8[0m:[93m28[0m - [91merror[0m[90m TS2307: [0mCannot find module '../../geometry/coordinateTypes' or its corresponding type declarations.
+
+    [7m8[0m import { Coordinate } from "../../geometry/coordinateTypes";
+    [7m [0m [91m                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/boxDesign/__test__/layoutSectionBtoAbs.test.ts
+  ● Test suite failed to run
+
+    [96msrc/box/boxPositions.ts[0m:[93m8[0m:[93m28[0m - [91merror[0m[90m TS2307: [0mCannot find module '../../geometry/coordinateTypes' or its corresponding type declarations.
+
+    [7m8[0m import { Coordinate } from "../../geometry/coordinateTypes";
+    [7m [0m [91m                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/boxDesign/__test__/layoutTxToSectionLocal.test.ts
+  ● Test suite failed to run
+
+    [96msrc/box/boxPositions.ts[0m:[93m8[0m:[93m28[0m - [91merror[0m[90m TS2307: [0mCannot find module '../../geometry/coordinateTypes' or its corresponding type declarations.
+
+    [7m8[0m import { Coordinate } from "../../geometry/coordinateTypes";
+    [7m [0m [91m                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/boxDesign/__test__/layoutSectionB.test.ts
+  ● Test suite failed to run
+
+    [96msrc/box/boxPositions.ts[0m:[93m8[0m:[93m28[0m - [91merror[0m[90m TS2307: [0mCannot find module '../../geometry/coordinateTypes' or its corresponding type declarations.
+
+    [7m8[0m import { Coordinate } from "../../geometry/coordinateTypes";
+    [7m [0m [91m                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+FAIL src/integration/mui/__tests__/checkSectionsOverlap.test.tsx
+  ● Test suite failed to run
+
+    [96msrc/integration/mui/GridCssMuiRenderer.tsx[0m:[93m23[0m:[93m8[0m - [91merror[0m[90m TS1259: [0mModule '"/home/marco/src/nextjs/mcpab-gridCSS/node_modules/.pnpm/@types+react@18.3.27/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+
+    [7m23[0m import React from "react";
+    [7m  [0m [91m       ~~~~~[0m
+
+      [96mnode_modules/.pnpm/@types+react@18.3.27/node_modules/@types/react/index.d.ts[0m:[93m47[0m:[93m1[0m
+        [7m47[0m export = React;
+        [7m  [0m [96m~~~~~~~~~~~~~~~[0m
+        This module is declared with 'export =', and can only be used with a default import when using the 'esModuleInterop' flag.
+
+Test Suites: 5 failed, 2 passed, 7 total
+Tests:       7 passed, 7 total
+Snapshots:   0 total
+Time:        5.4 s, estimated 6 s
+Ran all test suites.
