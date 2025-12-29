@@ -1,44 +1,11 @@
-// src/breakpoints.ts
-var BREAKPOINTS = ["xs", "sm", "md", "lg", "xl"];
-
-// src/gridErrorShape.ts
-var GRID_ERROR_CODE = {
-  // --- Core grid / geometry issues ----------------------------
-  OVERLAP_NOT_ALLOWED: "OVERLAP_NOT_ALLOWED",
-  // --- Pattern / semantic node issues -------------------------
-  INVALID_TRANSFORMATION_PARAMS: "INVALID_TRANSFORMATION_PARAMS",
-  // --- Runtime layout / builder anomalies --------------------
-  NO_BOXES_PROCESSED: "NO_BOXES_PROCESSED",
-  NO_SECTION_ID: "NO_SECTION_ID",
-  BOX_SHAPE_MISSING_BP: "BOX_SHAPE_MISSING_BP",
-  UNKNOWN_TRANSFORMATION: "UNKNOWN_TRANSFORMATION",
-  EMPTY_GRID: "EMPTY_GRID",
-  GRID_NORMALIZED_TO_POSITIVE_LINES: "GRID_NORMALIZED_TO_POSITIVE_LINES",
-  MISSING_COORDINATES: "MISSING_COORDINATES",
-  SECTION_SHAPES_MISSING_BP: "SECTION_SHAPES_MISSING_BP",
-  UNKNOWN_NODE_ID: "UNKNOWN_NODE_ID",
-  UNKNOWN_ANCHOR: "UNKNOWN_ANCHOR",
-  BOX_SPAN_MISSING: "BOX_SPAN_MISSING",
-  MISSING_BOX: "MISSING_BOX",
-  CONSTRAINT_VIOLATION: "CONSTRAINT_VIOLATION"
-};
-function makeDiagnostic(severity, origin2, code, message, extras = {}) {
-  return {
-    severity,
-    origin: origin2,
-    issue: {
-      code,
-      message,
-      ...extras
-    }
-  };
-}
-function makeError(origin2, code, message, extras = {}) {
-  return makeDiagnostic("error", origin2, code, message, extras);
-}
-function makeWarning(origin2, code, message, extras = {}) {
-  return makeDiagnostic("warning", origin2, code, message, extras);
-}
+import {
+  BREAKPOINTS,
+  GRID_ERROR_CODE,
+  gapValueToString,
+  gridUnitValueToString,
+  makeError,
+  makeWarning
+} from "./chunk-NNZR6OKN.js";
 
 // src/box/boxPositions.ts
 var boxPosition = (box, boxAnchor) => {
@@ -1454,43 +1421,6 @@ var customColumnTransforms = {
   xs: [{ stackVertically: { gap: 15 } }],
   lg: [{ stackVertically: { gap: 30 } }]
 };
-
-// src/cssStringify.ts
-function cssLengthToString(len) {
-  return `${len.value}${len.unit}`;
-}
-function isCssLength(v) {
-  return typeof v === "object" && v !== null && "unit" in v && "value" in v && v.unit && typeof v.value === "number";
-}
-function trackBreadthToString(b2) {
-  if (isCssLength(b2)) return cssLengthToString(b2);
-  switch (b2.unit) {
-    case "fr":
-      return `${b2.value}fr`;
-    case "auto":
-      return "auto";
-    case "min-content":
-      return "min-content";
-    case "max-content":
-      return "max-content";
-    case "fit-content":
-      return `fit-content(${cssLengthToString(b2.value)})`;
-    default: {
-      const _never = b2;
-      return String(_never);
-    }
-  }
-}
-function gridUnitValueToString(v) {
-  if (typeof v === "object" && v !== null && "unit" in v && v.unit === "minmax") {
-    const mm = v;
-    return `minmax(${trackBreadthToString(mm.min)}, ${trackBreadthToString(mm.max)})`;
-  }
-  return trackBreadthToString(v);
-}
-function gapValueToString(g) {
-  return cssLengthToString(g);
-}
 
 // src/utils/utils.ts
 function typedKeys(obj) {
