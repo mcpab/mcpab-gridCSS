@@ -33,22 +33,69 @@ npm install @mcpab/gridcss @mui/material @mui/system
 import { CSSLayout } from '@mcpab/gridcss';
 
 // Define your layout with transformations
-const myLayout = {
+const layoutWithTxExample: LayoutWithTx<'header' | 'main', 'block_1' | 'block_2'> = {
   sections: {
-    header: { /* section definition */ },
-    content: { /* section definition */ },
-    footer: { /* section definition */ }
+    header: {
+      gridBoxes: { 
+        xs: { 
+          block_1: { origin: { x: 0, y: 0 }, diagonal: { x: 100, y: 50 }, _normalized: "GridBox" } 
+        },
+        md: { 
+          block_1: { origin: { x: 0, y: 0 }, diagonal: { x: 200, y: 50 }, _normalized: "GridBox" } 
+        },
+        lg: { 
+          block_1: { origin: { x: 0, y: 0 }, diagonal: { x: 300, y: 50 }, _normalized: "GridBox" } 
+        },
+        sm: { 
+          block_1: { origin: { x: 0, y: 0 }, diagonal: { x: 150, y: 50 }, _normalized: "GridBox" } 
+        },
+        xl: { 
+          block_1: { origin: { x: 0, y: 0 }, diagonal: { x: 400, y: 50 }, _normalized: "GridBox" } 
+        },
+      } as BPSGridBoxes<'block_1' | 'block_2'>,
+      transformations: { 
+        xs: [{ stackHorizontally: {} }],
+        md: [{ stackHorizontally: { gap: 20 } }],
+        lg  : [{ stackHorizontally: { gap: 30 } }],
+        sm: [{ stackHorizontally: { gap: 15 } }],
+        xl: [{ stackHorizontally: { gap: 40 } }]
+      }
+    },
+    main: {
+      gridBoxes: {
+       xs: { 
+          block_1: { origin: { x: 0, y: 0 }, diagonal: { x: 100, y: 50 }, _normalized: "GridBox" } 
+        },
+        md: { 
+          block_1: { origin: { x: 0, y: 0 }, diagonal: { x: 200, y: 50 }, _normalized: "GridBox" } 
+        },
+        lg: { 
+          block_1: { origin: { x: 0, y: 0 }, diagonal: { x: 300, y: 50 }, _normalized: "GridBox" } 
+        },
+        sm: { 
+          block_1: { origin: { x: 0, y: 0 }, diagonal: { x: 150, y: 50 }, _normalized: "GridBox" } 
+        },
+        xl: { 
+          block_1: { origin: { x: 0, y: 0 }, diagonal: { x: 400, y: 50 }, _normalized: "GridBox" } 
+        },
+      } as BPSGridBoxes<'block_1' | 'block_2'>,
+      transformations: {
+         xs: [{ stackHorizontally: {} }],
+        md: [{ stackHorizontally: { gap: 20 } }],
+        lg  : [{ stackHorizontally: { gap: 30 } }],
+        sm: [{ stackHorizontally: { gap: 15 } }],
+        xl: [{ stackHorizontally: { gap: 40 } }]
+      }
+    }
   },
-  transformations: {
-    xs: [
-      { stackVertically: { boxes: ['header', 'content', 'footer'] } }
-    ],
-    md: [
-      { moveTo: { box: 'header', position: { x: 1, y: 1 } } }
-    ]
+  transformations: { 
+    xs: [{ stackHorizontally: {} }],
+        md: [{ stackHorizontally: { gap: 20 } }],
+        lg  : [{ stackHorizontally: { gap: 30 } }],
+        sm: [{ stackHorizontally: { gap: 15 } }],
+        xl: [{ stackHorizontally: { gap: 40 } }]
   }
 };
-
 // Process layout into CSS Grid coordinates
 const result = CSSLayout({
   layoutWithTx: myLayout,
@@ -245,13 +292,43 @@ diagnostics.forEach(diagnostic => {
 import { transformBoxMove } from '@mcpab/gridcss';
 
 // Create custom transformation factory
-const customTransformations = {
-  moveTo: ({ boxprops, boxes, diagnostics }) => {
-    // Custom transformation logic
-    return true; // success
-  }
-  // ... other transformations
-};
+let transformations: Array<BoxMovesProps<'block_1' | 'aside'>> = [
+ {
+      moveTo: {
+        from: {
+          boxId: 'aside',
+          anchor: 'center'
+        },
+        to: {
+          boxId: 'block_1',
+          anchor: 'topLeft'
+        }
+      }
+    },
+    {
+      moveBy: {
+        from: {
+          boxId: 'aside',
+        },
+        by: {
+          x: 100,
+          y: 200
+        },
+      }
+    },
+    {
+      moveTo: {
+        from: {
+          boxId: 'aside',
+          anchor: 'center'
+        },
+        to: {
+          boxId: 'block_1',
+          anchor: 'topLeft'
+        }
+      }
+    },
+  ];
 ```
 
 ### Template System
