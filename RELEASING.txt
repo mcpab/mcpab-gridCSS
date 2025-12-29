@@ -1,0 +1,122 @@
+RELEASING — @mcpab/gridcss
+==========================
+
+This repo is a TypeScript library that is installed from GitHub (git tag) today,
+with an easy path to publish later (npm or GitHub Packages).
+
+Key idea:
+- Consumers should pin to a git TAG (e.g. #v0.1.1) for reproducible builds.
+- While installing from GitHub, we commit dist/ so consumers don't need to build.
+
+------------------------------------------------------------
+A) Quick release checklist (GitHub install workflow)
+------------------------------------------------------------
+
+1) Make changes + run tests/build
+   - pnpm test        (if you have tests)
+   - pnpm build
+
+2) Ensure dist/ is up-to-date and committed
+   - dist/ must be committed for GitHub installs to work reliably.
+
+3) Bump version
+   - Edit package.json "version": "0.1.x"
+   (Optional: keep a CHANGELOG.md)
+
+4) Commit + tag + push
+   Example for v0.1.1:
+
+   pnpm build
+   git add -A
+   git commit -m "Release v0.1.1"
+   git tag v0.1.1
+   git push
+   git push --tags
+
+------------------------------------------------------------
+B) Updating consumers (Next.js repos)
+------------------------------------------------------------
+
+In each consumer repo:
+
+1) Upgrade dependency to the new tag
+   pnpm add github:mcpab/mcpab-gridCSS#v0.1.1
+
+2) Build to verify
+   pnpm build
+
+Notes:
+- Avoid installing from #main because it is not reproducible.
+- Tags are the "versions" for GitHub installs.
+
+------------------------------------------------------------
+C) Smoke tests (recommended)
+------------------------------------------------------------
+
+Core (Node-friendly):
+- You can sanity check core exports with Node ESM:
+  node -e "import('@mcpab/gridcss').then(m=>console.log(Object.keys(m).slice(0,10)))"
+
+MUI adapter:
+- @mcpab/gridcss/mui is intended to be consumed by a bundler (Next.js).
+- Do NOT treat raw Node ESM import as the main validation for /mui.
+- Validate /mui by importing it in a Next.js app and running pnpm build.
+
+------------------------------------------------------------
+D) Packaging structure
+------------------------------------------------------------
+
+Exports:
+- "@mcpab/gridcss"        -> dist/index.(js|cjs|d.ts)
+- "@mcpab/gridcss/mui"    -> dist/mui.(js|cjs|d.ts)
+
+While using GitHub installs:
+- Keep committing dist/ (do not .gitignore dist/).
+
+------------------------------------------------------------
+E) Later: Publishing (C) — choose one route
+------------------------------------------------------------
+
+Option 1: Publish to npm (public or private scope)
+-----------------------------------------------
+Pre-req:
+- Make sure the package name and scope are correct: "@mcpab/gridcss"
+- npm login
+
+Typical publish:
+- pnpm build
+- npm publish --access public   (for public scoped packages)
+
+After publishing, consumers use:
+- pnpm add @mcpab/gridcss@0.1.1
+
+Option 2: Publish to GitHub Packages
+-----------------------------------------------
+Pre-req:
+- GitHub token with package permissions
+- Configure publishConfig in package.json (example):
+
+  "publishConfig": { "registry": "https://npm.pkg.github.com" }
+
+Then:
+- pnpm build
+- npm publish
+
+Consumers configure npmrc auth for GitHub Packages and install:
+- pnpm add @mcpab/gridcss@0.1.1
+
+------------------------------------------------------------
+F) Versioning rule of thumb (simple)
+------------------------------------------------------------
+
+- PATCH (0.1.x): internal refactor, bug fixes, no API change (or only additive safe exports)
+- MINOR (0.x.0): new features, new exports, or changes requiring consumer updates
+- MAJOR (1.0.0+): breaking changes (renamed exports, behavior changes, type changes that break builds)
+
+------------------------------------------------------------
+G) Notes / gotchas
+------------------------------------------------------------
+
+- For GitHub installs, dist/ must be present at the tag.
+- If you change exports map or entrypoints, validate in a real Next.js consumer build.
+- Keep peerDependencies accurate for the /mui entry (react, react-dom, @mui/material, etc.).
