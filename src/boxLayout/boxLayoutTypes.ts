@@ -660,6 +660,19 @@ export type LayoutRenderingOverride<
   }>;
 }>;
 
+type SEC<L extends Layout<any, any>> = Extract<keyof L, SectionIDs>;
+type BLK<L extends Layout<any, any>, S extends SEC<L>> =
+  Extract<keyof NonNullable<L[S]>, BlocksIDs>;
+
+export type LayoutRenderOverrideFor<L extends Layout<any, any>> = Partial<{
+  [S in SEC<L>]: Partial<{
+    [BP in Breakpoint]: Partial<{
+      [B in BLK<L, S>]: NodeRenderConfig<S, B>;
+    }>;
+  }>;
+}>;
+
+
 // =============================================================================
 // Compilation Test Examples
 // =============================================================================
