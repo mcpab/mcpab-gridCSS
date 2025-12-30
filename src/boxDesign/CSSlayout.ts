@@ -20,10 +20,8 @@
 
 // Layout type definitions for different transformation stages
 import {
- 
   LayoutAbsolute,           // Final layout with absolute CSS coordinates
   LayoutWithTx,             // Input layout with transformation configurations
- 
 } from "../boxLayout/boxLayoutTypes";
 
 // Responsive breakpoint definitions
@@ -70,8 +68,8 @@ type GridDiagnostic = {
  * @property diagnostics - Array to collect errors and warnings
  * @property gridDiagnostic - Optional validation configuration
  */
-type CSSLayoutProps<sectionIDs extends SectionIDs, blockIDs extends BlocksIDs,L extends LayoutWithTx<sectionIDs, blockIDs>> = {
-  layoutWithTx: L;
+type CSSLayoutProps<sectionIDs extends SectionIDs, blockIDs extends BlocksIDs> = {
+  layoutWithTx: LayoutWithTx<sectionIDs, blockIDs>;
   diagnostics: DiagnosticEntry[];
   gridDiagnostic?: GridDiagnostic;
 };
@@ -93,12 +91,12 @@ type CSSLayoutProps<sectionIDs extends SectionIDs, blockIDs extends BlocksIDs,L 
  * @param props - Configuration object containing layout, diagnostics, and validation options
  * @returns Layout with absolute CSS Grid coordinates for all sections and boxes
  */
-export function CSSLayout<sectionIDs extends SectionIDs, blockIDs extends BlocksIDs, L extends LayoutWithTx<sectionIDs, blockIDs>>({
+export function CSSLayout<sectionIDs extends SectionIDs, blockIDs extends BlocksIDs >({
   layoutWithTx,
   diagnostics,
   gridDiagnostic = { overlapPolicy: "allow", breakpoints: BREAKPOINTS },
-}: CSSLayoutProps<sectionIDs, blockIDs, L>): LayoutAbsolute<
- sectionIDs,
+}: CSSLayoutProps<sectionIDs, blockIDs  >): LayoutAbsolute<
+  sectionIDs,
   blockIDs
 > {
   // Step 1: Apply transformations and convert to local section coordinates
@@ -112,7 +110,7 @@ export function CSSLayout<sectionIDs extends SectionIDs, blockIDs extends Blocks
   // Step 3: Convert to absolute CSS Grid coordinates
   // This positions sections absolutely and ensures all coordinates are valid for CSS Grid
   const layoutSecAbs = layoutSectionBtoAbsolute(layoutSecBonds, diagnostics);
-  
+
   // Extract diagnostic configuration with defaults
   const overlapPolicy = gridDiagnostic.overlapPolicy || "allow";
   const breakpoints = gridDiagnostic.breakpoints || BREAKPOINTS;
@@ -330,21 +328,21 @@ export function checkSectionsOverlap<
         diagnostics.push(
           overlapPolicy === "warn"
             ? makeWarning(
-                "CSSLayout",
-                GRID_ERROR_CODE.OVERLAP_NOT_ALLOWED,
-                message,
-                {
-                  details,
-                }
-              )
+              "CSSLayout",
+              GRID_ERROR_CODE.OVERLAP_NOT_ALLOWED,
+              message,
+              {
+                details,
+              }
+            )
             : makeError(
-                "CSSLayout",
-                GRID_ERROR_CODE.OVERLAP_NOT_ALLOWED,
-                message,
-                {
-                  details,
-                }
-              )
+              "CSSLayout",
+              GRID_ERROR_CODE.OVERLAP_NOT_ALLOWED,
+              message,
+              {
+                details,
+              }
+            )
         );
       }
     }

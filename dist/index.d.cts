@@ -1857,8 +1857,8 @@ type GridDiagnostic = {
  * @property diagnostics - Array to collect errors and warnings
  * @property gridDiagnostic - Optional validation configuration
  */
-type CSSLayoutProps<sectionIDs extends SectionIDs, blockIDs extends BlocksIDs, L extends LayoutWithTx<sectionIDs, blockIDs>> = {
-    layoutWithTx: L;
+type CSSLayoutProps<sectionIDs extends SectionIDs, blockIDs extends BlocksIDs> = {
+    layoutWithTx: LayoutWithTx<sectionIDs, blockIDs>;
     diagnostics: DiagnosticEntry[];
     gridDiagnostic?: GridDiagnostic;
 };
@@ -1879,7 +1879,7 @@ type CSSLayoutProps<sectionIDs extends SectionIDs, blockIDs extends BlocksIDs, L
  * @param props - Configuration object containing layout, diagnostics, and validation options
  * @returns Layout with absolute CSS Grid coordinates for all sections and boxes
  */
-declare function CSSLayout<sectionIDs extends SectionIDs, blockIDs extends BlocksIDs, L extends LayoutWithTx<sectionIDs, blockIDs>>({ layoutWithTx, diagnostics, gridDiagnostic, }: CSSLayoutProps<sectionIDs, blockIDs, L>): LayoutAbsolute<sectionIDs, blockIDs>;
+declare function CSSLayout<sectionIDs extends SectionIDs, blockIDs extends BlocksIDs>({ layoutWithTx, diagnostics, gridDiagnostic, }: CSSLayoutProps<sectionIDs, blockIDs>): LayoutAbsolute<sectionIDs, blockIDs>;
 /**
  * Check for overlapping boxes across all sections and report violations
  *
