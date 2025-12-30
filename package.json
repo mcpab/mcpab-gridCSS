@@ -25,7 +25,9 @@
   "scripts": {
     "build": "tsup",
     "clean": "rimraf dist",
-    "ladle": "ladle"
+    "ladle": "ladle serve",
+    "ladle:build": "ladle build",
+    "ladle:preview": "ladle preview"
   },
   "peerDependencies": {
     "@emotion/react": ">=11",
