@@ -1384,9 +1384,9 @@ type LayoutAbsolute<SectionID extends SectionIDs, BlockIDs extends BlocksIDs> = 
  * }
  * ```
  */
-type NodeRenderCtx<sectionID extends SectionIDs, blockIDs extends BlocksIDs, BP extends Breakpoint = Breakpoint> = {
+type NodeRenderCtx<sectionID extends SectionIDs, blockIDs extends BlocksIDs> = {
     sectionId: sectionID;
-    bp: BP;
+    bp: Breakpoint;
     boxId: blockIDs;
     coords: CSSCoordinates;
 };
@@ -1471,19 +1471,13 @@ type NodeRenderConfig<sectionID extends SectionIDs, blockIDs extends BlocksIDs> 
  * };
  * ```
  */
-type LayoutRenderingOverride<sectionID extends SectionIDs, blockIDs extends BlocksIDs> = Partial<{
-    [S in sectionID]: Partial<{
-        [BP in Breakpoint]: Partial<Record<blockIDs, NodeRenderConfig<sectionID, blockIDs>>>;
-    }>;
-}>;
+type LayoutRenderingOverride<sectionID extends SectionIDs, blockIDs extends BlocksIDs> = Partial<Record<sectionID, Partial<Record<blockIDs, NodeRenderConfig<sectionID, blockIDs>>>>>;
 type SEC<L extends Layout<any, any>> = Extract<keyof L, SectionIDs>;
 type BLK<L extends Layout<any, any>, S extends SEC<L>> = Extract<keyof NonNullable<L[S]>, BlocksIDs>;
 type LayoutRenderOverrideFor<L extends Layout<any, any>> = Partial<{
-    [S in SEC<L>]: Partial<{
-        [BP in Breakpoint]: Partial<{
-            [B in BLK<L, S>]: NodeRenderConfig<S, B>;
-        }>;
-    }>;
+    [S in SEC<L>]: Partial<Partial<{
+        [B in BLK<L, S>]: NodeRenderConfig<S, B>;
+    }>>;
 }>;
 
 /**

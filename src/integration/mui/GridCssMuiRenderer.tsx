@@ -353,7 +353,7 @@ export function GridCssMuiRenderer<
         // Resolve rendering configuration with safe fallbacks
         // Check for custom rendering override, otherwise use default empty renderer
         const resolved: NodeRenderConfig<sectionID, blockID> =
-          (layoutRendering?.[sectionId]?.[bp]?.[boxId] as
+          (layoutRendering?.[sectionId]?.[boxId] as
             | NodeRenderConfig<sectionID, blockID>
             | undefined) ?? {
             contentRenderer: () => <></>, // Empty fragment as fallback

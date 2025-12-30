@@ -191,7 +191,7 @@ export const DevTools: Story = () => {
         const coords = boxesAtBp[boxId];
         if (!coords) continue;
 
-        (layoutRendering as any)[sectionId][bp][boxId] = {
+        (layoutRendering as any)[sectionId][boxId] = {
           contentRenderer: ({ sectionId, bp, boxId, coords }: any) => (
             <Box
               sx={{

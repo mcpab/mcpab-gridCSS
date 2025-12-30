@@ -11,7 +11,7 @@ import { BoxMovesProps } from "../boxTransformations/boxTransformationsProps";
 import { BPs, Breakpoint } from "../breakpoints";
 import { CSSCoordinates } from "../gridNodeTypes";
 import { GridNodeViewOptions } from "../nodeViewOptions";
-import { SectionIDs, BlocksIDs, NodeID } from "../templates/layoutIDs";
+import { BlocksIDs, NodeID, SectionIDs } from "../templates/layoutIDs";
 
 /**
  * Defines the grid span dimensions for a box element.
@@ -60,7 +60,7 @@ export type BoxSpan = { spanX: number; spanY: number };
 export type Layout<
   sectionIDs extends SectionIDs,
   blockIDs extends BlocksIDs
-> =  Partial< Record<sectionIDs,  Partial<Record<blockIDs, BoxSpan>>>>;
+> = Partial<Record<sectionIDs, Partial<Record<blockIDs, BoxSpan>>>>;
 
 // /**
 //  * Extracts all section IDs that are present in a specific layout.
@@ -554,10 +554,10 @@ export type LayoutAbsolute<
 export type NodeRenderCtx<
   sectionID extends SectionIDs,
   blockIDs extends BlocksIDs,
-  BP extends Breakpoint = Breakpoint
+
 > = {
   sectionId: sectionID;
-  bp: BP;
+  bp: Breakpoint;
   boxId: blockIDs;
   coords: CSSCoordinates;
 };
@@ -652,25 +652,19 @@ export type NodeRenderConfig<
 export type LayoutRenderingOverride<
   sectionID extends SectionIDs,
   blockIDs extends BlocksIDs
-> = Partial<{
-  [S in sectionID]: Partial<{
-    [BP in Breakpoint]: Partial<
-      Record<blockIDs, NodeRenderConfig<sectionID, blockIDs>>
-    >;
-  }>;
-}>;
+> = Partial<Record<sectionID, Partial<Record<blockIDs, NodeRenderConfig<sectionID, blockIDs>>>>>;
 
 type SEC<L extends Layout<any, any>> = Extract<keyof L, SectionIDs>;
 type BLK<L extends Layout<any, any>, S extends SEC<L>> =
   Extract<keyof NonNullable<L[S]>, BlocksIDs>;
 
 export type LayoutRenderOverrideFor<L extends Layout<any, any>> = Partial<{
-  [S in SEC<L>]: Partial<{
-    [BP in Breakpoint]: Partial<{
+  [S in SEC<L>]: Partial<
+    Partial<{
       [B in BLK<L, S>]: NodeRenderConfig<S, B>;
-    }>;
-  }>;
-}>;
+    }>> }>;
+
+
 
 
 // =============================================================================
@@ -718,7 +712,7 @@ const layoutForBlocks = {
   },
 } satisfies Layout<"header", "block_1" | "block_3">;
 
- 
+
 // Result: 'block_1' | 'block_3'
 
 // UnionBlockIDSfromLayout examples
@@ -727,7 +721,7 @@ const layoutForUnion = {
   main: { block_3: { spanX: 1, spanY: 3 }, block_4: { spanX: 3, spanY: 3 } },
 } satisfies Layout<"header" | "main", "block_1" | "block_2" | "block_3" | "block_4">;
 
- 
+
 // BoxTransformations examples
 const transformations: BoxTransformations<"block_1" | "block_2"> = {
   xs: [
@@ -1254,7 +1248,7 @@ const localLayout: LayoutSectionLocal<
 };
 
 // NodeRenderCtx examples
-const renderContext: NodeRenderCtx<"header", "block_1", "md"> = {
+const renderContext: NodeRenderCtx<"header", "block_1"> = {
   sectionId: "header",
   bp: "md",
   boxId: "block_1",
@@ -1290,32 +1284,22 @@ const renderOverrides: LayoutRenderingOverride<
   // Override header section only
   header: {
     // Only for medium and large breakpoints
-    md: {
-      // Only for block_1
-      block_1: {
-        contentRenderer: (ctx) => "<h1>Custom Header</h1>",
-        view: {
-          justifySelf: "center",
-        },
+
+    // Only for block_1
+    block_1: {
+      contentRenderer: (ctx) => "<h1>Custom Header</h1>",
+      view: {
+        justifySelf: "center",
       },
     },
-    lg: {
-      block_1: {
-        contentRenderer: (ctx) => "<h1>Large Screen Header</h1>",
-      },
-      block_2: {
-        view: {
-          alignSelf: "end",
-        },
-      },
-    },
+
   },
   // Main section overrides
   main: {
-    xs: {
-      block_1: {
-        contentRenderer: (ctx) => "<div>Mobile Content</div>",
-      },
+
+    block_1: {
+      contentRenderer: (ctx) => "<div>Mobile Content</div>",
+
     },
   },
 };

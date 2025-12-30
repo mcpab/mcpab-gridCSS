@@ -21,7 +21,7 @@
 
 // MUI core imports - using specific file paths for better tree shaking
 import { useTheme } from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
+import useMediaQuery from '@mui/material/useMediaQuery'; 
 import Box  from '@mui/material/Box';
  import { MuiTheme } from './muiTypes';
 import type { MuiSystemStyleObject } from './muiTypes';

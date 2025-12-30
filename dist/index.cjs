@@ -2539,7 +2539,7 @@ function GridCssMuiRenderer({
           continue;
         }
         const nodeKey = `${String(sectionId)}::${String(boxId)}`;
-        const resolved = layoutRendering?.[sectionId]?.[bp]?.[boxId] ?? {
+        const resolved = layoutRendering?.[sectionId]?.[boxId] ?? {
           contentRenderer: () => /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(import_jsx_runtime2.Fragment, {}),
           // Empty fragment as fallback
           view: {}

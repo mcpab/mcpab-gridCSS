@@ -349,7 +349,7 @@ function GridCssMuiRenderer({
           continue;
         }
         const nodeKey = `${String(sectionId)}::${String(boxId)}`;
-        const resolved = layoutRendering?.[sectionId]?.[bp]?.[boxId] ?? {
+        const resolved = layoutRendering?.[sectionId]?.[boxId] ?? {
           contentRenderer: () => /* @__PURE__ */ jsx2(Fragment, {}),
           // Empty fragment as fallback
           view: {}
@@ -434,4 +434,4 @@ export {
   DefaultNodeRender,
   GridCssMuiRenderer
 };
-//# sourceMappingURL=chunk-QZG5IVUS.js.map
+//# sourceMappingURL=chunk-6ZFD4Q3H.js.map
