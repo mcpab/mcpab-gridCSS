@@ -1,11 +1,21 @@
 import {
   BREAKPOINTS,
+  DefaultNodeRender,
   GRID_ERROR_CODE,
+  GridCssMuiRenderer,
+  cssLengthToString,
   gapValueToString,
+  getNodeDomProps,
+  getNodeSxProps,
   gridUnitValueToString,
+  makeDiagnostic,
   makeError,
-  makeWarning
-} from "./chunk-NNZR6OKN.js";
+  makeInfo,
+  makeWarning,
+  partialRecordKeys,
+  recordKeys,
+  trackBreadthToString
+} from "./chunk-HN626CNF.js";
 
 // src/box/boxPositions.ts
 var boxPosition = (box, boxAnchor) => {
@@ -42,6 +52,14 @@ var boxPosition = (box, boxAnchor) => {
 };
 
 // src/geometry/matrixAlgebra.ts
+var unitMatrix = [
+  [1, 0],
+  [0, 1]
+];
+var zeroMatrix = [
+  [0, 0],
+  [0, 0]
+];
 var reflectionOnXAxis = [
   [1, 0],
   [0, -1]
@@ -134,7 +152,72 @@ var velocity = { x: 10, y: 5 };
 var oppositeDirection = invert(velocity);
 var originalBack = invert(invert(pointToInvert));
 
+// src/geometry/coordinateMetrics.ts
+var dot = (a2, b2) => {
+  return a2.x * b2.x + a2.y * b2.y;
+};
+var norm = (v) => {
+  return Math.sqrt(dot(v, v));
+};
+var distance = (a2, b2) => {
+  return norm({ x: b2.x - a2.x, y: b2.y - a2.y });
+};
+var normalize = (v) => {
+  const len = norm(v);
+  if (len === 0) {
+    return { x: 0, y: 0 };
+  }
+  return { x: v.x / len, y: v.y / len };
+};
+var angleBetween = (a2, b2) => {
+  const dotProduct = dot(a2, b2);
+  const lengthsProduct = norm(a2) * norm(b2);
+  if (lengthsProduct === 0) {
+    return 0;
+  }
+  let cosTheta = dotProduct / lengthsProduct;
+  cosTheta = Math.max(-1, Math.min(1, cosTheta));
+  return Math.acos(cosTheta);
+};
+var boundingBox = (points) => {
+  if (points.length === 0) {
+    return { min: { x: 0, y: 0 }, max: { x: 0, y: 0 } };
+  }
+  let minX = points[0].x;
+  let minY = points[0].y;
+  let maxX = points[0].x;
+  let maxY = points[0].y;
+  for (const point2 of points) {
+    if (point2.x < minX) minX = point2.x;
+    if (point2.y < minY) minY = point2.y;
+    if (point2.x > maxX) maxX = point2.x;
+    if (point2.y > maxY) maxY = point2.y;
+  }
+  return {
+    min: { x: minX, y: minY },
+    max: { x: maxX, y: maxY }
+  };
+};
+var lerp = (a2, b2, t) => {
+  return {
+    x: a2.x + (b2.x - a2.x) * t,
+    y: a2.y + (b2.y - a2.y) * t
+  };
+};
+var clamp = (v, min, max) => {
+  return {
+    x: Math.max(min.x, Math.min(max.x, v.x)),
+    y: Math.max(min.y, Math.min(max.y, v.y))
+  };
+};
+
 // src/geometry/coordinatesUtils.ts
+var minCoordinate = (a2, b2) => {
+  return { x: Math.min(a2.x, b2.x), y: Math.min(a2.y, b2.y) };
+};
+var maxCoordinate = (a2, b2) => {
+  return { x: Math.max(a2.x, b2.x), y: Math.max(a2.y, b2.y) };
+};
 var copyCoordinate = (coord4) => {
   return { x: coord4.x, y: coord4.y };
 };
@@ -148,6 +231,13 @@ var makeGridBox = (origin2, diagonal) => {
   return {
     origin: org,
     diagonal: diag,
+    _normalized: "GridBox"
+  };
+};
+var copyGridBox = (box) => {
+  return {
+    origin: copyCoordinate(box.origin),
+    diagonal: copyCoordinate(box.diagonal),
     _normalized: "GridBox"
   };
 };
@@ -1192,10 +1282,10 @@ function CSSLayout({
   }
   return layoutSecAbs;
 }
-function recordKeys(obj) {
+function recordKeys2(obj) {
   return Object.keys(obj);
 }
-function partialRecordKeys(obj) {
+function partialRecordKeys2(obj) {
   return Object.keys(obj);
 }
 function overlaps(a2, b2) {
@@ -1205,13 +1295,13 @@ function overlaps(a2, b2) {
   b2.gridRowStart < a2.gridRowEnd;
 }
 function checkSectionsOverlap(layoutAbsolute, diagnostics2, overlapPolicy, breakpoints) {
-  const sectionIds = recordKeys(layoutAbsolute.sections);
+  const sectionIds = recordKeys2(layoutAbsolute.sections);
   for (const bp of breakpoints) {
     const boxesByBp = [];
     for (const sectionId of sectionIds) {
       const sectionBoxes = layoutAbsolute.sections[sectionId].coordinates[bp];
       if (!sectionBoxes) continue;
-      const boxIds = partialRecordKeys(sectionBoxes);
+      const boxIds = partialRecordKeys2(sectionBoxes);
       for (const boxId of boxIds) {
         const crd = sectionBoxes[boxId];
         if (!crd) continue;
@@ -1422,6 +1512,504 @@ var customColumnTransforms = {
   lg: [{ stackVertically: { gap: 30 } }]
 };
 
+// src/templates/layoutsCatalog.ts
+var getCatalogCategoryKeys = () => Object.keys(layoutsCatalog);
+var getLayoutKeysForCategory = (catalogKey) => Object.keys(layoutsCatalog[catalogKey]);
+var getLayoutFromCatalog = (catalogKey, layoutKey) => {
+  const layout = layoutsCatalog[catalogKey][layoutKey];
+  return structuredClone(layout);
+};
+var layoutsCatalog = {
+  /**
+   * Primary20 category: Layout templates designed for 20-column grids.
+   * These layouts are optimized for desktop and wide-screen displays.
+   * All spanX values are calculated based on a 20-column grid system.
+   */
+  primary20: {
+    /**
+     * Single full-width band layout.
+     * Contains one row with a single block spanning the full 20 columns.
+     * Perfect for hero sections, banners, or simple single-content pages.
+     */
+    page_band: {
+      row_1: {
+        block_1: { spanX: 20, spanY: 1 }
+      }
+    },
+    /**
+     * Classic header-content-footer layout.
+     * Three-section vertical layout with full-width sections.
+     * Standard pattern for most web pages and applications.
+     */
+    page_headerContentFooter: {
+      header: {
+        block_1: { spanX: 20, spanY: 1 }
+      },
+      content: {
+        block_1: { spanX: 20, spanY: 1 }
+      },
+      footer: {
+        block_1: { spanX: 20, spanY: 1 }
+      }
+    },
+    /**
+     * Equal two-column layout (10/10 split).
+     * Header and footer span full width, main content split evenly.
+     * Ideal for balanced content presentation or comparison layouts.
+     */
+    page_twoCol_10_10: {
+      header: {
+        block_1: { spanX: 20, spanY: 1 }
+      },
+      main: {
+        block_1: { spanX: 10, spanY: 1 },
+        block_2: { spanX: 10, spanY: 1 }
+      },
+      footer: {
+        block_1: { spanX: 20, spanY: 1 }
+      }
+    },
+    /**
+     * Narrow sidebar with wide content (5/15 split).
+     * Left sidebar takes 25% width, content area takes 75%.
+     * Common for navigation + content layouts.
+     */
+    page_twoCol_5_15: {
+      header: {
+        block_1: { spanX: 20, spanY: 1 }
+      },
+      main: {
+        block_1: { spanX: 5, spanY: 1 },
+        block_2: { spanX: 15, spanY: 1 }
+      },
+      footer: {
+        block_1: { spanX: 20, spanY: 1 }
+      }
+    },
+    /**
+     * Wide content with narrow sidebar (15/5 split).
+     * Content area takes 75% width, right sidebar takes 25%.
+     * Useful for primary content with secondary information.
+     */
+    page_twoCol_15_5: {
+      header: {
+        block_1: { spanX: 20, spanY: 1 }
+      },
+      main: {
+        block_1: { spanX: 15, spanY: 1 },
+        block_2: { spanX: 5, spanY: 1 }
+      },
+      footer: {
+        block_1: { spanX: 20, spanY: 1 }
+      }
+    },
+    /**
+     * Very narrow sidebar layout (4/16 split).
+     * Minimal sidebar for icons/navigation, maximum content space.
+     * Suitable for app interfaces with icon-based navigation.
+     */
+    page_twoCol_4_16: {
+      header: {
+        block_1: { spanX: 20, spanY: 1 }
+      },
+      main: {
+        block_1: { spanX: 4, spanY: 1 },
+        block_2: { spanX: 16, spanY: 1 }
+      },
+      footer: {
+        block_1: { spanX: 20, spanY: 1 }
+      }
+    },
+    /**
+     * Wide content with very narrow sidebar (16/4 split).
+     * Maximum content space with minimal sidebar.
+     * Mirror of the 4/16 layout with sidebar on the right.
+     */
+    page_twoCol_16_4: {
+      header: {
+        block_1: { spanX: 20, spanY: 1 }
+      },
+      main: {
+        block_1: { spanX: 16, spanY: 1 },
+        block_2: { spanX: 4, spanY: 1 }
+      },
+      footer: {
+        block_1: { spanX: 20, spanY: 1 }
+      }
+    },
+    /**
+     * Medium sidebar with main content (8/12 split).
+     * Sidebar takes 40% width, content takes 60%.
+     * Good balance for secondary navigation and content.
+     */
+    page_twoCol_8_12: {
+      header: {
+        block_1: { spanX: 20, spanY: 1 }
+      },
+      main: {
+        block_1: { spanX: 8, spanY: 1 },
+        block_2: { spanX: 12, spanY: 1 }
+      },
+      footer: {
+        block_1: { spanX: 20, spanY: 1 }
+      }
+    },
+    /**
+     * Main content with medium sidebar (12/8 split).
+     * Content takes 60% width, sidebar takes 40%.
+     * Mirror of the 8/12 layout with sidebar on the right.
+     */
+    page_twoCol_12_8: {
+      header: {
+        block_1: { spanX: 20, spanY: 1 }
+      },
+      main: {
+        block_1: { spanX: 12, spanY: 1 },
+        block_2: { spanX: 8, spanY: 1 }
+      },
+      footer: {
+        block_1: { spanX: 20, spanY: 1 }
+      }
+    },
+    /**
+     * Balanced three-column layout (5/10/5 split).
+     * Equal sidebars with wider central content area.
+     * Classic layout for content with two complementary sidebars.
+     */
+    page_threeCol_5_10_5: {
+      header: {
+        block_1: { spanX: 20, spanY: 1 }
+      },
+      main: {
+        block_1: { spanX: 5, spanY: 1 },
+        block_2: { spanX: 10, spanY: 1 },
+        block_3: { spanX: 5, spanY: 1 }
+      },
+      footer: {
+        block_1: { spanX: 20, spanY: 1 }
+      }
+    },
+    /**
+     * Documentation-style layout (3/14/3 split).
+     * Narrow sidebars with maximum central content space.
+     * Optimized for reading experiences with minimal distractions.
+     */
+    page_docs_3_14_3: {
+      header: {
+        block_1: { spanX: 20, spanY: 1 }
+      },
+      main: {
+        block_1: { spanX: 3, spanY: 1 },
+        block_2: { spanX: 14, spanY: 1 },
+        block_3: { spanX: 3, spanY: 1 }
+      },
+      footer: {
+        block_1: { spanX: 20, spanY: 1 }
+      }
+    },
+    /**
+     * Wider documentation layout (4/12/4 split).
+     * Slightly wider sidebars for more navigation or content options.
+     * Balance between content focus and sidebar functionality.
+     */
+    page_docs_4_12_4: {
+      header: {
+        block_1: { spanX: 20, spanY: 1 }
+      },
+      main: {
+        block_1: { spanX: 4, spanY: 1 },
+        block_2: { spanX: 12, spanY: 1 },
+        block_3: { spanX: 4, spanY: 1 }
+      },
+      footer: {
+        block_1: { spanX: 20, spanY: 1 }
+      }
+    },
+    /**
+     * Equal four-column layout (5/5/5/5 split).
+     * Perfect symmetry with four equal content areas.
+     * Ideal for feature showcases, product grids, or dashboard cards.
+     */
+    page_fourCol_5_5_5_5: {
+      header: {
+        block_1: { spanX: 20, spanY: 1 }
+      },
+      main: {
+        block_1: { spanX: 5, spanY: 1 },
+        block_2: { spanX: 5, spanY: 1 },
+        block_3: { spanX: 5, spanY: 1 },
+        block_4: { spanX: 5, spanY: 1 }
+      },
+      footer: {
+        block_1: { spanX: 20, spanY: 1 }
+      }
+    },
+    /**
+     * Dashboard layout with KPI row and content section.
+     * Top row for key performance indicators (4 equal blocks).
+     * Bottom section with sidebar and main content area.
+     * Perfect for admin dashboards and analytics interfaces.
+     */
+    page_dashboard_kpis_then_content: {
+      header: {
+        block_1: { spanX: 20, spanY: 1 }
+      },
+      main: {
+        block_1: { spanX: 5, spanY: 1 },
+        block_2: { spanX: 5, spanY: 1 },
+        block_3: { spanX: 5, spanY: 1 },
+        block_4: { spanX: 5, spanY: 1 }
+      },
+      content: {
+        block_1: { spanX: 8, spanY: 1 },
+        block_2: { spanX: 12, spanY: 1 }
+      },
+      footer: {
+        block_1: { spanX: 20, spanY: 1 }
+      }
+    }
+  },
+  /**
+   * Secondary category: Flexible layouts with adaptive column counts.
+   * These layouts are designed to be more responsive and work well on various screen sizes.
+   * Column counts are minimal and can be adapted to different grid systems.
+   */
+  secondary: {
+    /**
+     * Minimal single cell layout.
+     * Contains one block in one row - simplest possible layout.
+     * Perfect for landing pages, simple forms, or focused content.
+     */
+    singleCell: {
+      row_1: {
+        block_1: { spanX: 1, spanY: 1 }
+      }
+    },
+    /**
+     * Simple two-cell layout.
+     * Two blocks side by side in equal proportions.
+     * Basic building block for comparison layouts.
+     */
+    twoCells: {
+      row_1: {
+        block_1: { spanX: 1, spanY: 1 },
+        block_2: { spanX: 1, spanY: 1 }
+      }
+    },
+    /**
+     * Sidebar with content layout.
+     * Small sidebar (1 unit) with wider content area (5 units).
+     * Responsive alternative to fixed-width sidebar layouts.
+     */
+    sideBarAndContent: {
+      row_1: {
+        block_1: { spanX: 1, spanY: 1 },
+        block_2: { spanX: 5, spanY: 1 }
+      }
+    },
+    /**
+     * Header-footer layout with 5-column content.
+     * Header and footer with sidebar/content split.
+     * Content area has 5 equal columns for flexible organization.
+     */
+    footerHeader5Columns: {
+      header: {
+        block_1: { spanX: 1, spanY: 1 },
+        block_2: { spanX: 5, spanY: 1 }
+      },
+      content: {
+        block_1: { spanX: 1, spanY: 1 },
+        block_2: { spanX: 1, spanY: 1 },
+        block_3: { spanX: 1, spanY: 1 },
+        block_4: { spanX: 1, spanY: 1 },
+        block_5: { spanX: 1, spanY: 1 }
+      },
+      footer: {
+        block_1: { spanX: 1, spanY: 1 },
+        block_2: { spanX: 5, spanY: 1 }
+      }
+    },
+    /**
+     * Simple header-content-footer with 3 columns.
+     * Equal-width content columns for balanced presentation.
+     * Clean and symmetric layout for basic content organization.
+     */
+    footerHeader3Columns: {
+      header: {
+        block_1: { spanX: 3, spanY: 1 }
+      },
+      content: {
+        block_1: { spanX: 1, spanY: 1 },
+        block_2: { spanX: 1, spanY: 1 },
+        block_3: { spanX: 1, spanY: 1 }
+      },
+      footer: {
+        block_1: { spanX: 3, spanY: 1 }
+      }
+    },
+    /**
+     * Header with 2-column content and footer.
+     * Minimal header/footer with two-column content area.
+     * Perfect for simple comparison or side-by-side content.
+     */
+    header2colFooter: {
+      header: {
+        block_1: { spanX: 1, spanY: 1 }
+      },
+      content: {
+        block_1: { spanX: 1, spanY: 1 },
+        block_2: { spanX: 1, spanY: 1 }
+      },
+      footer: {
+        block_1: { spanX: 1, spanY: 1 }
+      }
+    },
+    /**
+     * Header with 3-column content and footer.
+     * Similar to header2colFooter but with three content columns.
+     * Good for feature showcases or service presentations.
+     */
+    header3colFooter: {
+      header: {
+        block_1: { spanX: 1, spanY: 1 }
+      },
+      content: {
+        block_1: { spanX: 1, spanY: 1 },
+        block_2: { spanX: 1, spanY: 1 },
+        block_3: { spanX: 1, spanY: 1 }
+      },
+      footer: {
+        block_1: { spanX: 1, spanY: 1 }
+      }
+    },
+    /**
+     * Two rows with 3 columns each.
+     * Grid of 6 equal blocks arranged in 2 rows.
+     * Perfect for feature grids, team members, or product showcases.
+     */
+    twoRowsOf3: {
+      row_1: {
+        block_1: { spanX: 1, spanY: 1 },
+        block_2: { spanX: 1, spanY: 1 },
+        block_3: { spanX: 1, spanY: 1 }
+      },
+      row_2: {
+        block_1: { spanX: 1, spanY: 1 },
+        block_2: { spanX: 1, spanY: 1 },
+        block_3: { spanX: 1, spanY: 1 }
+      }
+    },
+    /**
+     * Two rows with 6 columns each.
+     * Dense grid of 12 equal blocks for extensive content.
+     * Suitable for galleries, portfolios, or comprehensive listings.
+     */
+    twoRowsOf6: {
+      row_1: {
+        block_1: { spanX: 1, spanY: 1 },
+        block_2: { spanX: 1, spanY: 1 },
+        block_3: { spanX: 1, spanY: 1 },
+        block_4: { spanX: 1, spanY: 1 },
+        block_5: { spanX: 1, spanY: 1 },
+        block_6: { spanX: 1, spanY: 1 }
+      },
+      row_2: {
+        block_1: { spanX: 1, spanY: 1 },
+        block_2: { spanX: 1, spanY: 1 },
+        block_3: { spanX: 1, spanY: 1 },
+        block_4: { spanX: 1, spanY: 1 },
+        block_5: { spanX: 1, spanY: 1 },
+        block_6: { spanX: 1, spanY: 1 }
+      }
+    },
+    /**
+     * Mixed density showcase layout.
+     * Progressive grid that starts simple and becomes more complex.
+     * Demonstrates increasing content density from 1 to 5 columns per row.
+     * Perfect for showcasing scalability or progressive disclosure.
+     */
+    mixedDensityShowcase: {
+      header: {
+        block_1: { spanX: 1, spanY: 1 }
+      },
+      row_1: {
+        block_1: { spanX: 1, spanY: 1 },
+        block_2: { spanX: 1, spanY: 1 }
+      },
+      row_2: {
+        block_1: { spanX: 1, spanY: 1 },
+        block_2: { spanX: 1, spanY: 1 },
+        block_3: { spanX: 1, spanY: 1 }
+      },
+      row_3: {
+        block_1: { spanX: 1, spanY: 1 },
+        block_2: { spanX: 1, spanY: 1 },
+        block_3: { spanX: 1, spanY: 1 },
+        block_4: { spanX: 1, spanY: 1 }
+      },
+      row_4: {
+        block_1: { spanX: 1, spanY: 1 },
+        block_2: { spanX: 1, spanY: 1 },
+        block_3: { spanX: 1, spanY: 1 },
+        block_4: { spanX: 1, spanY: 1 },
+        block_5: { spanX: 1, spanY: 1 }
+      },
+      footer: {
+        block_1: { spanX: 1, spanY: 1 },
+        block_2: { spanX: 1, spanY: 1 },
+        block_3: { spanX: 1, spanY: 1 },
+        block_4: { spanX: 1, spanY: 1 },
+        block_5: { spanX: 1, spanY: 1 },
+        block_6: { spanX: 1, spanY: 1 }
+      }
+    },
+    /**
+     * Featured row with 4 blocks (one double-wide).
+     * Second block spans 2 columns for emphasis.
+     * Great for highlighting featured content alongside regular items.
+     */
+    featuredRow4: {
+      row_1: {
+        block_1: { spanX: 1, spanY: 1 },
+        block_2: { spanX: 2, spanY: 1 },
+        // featured double-wide
+        block_3: { spanX: 1, spanY: 1 },
+        block_4: { spanX: 1, spanY: 1 }
+      }
+    },
+    /**
+     * Featured row with 5 blocks (one double-wide).
+     * Similar to featuredRow4 but with additional content block.
+     * Balances featured content with more supporting elements.
+     */
+    featuredRow5: {
+      row_1: {
+        block_1: { spanX: 1, spanY: 1 },
+        block_2: { spanX: 2, spanY: 1 },
+        // featured double-wide
+        block_3: { spanX: 1, spanY: 1 },
+        block_4: { spanX: 1, spanY: 1 },
+        block_5: { spanX: 1, spanY: 1 }
+      }
+    },
+    /**
+     * Featured row with prominent triple-wide block.
+     * Second block spans 3 columns for maximum emphasis.
+     * Perfect for hero content with minimal supporting elements.
+     */
+    featuredRow5Big: {
+      row_1: {
+        block_1: { spanX: 1, spanY: 1 },
+        block_2: { spanX: 3, spanY: 1 },
+        // featured triple-wide
+        block_3: { spanX: 1, spanY: 1 },
+        block_4: { spanX: 1, spanY: 1 },
+        block_5: { spanX: 1, spanY: 1 }
+      }
+    }
+  }
+};
+
 // src/utils/utils.ts
 function typedKeys(obj) {
   return Object.keys(obj);
@@ -1429,14 +2017,62 @@ function typedKeys(obj) {
 export {
   BREAKPOINTS,
   CSSLayout,
+  DEFAULT_GRID_NODE_VIEW_OPTIONS,
+  DEFAULT_GRID_OPTIONS,
+  DefaultBoxTransformations,
+  DefaultNodeRender,
+  DefaultTransformationsResponsiveColumns,
+  DefaultTransformationsResponsiveRows,
   GRID_ERROR_CODE,
+  GridCssMuiRenderer,
   addCoordinates,
+  angleBetween,
+  boundingBox,
+  boxPosition,
+  clamp,
+  copyCoordinate,
+  copyGridBox,
+  cssLengthToString,
+  distance,
+  dot,
   gapValueToString,
+  getCatalogCategoryKeys,
   getDefaultTheme,
+  getLayoutFromCatalog,
+  getLayoutKeysForCategory,
+  getNodeDomProps,
+  getNodeSxProps,
+  getOrigin,
   gridUnitValueToString,
+  invert,
+  lerp,
+  linearCombination,
+  makeDiagnostic,
   makeError,
+  makeGridBox,
+  makeInfo,
   makeWarning,
+  maxCoordinate,
+  minCoordinate,
+  multiply,
+  multiplyScalar,
+  norm,
+  normalize,
+  partialRecordKeys,
+  recordKeys,
+  reflectOnXAxis,
+  reflectOnYAxis,
+  reflectionOnXAxis,
+  reflectionOnYAxis,
+  resolveGridNodeViewOptions,
+  resolveGridOptions,
+  rotateByClockWise,
+  rotationByThetaClockWise,
   subtractCoordinates,
-  typedKeys
+  trackBreadthToString,
+  transformationIDs,
+  typedKeys,
+  unitMatrix,
+  zeroMatrix
 };
 //# sourceMappingURL=index.js.map

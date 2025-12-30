@@ -1,7 +1,9 @@
 "use strict";
+var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
+var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __export = (target, all) => {
   for (var name in all)
@@ -15,6 +17,14 @@ var __copyProps = (to2, from2, except, desc) => {
   }
   return to2;
 };
+var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+  // If the importer is in node compatibility mode or this is not an ESM
+  // file that has been converted to a CommonJS file using a Babel-
+  // compatible transform (i.e. "__esModule" has not been set), then set
+  // "default" to the CommonJS "module.exports" for node compatibility.
+  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+  mod
+));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
 // src/index.ts
@@ -22,15 +32,63 @@ var src_exports = {};
 __export(src_exports, {
   BREAKPOINTS: () => BREAKPOINTS,
   CSSLayout: () => CSSLayout,
+  DEFAULT_GRID_NODE_VIEW_OPTIONS: () => DEFAULT_GRID_NODE_VIEW_OPTIONS,
+  DEFAULT_GRID_OPTIONS: () => DEFAULT_GRID_OPTIONS,
+  DefaultBoxTransformations: () => DefaultBoxTransformations,
+  DefaultNodeRender: () => DefaultNodeRender,
+  DefaultTransformationsResponsiveColumns: () => DefaultTransformationsResponsiveColumns,
+  DefaultTransformationsResponsiveRows: () => DefaultTransformationsResponsiveRows,
   GRID_ERROR_CODE: () => GRID_ERROR_CODE,
+  GridCssMuiRenderer: () => GridCssMuiRenderer,
   addCoordinates: () => addCoordinates,
+  angleBetween: () => angleBetween,
+  boundingBox: () => boundingBox,
+  boxPosition: () => boxPosition,
+  clamp: () => clamp,
+  copyCoordinate: () => copyCoordinate,
+  copyGridBox: () => copyGridBox,
+  cssLengthToString: () => cssLengthToString,
+  distance: () => distance,
+  dot: () => dot,
   gapValueToString: () => gapValueToString,
+  getCatalogCategoryKeys: () => getCatalogCategoryKeys,
   getDefaultTheme: () => getDefaultTheme,
+  getLayoutFromCatalog: () => getLayoutFromCatalog,
+  getLayoutKeysForCategory: () => getLayoutKeysForCategory,
+  getNodeDomProps: () => getNodeDomProps,
+  getNodeSxProps: () => getNodeSxProps,
+  getOrigin: () => getOrigin,
   gridUnitValueToString: () => gridUnitValueToString,
+  invert: () => invert,
+  lerp: () => lerp,
+  linearCombination: () => linearCombination,
+  makeDiagnostic: () => makeDiagnostic,
   makeError: () => makeError,
+  makeGridBox: () => makeGridBox,
+  makeInfo: () => makeInfo,
   makeWarning: () => makeWarning,
+  maxCoordinate: () => maxCoordinate,
+  minCoordinate: () => minCoordinate,
+  multiply: () => multiply,
+  multiplyScalar: () => multiplyScalar,
+  norm: () => norm,
+  normalize: () => normalize,
+  partialRecordKeys: () => partialRecordKeys2,
+  recordKeys: () => recordKeys2,
+  reflectOnXAxis: () => reflectOnXAxis,
+  reflectOnYAxis: () => reflectOnYAxis,
+  reflectionOnXAxis: () => reflectionOnXAxis,
+  reflectionOnYAxis: () => reflectionOnYAxis,
+  resolveGridNodeViewOptions: () => resolveGridNodeViewOptions,
+  resolveGridOptions: () => resolveGridOptions,
+  rotateByClockWise: () => rotateByClockWise,
+  rotationByThetaClockWise: () => rotationByThetaClockWise,
   subtractCoordinates: () => subtractCoordinates,
-  typedKeys: () => typedKeys
+  trackBreadthToString: () => trackBreadthToString,
+  transformationIDs: () => transformationIDs,
+  typedKeys: () => typedKeys,
+  unitMatrix: () => unitMatrix,
+  zeroMatrix: () => zeroMatrix
 });
 module.exports = __toCommonJS(src_exports);
 
@@ -75,6 +133,9 @@ function makeError(origin2, code, message, extras = {}) {
 function makeWarning(origin2, code, message, extras = {}) {
   return makeDiagnostic("warning", origin2, code, message, extras);
 }
+function makeInfo(origin2, code, message, extras = {}) {
+  return makeDiagnostic("info", origin2, code, message, extras);
+}
 
 // src/box/boxPositions.ts
 var boxPosition = (box, boxAnchor) => {
@@ -111,6 +172,14 @@ var boxPosition = (box, boxAnchor) => {
 };
 
 // src/geometry/matrixAlgebra.ts
+var unitMatrix = [
+  [1, 0],
+  [0, 1]
+];
+var zeroMatrix = [
+  [0, 0],
+  [0, 0]
+];
 var reflectionOnXAxis = [
   [1, 0],
   [0, -1]
@@ -203,7 +272,72 @@ var velocity = { x: 10, y: 5 };
 var oppositeDirection = invert(velocity);
 var originalBack = invert(invert(pointToInvert));
 
+// src/geometry/coordinateMetrics.ts
+var dot = (a2, b2) => {
+  return a2.x * b2.x + a2.y * b2.y;
+};
+var norm = (v) => {
+  return Math.sqrt(dot(v, v));
+};
+var distance = (a2, b2) => {
+  return norm({ x: b2.x - a2.x, y: b2.y - a2.y });
+};
+var normalize = (v) => {
+  const len = norm(v);
+  if (len === 0) {
+    return { x: 0, y: 0 };
+  }
+  return { x: v.x / len, y: v.y / len };
+};
+var angleBetween = (a2, b2) => {
+  const dotProduct = dot(a2, b2);
+  const lengthsProduct = norm(a2) * norm(b2);
+  if (lengthsProduct === 0) {
+    return 0;
+  }
+  let cosTheta = dotProduct / lengthsProduct;
+  cosTheta = Math.max(-1, Math.min(1, cosTheta));
+  return Math.acos(cosTheta);
+};
+var boundingBox = (points) => {
+  if (points.length === 0) {
+    return { min: { x: 0, y: 0 }, max: { x: 0, y: 0 } };
+  }
+  let minX = points[0].x;
+  let minY = points[0].y;
+  let maxX = points[0].x;
+  let maxY = points[0].y;
+  for (const point2 of points) {
+    if (point2.x < minX) minX = point2.x;
+    if (point2.y < minY) minY = point2.y;
+    if (point2.x > maxX) maxX = point2.x;
+    if (point2.y > maxY) maxY = point2.y;
+  }
+  return {
+    min: { x: minX, y: minY },
+    max: { x: maxX, y: maxY }
+  };
+};
+var lerp = (a2, b2, t) => {
+  return {
+    x: a2.x + (b2.x - a2.x) * t,
+    y: a2.y + (b2.y - a2.y) * t
+  };
+};
+var clamp = (v, min, max) => {
+  return {
+    x: Math.max(min.x, Math.min(max.x, v.x)),
+    y: Math.max(min.y, Math.min(max.y, v.y))
+  };
+};
+
 // src/geometry/coordinatesUtils.ts
+var minCoordinate = (a2, b2) => {
+  return { x: Math.min(a2.x, b2.x), y: Math.min(a2.y, b2.y) };
+};
+var maxCoordinate = (a2, b2) => {
+  return { x: Math.max(a2.x, b2.x), y: Math.max(a2.y, b2.y) };
+};
 var copyCoordinate = (coord4) => {
   return { x: coord4.x, y: coord4.y };
 };
@@ -217,6 +351,13 @@ var makeGridBox = (origin2, diagonal) => {
   return {
     origin: org,
     diagonal: diag,
+    _normalized: "GridBox"
+  };
+};
+var copyGridBox = (box) => {
+  return {
+    origin: copyCoordinate(box.origin),
+    diagonal: copyCoordinate(box.diagonal),
     _normalized: "GridBox"
   };
 };
@@ -1491,6 +1632,504 @@ var customColumnTransforms = {
   lg: [{ stackVertically: { gap: 30 } }]
 };
 
+// src/templates/layoutsCatalog.ts
+var getCatalogCategoryKeys = () => Object.keys(layoutsCatalog);
+var getLayoutKeysForCategory = (catalogKey) => Object.keys(layoutsCatalog[catalogKey]);
+var getLayoutFromCatalog = (catalogKey, layoutKey) => {
+  const layout = layoutsCatalog[catalogKey][layoutKey];
+  return structuredClone(layout);
+};
+var layoutsCatalog = {
+  /**
+   * Primary20 category: Layout templates designed for 20-column grids.
+   * These layouts are optimized for desktop and wide-screen displays.
+   * All spanX values are calculated based on a 20-column grid system.
+   */
+  primary20: {
+    /**
+     * Single full-width band layout.
+     * Contains one row with a single block spanning the full 20 columns.
+     * Perfect for hero sections, banners, or simple single-content pages.
+     */
+    page_band: {
+      row_1: {
+        block_1: { spanX: 20, spanY: 1 }
+      }
+    },
+    /**
+     * Classic header-content-footer layout.
+     * Three-section vertical layout with full-width sections.
+     * Standard pattern for most web pages and applications.
+     */
+    page_headerContentFooter: {
+      header: {
+        block_1: { spanX: 20, spanY: 1 }
+      },
+      content: {
+        block_1: { spanX: 20, spanY: 1 }
+      },
+      footer: {
+        block_1: { spanX: 20, spanY: 1 }
+      }
+    },
+    /**
+     * Equal two-column layout (10/10 split).
+     * Header and footer span full width, main content split evenly.
+     * Ideal for balanced content presentation or comparison layouts.
+     */
+    page_twoCol_10_10: {
+      header: {
+        block_1: { spanX: 20, spanY: 1 }
+      },
+      main: {
+        block_1: { spanX: 10, spanY: 1 },
+        block_2: { spanX: 10, spanY: 1 }
+      },
+      footer: {
+        block_1: { spanX: 20, spanY: 1 }
+      }
+    },
+    /**
+     * Narrow sidebar with wide content (5/15 split).
+     * Left sidebar takes 25% width, content area takes 75%.
+     * Common for navigation + content layouts.
+     */
+    page_twoCol_5_15: {
+      header: {
+        block_1: { spanX: 20, spanY: 1 }
+      },
+      main: {
+        block_1: { spanX: 5, spanY: 1 },
+        block_2: { spanX: 15, spanY: 1 }
+      },
+      footer: {
+        block_1: { spanX: 20, spanY: 1 }
+      }
+    },
+    /**
+     * Wide content with narrow sidebar (15/5 split).
+     * Content area takes 75% width, right sidebar takes 25%.
+     * Useful for primary content with secondary information.
+     */
+    page_twoCol_15_5: {
+      header: {
+        block_1: { spanX: 20, spanY: 1 }
+      },
+      main: {
+        block_1: { spanX: 15, spanY: 1 },
+        block_2: { spanX: 5, spanY: 1 }
+      },
+      footer: {
+        block_1: { spanX: 20, spanY: 1 }
+      }
+    },
+    /**
+     * Very narrow sidebar layout (4/16 split).
+     * Minimal sidebar for icons/navigation, maximum content space.
+     * Suitable for app interfaces with icon-based navigation.
+     */
+    page_twoCol_4_16: {
+      header: {
+        block_1: { spanX: 20, spanY: 1 }
+      },
+      main: {
+        block_1: { spanX: 4, spanY: 1 },
+        block_2: { spanX: 16, spanY: 1 }
+      },
+      footer: {
+        block_1: { spanX: 20, spanY: 1 }
+      }
+    },
+    /**
+     * Wide content with very narrow sidebar (16/4 split).
+     * Maximum content space with minimal sidebar.
+     * Mirror of the 4/16 layout with sidebar on the right.
+     */
+    page_twoCol_16_4: {
+      header: {
+        block_1: { spanX: 20, spanY: 1 }
+      },
+      main: {
+        block_1: { spanX: 16, spanY: 1 },
+        block_2: { spanX: 4, spanY: 1 }
+      },
+      footer: {
+        block_1: { spanX: 20, spanY: 1 }
+      }
+    },
+    /**
+     * Medium sidebar with main content (8/12 split).
+     * Sidebar takes 40% width, content takes 60%.
+     * Good balance for secondary navigation and content.
+     */
+    page_twoCol_8_12: {
+      header: {
+        block_1: { spanX: 20, spanY: 1 }
+      },
+      main: {
+        block_1: { spanX: 8, spanY: 1 },
+        block_2: { spanX: 12, spanY: 1 }
+      },
+      footer: {
+        block_1: { spanX: 20, spanY: 1 }
+      }
+    },
+    /**
+     * Main content with medium sidebar (12/8 split).
+     * Content takes 60% width, sidebar takes 40%.
+     * Mirror of the 8/12 layout with sidebar on the right.
+     */
+    page_twoCol_12_8: {
+      header: {
+        block_1: { spanX: 20, spanY: 1 }
+      },
+      main: {
+        block_1: { spanX: 12, spanY: 1 },
+        block_2: { spanX: 8, spanY: 1 }
+      },
+      footer: {
+        block_1: { spanX: 20, spanY: 1 }
+      }
+    },
+    /**
+     * Balanced three-column layout (5/10/5 split).
+     * Equal sidebars with wider central content area.
+     * Classic layout for content with two complementary sidebars.
+     */
+    page_threeCol_5_10_5: {
+      header: {
+        block_1: { spanX: 20, spanY: 1 }
+      },
+      main: {
+        block_1: { spanX: 5, spanY: 1 },
+        block_2: { spanX: 10, spanY: 1 },
+        block_3: { spanX: 5, spanY: 1 }
+      },
+      footer: {
+        block_1: { spanX: 20, spanY: 1 }
+      }
+    },
+    /**
+     * Documentation-style layout (3/14/3 split).
+     * Narrow sidebars with maximum central content space.
+     * Optimized for reading experiences with minimal distractions.
+     */
+    page_docs_3_14_3: {
+      header: {
+        block_1: { spanX: 20, spanY: 1 }
+      },
+      main: {
+        block_1: { spanX: 3, spanY: 1 },
+        block_2: { spanX: 14, spanY: 1 },
+        block_3: { spanX: 3, spanY: 1 }
+      },
+      footer: {
+        block_1: { spanX: 20, spanY: 1 }
+      }
+    },
+    /**
+     * Wider documentation layout (4/12/4 split).
+     * Slightly wider sidebars for more navigation or content options.
+     * Balance between content focus and sidebar functionality.
+     */
+    page_docs_4_12_4: {
+      header: {
+        block_1: { spanX: 20, spanY: 1 }
+      },
+      main: {
+        block_1: { spanX: 4, spanY: 1 },
+        block_2: { spanX: 12, spanY: 1 },
+        block_3: { spanX: 4, spanY: 1 }
+      },
+      footer: {
+        block_1: { spanX: 20, spanY: 1 }
+      }
+    },
+    /**
+     * Equal four-column layout (5/5/5/5 split).
+     * Perfect symmetry with four equal content areas.
+     * Ideal for feature showcases, product grids, or dashboard cards.
+     */
+    page_fourCol_5_5_5_5: {
+      header: {
+        block_1: { spanX: 20, spanY: 1 }
+      },
+      main: {
+        block_1: { spanX: 5, spanY: 1 },
+        block_2: { spanX: 5, spanY: 1 },
+        block_3: { spanX: 5, spanY: 1 },
+        block_4: { spanX: 5, spanY: 1 }
+      },
+      footer: {
+        block_1: { spanX: 20, spanY: 1 }
+      }
+    },
+    /**
+     * Dashboard layout with KPI row and content section.
+     * Top row for key performance indicators (4 equal blocks).
+     * Bottom section with sidebar and main content area.
+     * Perfect for admin dashboards and analytics interfaces.
+     */
+    page_dashboard_kpis_then_content: {
+      header: {
+        block_1: { spanX: 20, spanY: 1 }
+      },
+      main: {
+        block_1: { spanX: 5, spanY: 1 },
+        block_2: { spanX: 5, spanY: 1 },
+        block_3: { spanX: 5, spanY: 1 },
+        block_4: { spanX: 5, spanY: 1 }
+      },
+      content: {
+        block_1: { spanX: 8, spanY: 1 },
+        block_2: { spanX: 12, spanY: 1 }
+      },
+      footer: {
+        block_1: { spanX: 20, spanY: 1 }
+      }
+    }
+  },
+  /**
+   * Secondary category: Flexible layouts with adaptive column counts.
+   * These layouts are designed to be more responsive and work well on various screen sizes.
+   * Column counts are minimal and can be adapted to different grid systems.
+   */
+  secondary: {
+    /**
+     * Minimal single cell layout.
+     * Contains one block in one row - simplest possible layout.
+     * Perfect for landing pages, simple forms, or focused content.
+     */
+    singleCell: {
+      row_1: {
+        block_1: { spanX: 1, spanY: 1 }
+      }
+    },
+    /**
+     * Simple two-cell layout.
+     * Two blocks side by side in equal proportions.
+     * Basic building block for comparison layouts.
+     */
+    twoCells: {
+      row_1: {
+        block_1: { spanX: 1, spanY: 1 },
+        block_2: { spanX: 1, spanY: 1 }
+      }
+    },
+    /**
+     * Sidebar with content layout.
+     * Small sidebar (1 unit) with wider content area (5 units).
+     * Responsive alternative to fixed-width sidebar layouts.
+     */
+    sideBarAndContent: {
+      row_1: {
+        block_1: { spanX: 1, spanY: 1 },
+        block_2: { spanX: 5, spanY: 1 }
+      }
+    },
+    /**
+     * Header-footer layout with 5-column content.
+     * Header and footer with sidebar/content split.
+     * Content area has 5 equal columns for flexible organization.
+     */
+    footerHeader5Columns: {
+      header: {
+        block_1: { spanX: 1, spanY: 1 },
+        block_2: { spanX: 5, spanY: 1 }
+      },
+      content: {
+        block_1: { spanX: 1, spanY: 1 },
+        block_2: { spanX: 1, spanY: 1 },
+        block_3: { spanX: 1, spanY: 1 },
+        block_4: { spanX: 1, spanY: 1 },
+        block_5: { spanX: 1, spanY: 1 }
+      },
+      footer: {
+        block_1: { spanX: 1, spanY: 1 },
+        block_2: { spanX: 5, spanY: 1 }
+      }
+    },
+    /**
+     * Simple header-content-footer with 3 columns.
+     * Equal-width content columns for balanced presentation.
+     * Clean and symmetric layout for basic content organization.
+     */
+    footerHeader3Columns: {
+      header: {
+        block_1: { spanX: 3, spanY: 1 }
+      },
+      content: {
+        block_1: { spanX: 1, spanY: 1 },
+        block_2: { spanX: 1, spanY: 1 },
+        block_3: { spanX: 1, spanY: 1 }
+      },
+      footer: {
+        block_1: { spanX: 3, spanY: 1 }
+      }
+    },
+    /**
+     * Header with 2-column content and footer.
+     * Minimal header/footer with two-column content area.
+     * Perfect for simple comparison or side-by-side content.
+     */
+    header2colFooter: {
+      header: {
+        block_1: { spanX: 1, spanY: 1 }
+      },
+      content: {
+        block_1: { spanX: 1, spanY: 1 },
+        block_2: { spanX: 1, spanY: 1 }
+      },
+      footer: {
+        block_1: { spanX: 1, spanY: 1 }
+      }
+    },
+    /**
+     * Header with 3-column content and footer.
+     * Similar to header2colFooter but with three content columns.
+     * Good for feature showcases or service presentations.
+     */
+    header3colFooter: {
+      header: {
+        block_1: { spanX: 1, spanY: 1 }
+      },
+      content: {
+        block_1: { spanX: 1, spanY: 1 },
+        block_2: { spanX: 1, spanY: 1 },
+        block_3: { spanX: 1, spanY: 1 }
+      },
+      footer: {
+        block_1: { spanX: 1, spanY: 1 }
+      }
+    },
+    /**
+     * Two rows with 3 columns each.
+     * Grid of 6 equal blocks arranged in 2 rows.
+     * Perfect for feature grids, team members, or product showcases.
+     */
+    twoRowsOf3: {
+      row_1: {
+        block_1: { spanX: 1, spanY: 1 },
+        block_2: { spanX: 1, spanY: 1 },
+        block_3: { spanX: 1, spanY: 1 }
+      },
+      row_2: {
+        block_1: { spanX: 1, spanY: 1 },
+        block_2: { spanX: 1, spanY: 1 },
+        block_3: { spanX: 1, spanY: 1 }
+      }
+    },
+    /**
+     * Two rows with 6 columns each.
+     * Dense grid of 12 equal blocks for extensive content.
+     * Suitable for galleries, portfolios, or comprehensive listings.
+     */
+    twoRowsOf6: {
+      row_1: {
+        block_1: { spanX: 1, spanY: 1 },
+        block_2: { spanX: 1, spanY: 1 },
+        block_3: { spanX: 1, spanY: 1 },
+        block_4: { spanX: 1, spanY: 1 },
+        block_5: { spanX: 1, spanY: 1 },
+        block_6: { spanX: 1, spanY: 1 }
+      },
+      row_2: {
+        block_1: { spanX: 1, spanY: 1 },
+        block_2: { spanX: 1, spanY: 1 },
+        block_3: { spanX: 1, spanY: 1 },
+        block_4: { spanX: 1, spanY: 1 },
+        block_5: { spanX: 1, spanY: 1 },
+        block_6: { spanX: 1, spanY: 1 }
+      }
+    },
+    /**
+     * Mixed density showcase layout.
+     * Progressive grid that starts simple and becomes more complex.
+     * Demonstrates increasing content density from 1 to 5 columns per row.
+     * Perfect for showcasing scalability or progressive disclosure.
+     */
+    mixedDensityShowcase: {
+      header: {
+        block_1: { spanX: 1, spanY: 1 }
+      },
+      row_1: {
+        block_1: { spanX: 1, spanY: 1 },
+        block_2: { spanX: 1, spanY: 1 }
+      },
+      row_2: {
+        block_1: { spanX: 1, spanY: 1 },
+        block_2: { spanX: 1, spanY: 1 },
+        block_3: { spanX: 1, spanY: 1 }
+      },
+      row_3: {
+        block_1: { spanX: 1, spanY: 1 },
+        block_2: { spanX: 1, spanY: 1 },
+        block_3: { spanX: 1, spanY: 1 },
+        block_4: { spanX: 1, spanY: 1 }
+      },
+      row_4: {
+        block_1: { spanX: 1, spanY: 1 },
+        block_2: { spanX: 1, spanY: 1 },
+        block_3: { spanX: 1, spanY: 1 },
+        block_4: { spanX: 1, spanY: 1 },
+        block_5: { spanX: 1, spanY: 1 }
+      },
+      footer: {
+        block_1: { spanX: 1, spanY: 1 },
+        block_2: { spanX: 1, spanY: 1 },
+        block_3: { spanX: 1, spanY: 1 },
+        block_4: { spanX: 1, spanY: 1 },
+        block_5: { spanX: 1, spanY: 1 },
+        block_6: { spanX: 1, spanY: 1 }
+      }
+    },
+    /**
+     * Featured row with 4 blocks (one double-wide).
+     * Second block spans 2 columns for emphasis.
+     * Great for highlighting featured content alongside regular items.
+     */
+    featuredRow4: {
+      row_1: {
+        block_1: { spanX: 1, spanY: 1 },
+        block_2: { spanX: 2, spanY: 1 },
+        // featured double-wide
+        block_3: { spanX: 1, spanY: 1 },
+        block_4: { spanX: 1, spanY: 1 }
+      }
+    },
+    /**
+     * Featured row with 5 blocks (one double-wide).
+     * Similar to featuredRow4 but with additional content block.
+     * Balances featured content with more supporting elements.
+     */
+    featuredRow5: {
+      row_1: {
+        block_1: { spanX: 1, spanY: 1 },
+        block_2: { spanX: 2, spanY: 1 },
+        // featured double-wide
+        block_3: { spanX: 1, spanY: 1 },
+        block_4: { spanX: 1, spanY: 1 },
+        block_5: { spanX: 1, spanY: 1 }
+      }
+    },
+    /**
+     * Featured row with prominent triple-wide block.
+     * Second block spans 3 columns for maximum emphasis.
+     * Perfect for hero content with minimal supporting elements.
+     */
+    featuredRow5Big: {
+      row_1: {
+        block_1: { spanX: 1, spanY: 1 },
+        block_2: { spanX: 3, spanY: 1 },
+        // featured triple-wide
+        block_3: { spanX: 1, spanY: 1 },
+        block_4: { spanX: 1, spanY: 1 },
+        block_5: { spanX: 1, spanY: 1 }
+      }
+    }
+  }
+};
+
 // src/cssStringify.ts
 function cssLengthToString(len) {
   return `${len.value}${len.unit}`;
@@ -1532,18 +2171,406 @@ function gapValueToString(g) {
 function typedKeys(obj) {
   return Object.keys(obj);
 }
+
+// src/integration/mui/GridCssMuiRenderer.tsx
+var import_Box2 = __toESM(require("@mui/material/Box"), 1);
+
+// src/integration/mui/DefaultNodeRender.tsx
+var import_styles = require("@mui/material/styles");
+var import_useMediaQuery = __toESM(require("@mui/material/useMediaQuery"), 1);
+var import_Box = __toESM(require("@mui/material/Box"), 1);
+var import_jsx_runtime = require("react/jsx-runtime");
+var visuallyHiddenStyle = {
+  position: "absolute",
+  width: 1,
+  height: 1,
+  padding: 0,
+  margin: -1,
+  overflow: "visible",
+  clip: "rect(0 0 0 0)",
+  whiteSpace: "nowrap",
+  border: 0
+};
+function getNodeSxProps(view) {
+  const v = view ?? {};
+  const minWidth0 = v.minWidth0 ?? true;
+  const minHeight0 = v.minHeight0 ?? true;
+  return {
+    // Apply minimum size constraints conditionally
+    ...minWidth0 ? { minWidth: 0 } : {},
+    ...minHeight0 ? { minHeight: 0 } : {},
+    // CSS Grid alignment within the assigned grid area
+    justifySelf: v.justifySelf ?? "stretch",
+    // Horizontal alignment (default: fill area)
+    alignSelf: v.alignSelf ?? "stretch",
+    // Vertical alignment (default: fill area)
+    // Stacking order control (only apply if explicitly set)
+    ...v.zIndex != null ? { zIndex: v.zIndex } : {},
+    // Mouse interaction control
+    pointerEvents: v.pointerEvents ?? "auto",
+    // Visibility handling with different hide mechanisms
+    ...v.visibility === "hidden" ? { visibility: "hidden" } : {},
+    ...v.visibility === "visuallyHidden" ? visuallyHiddenStyle : {}
+  };
+}
+function getNodeDomProps(view) {
+  const v = view ?? {};
+  const aria = v.aria ?? {};
+  const domProps = {};
+  if (aria.role) domProps.role = aria.role;
+  if (aria.label) domProps["aria-label"] = aria.label;
+  if (aria.labelledBy) domProps["aria-labelledby"] = aria.labelledBy;
+  if (aria.describedBy) domProps["aria-describedby"] = aria.describedBy;
+  if (v.dataAttrs) {
+    for (const [k, val] of Object.entries(v.dataAttrs)) {
+      const key = k.startsWith("data-") ? k : `data-${k}`;
+      domProps[key] = String(val);
+    }
+  }
+  return domProps;
+}
+function DefaultNodeRender({
+  section,
+  boxId,
+  cssCoordinateBPs,
+  content
+}) {
+  const nodeSx = getNodeSxProps(content.view);
+  const domProps = getNodeDomProps(content.view);
+  const theme = (0, import_styles.useTheme)();
+  const upSm = (0, import_useMediaQuery.default)(theme.breakpoints.up("sm"));
+  const upMd = (0, import_useMediaQuery.default)(theme.breakpoints.up("md"));
+  const upLg = (0, import_useMediaQuery.default)(theme.breakpoints.up("lg"));
+  const upXl = (0, import_useMediaQuery.default)(theme.breakpoints.up("xl"));
+  const bp = upXl ? "xl" : upLg ? "lg" : upMd ? "md" : upSm ? "sm" : "xs";
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+    import_Box.default,
+    {
+      ...domProps,
+      sx: {
+        // Foundation styles for proper grid node behavior
+        boxSizing: "border-box",
+        // Include padding/border in size calculations
+        position: "relative",
+        // Establish positioning context for children
+        overflow: "visible",
+        // Don't clip content by default (opt-in clipping via view)
+        minWidth: 0,
+        // Allow content to shrink below natural minimum width
+        minHeight: 0,
+        // Allow content to shrink below natural minimum height
+        // Responsive CSS Grid positioning
+        // Each breakpoint gets its specific grid coordinates
+        gridColumnStart: {
+          xs: cssCoordinateBPs.xs.gridColumnStart,
+          sm: cssCoordinateBPs.sm.gridColumnStart,
+          md: cssCoordinateBPs.md.gridColumnStart,
+          lg: cssCoordinateBPs.lg.gridColumnStart,
+          xl: cssCoordinateBPs.xl.gridColumnStart
+        },
+        gridColumnEnd: {
+          xs: cssCoordinateBPs.xs.gridColumnEnd,
+          sm: cssCoordinateBPs.sm.gridColumnEnd,
+          md: cssCoordinateBPs.md.gridColumnEnd,
+          lg: cssCoordinateBPs.lg.gridColumnEnd,
+          xl: cssCoordinateBPs.xl.gridColumnEnd
+        },
+        gridRowStart: {
+          xs: cssCoordinateBPs.xs.gridRowStart,
+          sm: cssCoordinateBPs.sm.gridRowStart,
+          md: cssCoordinateBPs.md.gridRowStart,
+          lg: cssCoordinateBPs.lg.gridRowStart,
+          xl: cssCoordinateBPs.xl.gridRowStart
+        },
+        gridRowEnd: {
+          xs: cssCoordinateBPs.xs.gridRowEnd,
+          sm: cssCoordinateBPs.sm.gridRowEnd,
+          md: cssCoordinateBPs.md.gridRowEnd,
+          lg: cssCoordinateBPs.lg.gridRowEnd,
+          xl: cssCoordinateBPs.xl.gridRowEnd
+        },
+        // Apply view-driven style overrides
+        // This includes alignment, sizing, visibility, z-index, etc.
+        ...nodeSx
+      },
+      children: content.contentRenderer ? content.contentRenderer({
+        sectionId: section,
+        bp,
+        boxId,
+        coords: cssCoordinateBPs[bp]
+      }) : null
+    }
+  );
+}
+
+// src/integration/mui/GridCssMuiRenderer.tsx
+var import_jsx_runtime2 = require("react/jsx-runtime");
+function getSxProps(gridOptions) {
+  const gapCss = gridOptions.gap ? gapValueToString(gridOptions.gap) : "0px";
+  return {
+    // Implicit grid track sizing for auto-generated columns
+    gridAutoColumns: gridOptions.implicitColumnUnits == null ? "auto" : gridUnitValueToString(gridOptions.implicitColumnUnits),
+    // Implicit grid track sizing for auto-generated rows
+    gridAutoRows: gridOptions.implicitRowUnits == null ? "auto" : gridUnitValueToString(gridOptions.implicitRowUnits),
+    // Direction for auto-placement of grid items
+    gridAutoFlow: gridOptions.autoFlow ?? "row",
+    // Default: row-wise placement
+    // Container overflow behavior
+    overflow: gridOptions.overflow ?? "visible",
+    // Default: don't clip content
+    // Individual item alignment within their grid areas
+    justifyItems: gridOptions.justifyItems ?? "stretch",
+    // Horizontal alignment
+    alignItems: gridOptions.alignItems ?? "stretch",
+    // Vertical alignment
+    // Grid content alignment within the container
+    justifyContent: gridOptions.justifyContent ?? "start",
+    // Horizontal content alignment
+    alignContent: gridOptions.alignContent ?? "start",
+    // Vertical content alignment
+    // Grid gap configuration with fallbacks
+    gap: gapCss,
+    // Overall gap for both rows and columns
+    rowGap: gridOptions.rowGap ? gapValueToString(gridOptions.rowGap) : gapCss,
+    columnGap: gridOptions.columnGap ? gapValueToString(gridOptions.columnGap) : gapCss
+  };
+}
+function TopContainer({
+  layoutAbsolute,
+  gridOptionsOverride,
+  children
+}) {
+  const gridOptionsResolved = getSxProps(gridOptionsOverride || {});
+  return /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
+    import_Box2.default,
+    {
+      sx: {
+        display: "grid",
+        // Container sizing constraints
+        // 🔒 Hard clamp to parent width to prevent overflow
+        width: "100%",
+        // Fill available width
+        maxWidth: "100%",
+        // Never exceed parent width
+        minWidth: 0,
+        // Allow shrinking below natural minimum
+        boxSizing: "border-box",
+        // Include padding/border in width
+        // Responsive grid template definitions
+        // 🔒 Allow tracks to shrink using minmax(0, 1fr)
+        gridTemplateColumns: {
+          xs: `repeat(${layoutAbsolute.gridDimensions.columns.xs}, minmax(0, 1fr))`,
+          sm: `repeat(${layoutAbsolute.gridDimensions.columns.sm}, minmax(0, 1fr))`,
+          md: `repeat(${layoutAbsolute.gridDimensions.columns.md}, minmax(0, 1fr))`,
+          lg: `repeat(${layoutAbsolute.gridDimensions.columns.lg}, minmax(0, 1fr))`,
+          xl: `repeat(${layoutAbsolute.gridDimensions.columns.xl}, minmax(0, 1fr))`
+        },
+        // Row templates with content-driven sizing
+        gridTemplateRows: {
+          xs: `repeat(${layoutAbsolute.gridDimensions.rows.xs}, minmax(min-content, auto))`,
+          sm: `repeat(${layoutAbsolute.gridDimensions.rows.sm}, minmax(min-content, auto))`,
+          md: `repeat(${layoutAbsolute.gridDimensions.rows.md}, minmax(min-content, auto))`,
+          lg: `repeat(${layoutAbsolute.gridDimensions.rows.lg}, minmax(min-content, auto))`,
+          xl: `repeat(${layoutAbsolute.gridDimensions.rows.xl}, minmax(min-content, auto))`
+        },
+        // Apply configured grid options (gaps, alignment, etc.)
+        ...gridOptionsResolved
+      },
+      children
+    }
+  );
+}
+var dummyCSSCoordinates = {
+  gridColumnStart: 0,
+  gridColumnEnd: 0,
+  gridRowStart: 0,
+  gridRowEnd: 0
+};
+function partialRecordKeys2(obj) {
+  return Object.keys(obj);
+}
+function recordKeys2(obj) {
+  return Object.keys(obj);
+}
+var fallbackCSSCoordinates = {
+  gridColumnStart: 1,
+  // Start at first column
+  gridColumnEnd: 2,
+  // End after first column (1 column wide)
+  gridRowStart: 1,
+  // Start at first row
+  gridRowEnd: 2
+  // End after first row (1 row tall)
+};
+function GridCssMuiRenderer({
+  layoutAbsolute,
+  layoutRendering,
+  diagnostics: diagnostics2,
+  gridOptionsOverride
+}) {
+  const nodes = {};
+  const sectionIds = recordKeys2(layoutAbsolute.sections);
+  for (const sectionId of sectionIds) {
+    for (const bp of BREAKPOINTS) {
+      const boxesAtBP = layoutAbsolute.sections[sectionId].coordinates[bp];
+      if (!boxesAtBP) {
+        diagnostics2.push(
+          makeError(
+            "GridCssMuiRenderer",
+            GRID_ERROR_CODE.SECTION_SHAPES_MISSING_BP,
+            `Missing box shapes for section "${String(
+              sectionId
+            )}" at breakpoint "${bp}"`,
+            { details: { sectionId, bp } }
+          )
+        );
+        continue;
+      }
+      const boxIds = partialRecordKeys2(boxesAtBP);
+      for (const boxId of boxIds) {
+        const crd = boxesAtBP[boxId];
+        if (!crd) {
+          diagnostics2.push(
+            makeError(
+              "GridCssMuiRenderer",
+              GRID_ERROR_CODE.BOX_SHAPE_MISSING_BP,
+              `Missing box shape for box "${String(
+                boxId
+              )}" in section "${String(sectionId)}" at breakpoint "${bp}"`,
+              { details: { sectionId, boxId, bp } }
+            )
+          );
+          continue;
+        }
+        const nodeKey = `${String(sectionId)}::${String(boxId)}`;
+        const resolved = layoutRendering?.[sectionId]?.[bp]?.[boxId] ?? {
+          contentRenderer: () => /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(import_jsx_runtime2.Fragment, {}),
+          // Empty fragment as fallback
+          view: {}
+          // Empty view options as fallback
+        };
+        if (!nodes[nodeKey]) {
+          nodes[nodeKey] = {
+            sectionId,
+            boxId,
+            // Initialize all breakpoint coordinates with dummy values
+            coordinate: {
+              xs: dummyCSSCoordinates,
+              sm: dummyCSSCoordinates,
+              md: dummyCSSCoordinates,
+              lg: dummyCSSCoordinates,
+              xl: dummyCSSCoordinates
+            },
+            content: resolved
+            // Use resolved rendering configuration
+          };
+        } else {
+          if (!nodes[nodeKey].content) nodes[nodeKey].content = resolved;
+        }
+        nodes[nodeKey].coordinate[bp] = crd;
+      }
+    }
+  }
+  for (const nodeKey of Object.keys(nodes)) {
+    const node = nodes[nodeKey];
+    for (const bp of BREAKPOINTS) {
+      const crd = node.coordinate[bp];
+      if (crd.gridColumnStart === 0 && crd.gridColumnEnd === 0 && crd.gridRowStart === 0 && crd.gridRowEnd === 0) {
+        const message = `Box "${String(node.boxId)}" in section "${String(
+          node.sectionId
+        )}" is missing coordinates for breakpoint "${bp}". Recovering with default coordinates.`;
+        diagnostics2.push(
+          makeError(
+            "GridCssMuiRenderer",
+            GRID_ERROR_CODE.MISSING_COORDINATES,
+            message,
+            {
+              details: { sectionId: node.sectionId, boxId: node.boxId, bp }
+            }
+          )
+        );
+        node.coordinate[bp] = fallbackCSSCoordinates;
+      }
+    }
+  }
+  return /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
+    TopContainer,
+    {
+      layoutAbsolute,
+      gridOptionsOverride,
+      children: Object.entries(nodes).map(([nodeKey, node]) => /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
+        DefaultNodeRender,
+        {
+          cssCoordinateBPs: node.coordinate,
+          section: node.sectionId,
+          boxId: node.boxId,
+          content: node.content
+        },
+        nodeKey
+      ))
+    }
+  );
+}
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   BREAKPOINTS,
   CSSLayout,
+  DEFAULT_GRID_NODE_VIEW_OPTIONS,
+  DEFAULT_GRID_OPTIONS,
+  DefaultBoxTransformations,
+  DefaultNodeRender,
+  DefaultTransformationsResponsiveColumns,
+  DefaultTransformationsResponsiveRows,
   GRID_ERROR_CODE,
+  GridCssMuiRenderer,
   addCoordinates,
+  angleBetween,
+  boundingBox,
+  boxPosition,
+  clamp,
+  copyCoordinate,
+  copyGridBox,
+  cssLengthToString,
+  distance,
+  dot,
   gapValueToString,
+  getCatalogCategoryKeys,
   getDefaultTheme,
+  getLayoutFromCatalog,
+  getLayoutKeysForCategory,
+  getNodeDomProps,
+  getNodeSxProps,
+  getOrigin,
   gridUnitValueToString,
+  invert,
+  lerp,
+  linearCombination,
+  makeDiagnostic,
   makeError,
+  makeGridBox,
+  makeInfo,
   makeWarning,
+  maxCoordinate,
+  minCoordinate,
+  multiply,
+  multiplyScalar,
+  norm,
+  normalize,
+  partialRecordKeys,
+  recordKeys,
+  reflectOnXAxis,
+  reflectOnYAxis,
+  reflectionOnXAxis,
+  reflectionOnYAxis,
+  resolveGridNodeViewOptions,
+  resolveGridOptions,
+  rotateByClockWise,
+  rotationByThetaClockWise,
   subtractCoordinates,
-  typedKeys
+  trackBreadthToString,
+  transformationIDs,
+  typedKeys,
+  unitMatrix,
+  zeroMatrix
 });
 //# sourceMappingURL=index.cjs.map

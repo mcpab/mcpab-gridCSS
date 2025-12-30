@@ -19,5 +19,5 @@ export {
 export { 
   recordKeys, 
   partialRecordKeys, 
-  typedKeys 
+ 
 } from './GridCssMuiRenderer';

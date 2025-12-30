@@ -18,9 +18,6 @@ import { CatalogEntries, getCatalogCategoryKeys, getLayoutKeysForCategory, getLa
 import { GridCssMuiRenderer } from './GridCssMuiRenderer';
  
 
-export function typedKeys<T extends object>(obj: T): Array<keyof T> {
-  return Object.keys(obj) as Array<keyof T>;
-}
  
 
 /**

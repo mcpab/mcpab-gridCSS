@@ -263,18 +263,7 @@ const fallbackCSSCoordinates: CSSCoordinates = {
   gridRowStart: 1, // Start at first row
   gridRowEnd: 2, // End after first row (1 row tall)
 };
-
-/**
- * Extract typed keys from any object
- *
- * Generic utility for type-safe key extraction from objects.
- *
- * @param obj - Object to extract keys from
- * @returns Array of typed keys
- */
-export function typedKeys<T extends object>(obj: T): Array<keyof T> {
-  return Object.keys(obj) as Array<keyof T>;
-}
+ 
 /**
  * Main Grid CSS MUI Renderer Component
  *

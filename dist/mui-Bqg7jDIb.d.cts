@@ -1,4 +1,7 @@
 import * as react_jsx_runtime from 'react/jsx-runtime';
+import { Theme } from '@mui/material/styles';
+import { SystemStyleObject } from '@mui/system';
+import React$1 from 'react';
 
 /**
  * @fileoverview Core coordinate system types for 2D geometry operations.
@@ -29,6 +32,41 @@ type Coordinate = {
     x: number;
     y: number;
 };
+/**
+ * Function type for transforming coordinates from one space to another.
+ * Takes a coordinate and returns a transformed coordinate.
+ *
+ * @param v - The input coordinate to transform
+ * @returns The transformed coordinate
+ *
+ * @example
+ * ```typescript
+ * // Translation transformation
+ * const translate: CoordinateTransformation = (v) => ({
+ *   x: v.x + 10,
+ *   y: v.y + 20
+ * });
+ *
+ * // Scaling transformation
+ * const scale: CoordinateTransformation = (v) => ({
+ *   x: v.x * 2,
+ *   y: v.y * 2
+ * });
+ *
+ * // Rotation transformation (90 degrees)
+ * const rotate90: CoordinateTransformation = (v) => ({
+ *   x: -v.y,
+ *   y: v.x
+ * });
+ *
+ * // Usage
+ * const point: Coordinate = { x: 5, y: 10 };
+ * const translated = translate(point);     // { x: 15, y: 30 }
+ * const scaled = scale(point);            // { x: 10, y: 20 }
+ * const rotated = rotate90(point);        // { x: -10, y: 5 }
+ * ```
+ */
+type CoordinateTransformation = (v: Coordinate) => Coordinate;
 
 /**
  * A normalized rectangular box in an abstract local grid.
@@ -82,6 +120,23 @@ type GridBox = {
  *   `origin + diagonal / 2` (component-wise).
  */
 type Anchor = 'bottomLeft' | 'bottomRight' | 'topLeft' | 'topRight' | 'center';
+/**
+ * Function signature for computing the position of an anchor point on a
+ * {@link GridBox}.
+ *
+ * @remarks
+ * - The returned coordinate is expressed in the same abstract local reference
+ *   system as the `GridBox`.
+ * - Implementations may return `undefined` for degenerate boxes (e.g. zero
+ *   width or height) or for anchors that cannot be computed under specific
+ *   policies.
+ *
+ * @param box - The target {@link GridBox} whose anchor position should be computed.
+ * @param boxAnchor - The anchor on the box to locate.
+ * @returns The coordinate of the requested anchor in local space, or
+ * `undefined` if the position cannot be determined.
+ */
+type GridBoxPointPosition = (box: GridBox, boxAnchor: Anchor) => Coordinate | undefined;
 
 /**
  * @fileoverview Layout identifier types for CSS Grid layout system.
@@ -302,6 +357,27 @@ type DiagnosticEntry = {
  */
 type IssueExtras = Omit<GridIssue, 'code' | 'message'>;
 /**
+ * Creates a diagnostic entry with specified severity, origin, and issue details.
+ *
+ * @param severity - The severity level of the diagnostic
+ * @param origin - The origin/source of the diagnostic
+ * @param code - The error code
+ * @param message - The error message
+ * @param extras - Additional issue details
+ * @returns A complete diagnostic entry
+ *
+ * @example
+ * ```typescript
+ * const diagnostic = makeDiagnostic(
+ *   'error',
+ *   'CSSLayout',
+ *   GRID_ERROR_CODE.OVERLAP_NOT_ALLOWED,
+ *   'Grid boxes overlap detected'
+ * );
+ * ```
+ */
+declare function makeDiagnostic(severity: DiagnosticSeverity, origin: DiagnosticOrigin, code: GridErrorCode, message: string, extras?: IssueExtras): DiagnosticEntry;
+/**
  * Creates an error-level diagnostic entry.
  *
  * @param origin - The origin/source of the error
@@ -339,6 +415,25 @@ declare function makeError(origin: DiagnosticOrigin, code: GridErrorCode, messag
  * ```
  */
 declare function makeWarning(origin: DiagnosticOrigin, code: GridErrorCode, message: string, extras?: IssueExtras): DiagnosticEntry;
+/**
+ * Creates an info-level diagnostic entry.
+ *
+ * @param origin - The origin/source of the info
+ * @param code - The error code
+ * @param message - The info message
+ * @param extras - Additional issue details
+ * @returns A diagnostic entry with 'info' severity
+ *
+ * @example
+ * ```typescript
+ * const infoDiagnostic = makeInfo(
+ *   'layoutSectionBtoAbsolute',
+ *   GRID_ERROR_CODE.GRID_NORMALIZED_TO_POSITIVE_LINES,
+ *   'Grid coordinates normalized to positive values'
+ * );
+ * ```
+ */
+declare function makeInfo(origin: DiagnosticOrigin, code: GridErrorCode, message: string, extras?: IssueExtras): DiagnosticEntry;
 
 /**
  * @fileoverview Box transformation properties and types for CSS Grid layout system.
@@ -491,6 +586,22 @@ type BoxAlignXProps<BoxID extends NodeID> = {
     gap?: number;
 };
 /**
+ * Union type of all possible box transformation properties.
+ * Enables type-safe handling of any individual box transformation operation.
+ *
+ * @template BoxID - The type of box identifier that can be transformed
+ *
+ * @example
+ * ```typescript
+ * const transforms: BoxProps<'block_1' | 'aside'>[] = [
+ *   { from: { boxId: 'aside', anchor: 'center' }, to: { x: 100, y: 200 } },
+ *   { from: { boxId: 'block_1' }, by: 50 },
+ *   { from: { boxId: 'aside', anchor: 'top' }, to: 300, gap: 10 }
+ * ];
+ * ```
+ */
+type BoxProps<BoxID extends NodeID> = BoxMoveToProps<BoxID> | BoxMoveByProps<BoxID> | BoxAlignYProps<BoxID> | BoxAlignXProps<BoxID>;
+/**
  * Comprehensive database of all possible box transformation operations.
  * Maps transformation names to their corresponding property types.
  * Ensures all transformation IDs correspond to meaningful transformation properties.
@@ -550,6 +661,19 @@ type BoxMovesPropsObject<BoxID extends NodeID> = {
  * @template BoxID - The type of box identifier
  */
 type TransformationIDs<BoxID extends NodeID> = keyof BoxMovesPropsObject<BoxID>;
+/**
+ * Constant array of all available transformation IDs.
+ * Ensures compile-time verification that all transformations are accounted for.
+ *
+ * @example
+ * ```typescript
+ * // Iterate through all available transformations
+ * transformationIDs.forEach(id => {
+ *   console.log(`Available transformation: ${id}`);
+ * });
+ * ```
+ */
+declare const transformationIDs: readonly ["moveTo", "moveBy", "alignToY", "alignToX", "alignAllToY", "alignAllToX", "stackVertically", "stackHorizontally"];
 /**
  * Discriminated union type for box transformation properties.
  * Enables type-safe handling of transformations where each transformation
@@ -668,6 +792,12 @@ type Breakpoint = (typeof BREAKPOINTS)[number];
  * Complete breakpoint record with all breakpoints required
  */
 type BPs<T> = Record<Breakpoint, T>;
+/**
+ * Partial breakpoint record with only xs required
+ */
+type PartialBps<T> = {
+    xs: T;
+} & Partial<Record<Exclude<Breakpoint, 'xs'>, T>>;
 
 /**
  * @fileoverview Grid node type definitions for layout positioning and configuration.
@@ -680,6 +810,26 @@ type BPs<T> = Record<Breakpoint, T>;
  * ============================================================================
  */
 
+/**
+ * Layout configuration flags for grid node behavior and constraints.
+ *
+ * @example
+ * ```typescript
+ * const layoutFlags: GridNodeLayoutFlags = {
+ *   allowOverlap: true,
+ *   constrainChildren: false,
+ *   visibility: "visible" // no visuallyHidden here
+ * };
+ * ```
+ */
+type GridNodeLayoutFlags = {
+    /** Whether this node can overlap with other nodes */
+    allowOverlap?: boolean;
+    /** Whether to constrain child elements within this node's bounds */
+    constrainChildren?: boolean;
+    /** Visibility state of the node */
+    visibility?: "visible" | "hidden";
+};
 /**
  * Absolute coordinates for CSS Grid node positioning.
  * Defines the exact grid lines where a node starts and ends.
@@ -706,6 +856,36 @@ type CSSCoordinates = {
     /** Ending column line (1-based, exclusive) */
     gridColumnEnd: number;
 };
+/**
+ * Grid node identity and metadata (currently unused).
+ *
+ * @example
+ * ```typescript
+ * // Grid node identity and metadata
+ * type GridNodeIdentityK<ID extends string = string> = {
+ *   parentId?: ID;        // Optional parent node reference
+ *   name?: string;        // display/debug name
+ *   id: ID;              // Unique identifier
+ * };
+ * ```
+ */
+/**
+ * Responsive CSS coordinates across all breakpoints.
+ * Maps each breakpoint to its corresponding CSS Grid coordinates.
+ *
+ * @example
+ * ```typescript
+ * // Absolute positioned grid node with identity, coordinates, and options
+ * const responsiveCoords: CSSCoordinatesBPS = {
+ *   xs: { gridRowStart: 1, gridColumnStart: 1, gridRowEnd: 2, gridColumnEnd: 2 },
+ *   sm: { gridRowStart: 1, gridColumnStart: 1, gridRowEnd: 2, gridColumnEnd: 3 },
+ *   md: { gridRowStart: 1, gridColumnStart: 2, gridRowEnd: 2, gridColumnEnd: 4 },
+ *   lg: { gridRowStart: 1, gridColumnStart: 2, gridRowEnd: 2, gridColumnEnd: 5 },
+ *   xl: { gridRowStart: 1, gridColumnStart: 3, gridRowEnd: 2, gridColumnEnd: 6 }
+ * };
+ * ```
+ */
+type CSSCoordinatesBPS = BPs<CSSCoordinates>;
 
 /**
  * @fileoverview Grid node view configuration options for styling and behavior.
@@ -866,6 +1046,26 @@ type SectionsIDSFromLayout<E extends Layout> = Extract<keyof E, SectionIDs>;
  * ```
  */
 type BlockIDSFromSectionAndLayout<E extends Layout, S extends SectionsIDSFromLayout<E>> = Extract<keyof NonNullable<E[S]>, BlocksIDs>;
+/**
+ * Creates a union type of all block IDs from all sections in a layout.
+ * Useful for operations that need to reference any block across the entire layout.
+ *
+ * @template E - The layout type to extract all block IDs from
+ *
+ * @example
+ * ```typescript
+ * const layout = {
+ *   header: { block_1: { spanX: 1, spanY: 1 }, block_2: { spanX: 2, spanY: 1 } },
+ *   main: { block_3: { spanX: 1, spanY: 3 }, block_4: { spanX: 3, spanY: 3 } }
+ * } satisfies Layout;
+ *
+ * type AllBlocks = UnionBlockIDSfromLayout<typeof layout>;
+ * // Result: 'block_1' | 'block_2' | 'block_3' | 'block_4'
+ * ```
+ */
+type UnionBlockIDSfromLayout<E extends Layout> = Extract<{
+    [S in SectionsIDSFromLayout<E>]: Extract<keyof NonNullable<E[S]>, BlocksIDs>;
+}[SectionsIDSFromLayout<E>], BlocksIDs>;
 /**
  * Box transformations configuration across breakpoints.
  * Defines all possible transformations that can be applied to boxes in the layout.
@@ -1405,6 +1605,34 @@ type GridUnitValue = TrackBreadth | {
  */
 type GapValue = CssLength;
 /**
+ * Converts a CSS length object to its string representation.
+ *
+ * @param len - The CSS length object with unit and value
+ * @returns CSS string representation
+ *
+ * @example
+ * ```typescript
+ * // --- Converters (domain -> CSS string) ---
+ * cssLengthToString({ unit: "px", value: 16 }); // "16px"
+ * cssLengthToString({ unit: "%", value: 100 }); // "100%"
+ * ```
+ */
+declare function cssLengthToString(len: CssLength): string;
+/**
+ * Converts a TrackBreadth object to its CSS string representation.
+ *
+ * @param b - The track breadth object to convert
+ * @returns CSS string representation
+ *
+ * @example
+ * ```typescript
+ * trackBreadthToString({ unit: "fr", value: 1 }); // "1fr"
+ * trackBreadthToString({ unit: "auto" }); // "auto"
+ * trackBreadthToString({ unit: "fit-content", value: { unit: "px", value: 200 } }); // "fit-content(200px)"
+ * ```
+ */
+declare function trackBreadthToString(b: TrackBreadth): string;
+/**
  * Converts a GridUnitValue to its CSS string representation.
  * Handles both simple track breadths and minmax() functions.
  *
@@ -1532,15 +1760,6 @@ declare function partialRecordKeys<K extends string, V>(obj: Partial<Record<K, V
  */
 declare function recordKeys<K extends string, V>(obj: Record<K, V>): K[];
 /**
- * Extract typed keys from any object
- *
- * Generic utility for type-safe key extraction from objects.
- *
- * @param obj - Object to extract keys from
- * @returns Array of typed keys
- */
-declare function typedKeys<T extends object>(obj: T): Array<keyof T>;
-/**
  * Main Grid CSS MUI Renderer Component
  *
  * Renders a complete CSS Grid layout using Material-UI components. This is the primary
@@ -1565,4 +1784,78 @@ declare function typedKeys<T extends object>(obj: T): Array<keyof T>;
  */
 declare function GridCssMuiRenderer<sectionID extends SectionIDs, blockID extends BlocksIDs, LA extends LayoutAbsolute<sectionID, blockID>>({ layoutAbsolute, layoutRendering, diagnostics, gridOptionsOverride, }: GridCssMuiRendererProps<sectionID, blockID, LA>): react_jsx_runtime.JSX.Element;
 
-export { recordKeys as A, type BlocksIDs as B, type Coordinate as C, type DiagnosticEntry as D, typedKeys as E, GridCssMuiRenderer as F, type GridBox as G, type LayoutWithTx as L, type NodeRenderConfig as N, type SectionIDs as S, type TransformationIDs as T, BREAKPOINTS as a, type LayoutAbsolute as b, type SectionsInLayoutWithTx as c, type BlocksInLayoutWithTx as d, type Layout as e, type SectionsIDSFromLayout as f, type BlockIDSFromSectionAndLayout as g, type BoxSpan as h, type LayoutSectionBounds as i, type LayoutSectionLocal as j, type BoxTransformations as k, type BoxMovesFunctions as l, type BoxMovesProps as m, type BoxMoveToProps as n, type CSSCoordinates as o, type GridOptions as p, type GridNodeViewOptions as q, type NodeID as r, type BPs as s, GRID_ERROR_CODE as t, makeError as u, makeWarning as v, gapValueToString as w, gridUnitValueToString as x, type GridCssMuiRendererProps as y, partialRecordKeys as z };
+type MuiTheme = Theme;
+type MuiSystemStyleObject = SystemStyleObject<MuiTheme>;
+
+/**
+ * Generate MUI sx props based on grid node view options
+ *
+ * Converts GridNodeViewOptions into MUI's sx prop object, handling various
+ * visual and layout properties including sizing constraints, positioning,
+ * visibility, and accessibility.
+ *
+ * Supported options:
+ * - minWidth0/minHeight0: Allow content to shrink below natural minimum
+ * - justifySelf/alignSelf: CSS Grid alignment within grid area
+ * - zIndex: Stacking order control
+ * - pointerEvents: Mouse interaction control
+ * - visibility: Show/hide/visually-hide content
+ *
+ * @param view - Optional view configuration object
+ * @returns MUI sx prop object with computed styles
+ */
+declare function getNodeSxProps(view?: GridNodeViewOptions): MuiSystemStyleObject;
+/**
+ * Generate DOM attributes and props from grid node view options
+ *
+ * Converts GridNodeViewOptions into React DOM attributes, specifically handling
+ * accessibility (ARIA) attributes and custom data attributes. This ensures proper
+ * semantic markup and accessibility support for grid nodes.
+ *
+ * Supported features:
+ * - ARIA attributes (role, label, labelledby, describedby)
+ * - Custom data attributes with automatic "data-" prefixing
+ * - Type-safe attribute handling
+ *
+ * @param view - Optional view configuration object
+ * @returns Object containing React DOM attributes
+ */
+type DataAttributes = Record<`data-${string}`, string>;
+declare function getNodeDomProps(view?: GridNodeViewOptions): React$1.HTMLAttributes<HTMLElement> & DataAttributes;
+/**
+ * Props for the DefaultNodeRender component
+ *
+ * @template sectionIDs - Union type of valid section identifiers
+ * @template blockIDs - Union type of valid block/box identifiers
+ */
+type DefaultNodeRenderProps<sectionIDs extends SectionIDs, blockIDs extends BlocksIDs> = {
+    section: sectionIDs;
+    boxId: blockIDs;
+    cssCoordinateBPs: BPs<CSSCoordinates>;
+    content: NodeRenderConfig<sectionIDs, blockIDs>;
+};
+/**
+ * Default Node Renderer Component
+ *
+ * Renders a grid node using Material-UI components with full responsive CSS Grid support.
+ * This component handles the conversion from grid coordinates to CSS Grid properties
+ * and applies them across all responsive breakpoints.
+ *
+ * Key Features:
+ * - Responsive CSS Grid positioning using MUI breakpoint system
+ * - Automatic breakpoint detection and coordinate application
+ * - Accessibility attribute management
+ * - Flexible content rendering through render props
+ * - Integration with MUI theming
+ *
+ * The component uses MUI's useMediaQuery to detect the current breakpoint and
+ * applies the appropriate CSS Grid coordinates for that breakpoint.
+ *
+ * @template sectionIDs - Union type of valid section identifiers
+ * @template blockIDs - Union type of valid block/box identifiers
+ * @param props - Component props including coordinates, content, and identifiers
+ * @returns Rendered grid node as MUI Box component
+ */
+declare function DefaultNodeRender<sectionIDs extends SectionIDs, blockIDs extends BlocksIDs>({ section, boxId, cssCoordinateBPs, content, }: DefaultNodeRenderProps<sectionIDs, blockIDs>): react_jsx_runtime.JSX.Element;
+
+export { GRID_ERROR_CODE as $, type BoxProps as A, type BlocksIDs as B, type Coordinate as C, type DiagnosticEntry as D, type BoxMovesPropsObject as E, type BoxMovesProps as F, type GridBox as G, type AllBoxMovesProps as H, type BoxMovesFunctionsProps as I, transformationIDs as J, type Anchor as K, type LayoutWithTx as L, type GridNodeLayoutFlags as M, type NodeID as N, type CSSCoordinates as O, type CSSCoordinatesBPS as P, type Cards as Q, type Rows as R, type SectionIDs as S, type TransformationIDs as T, type UnionBlockIDSfromLayout as U, type Breakpoint as V, type BPs as W, type PartialBps as X, type DiagnosticSeverity as Y, type DiagnosticOrigin as Z, type GridErrorCode as _, BREAKPOINTS as a, type GridIssue as a0, makeDiagnostic as a1, makeError as a2, makeWarning as a3, makeInfo as a4, type CoordinateTransformation as a5, type CssLength as a6, type TrackBreadth as a7, type GridUnitValue as a8, type GapValue as a9, cssLengthToString as aa, trackBreadthToString as ab, gridUnitValueToString as ac, gapValueToString as ad, GridCssMuiRenderer as ae, type GridCssMuiRendererProps as af, DefaultNodeRender as ag, getNodeSxProps as ah, getNodeDomProps as ai, recordKeys as aj, partialRecordKeys as ak, type LayoutAbsolute as b, type SectionsInLayoutWithTx as c, type BlocksInLayoutWithTx as d, type BoxMovesFunctions as e, type Layout as f, type SectionsIDSFromLayout as g, type BlockIDSFromSectionAndLayout as h, type BoxSpan as i, type BoxTransformations as j, type GridNodeViewOptions as k, type GridOptions as l, type GridBoxPointPosition as m, type BPSGridBoxes as n, type GridBoxesAndTx as o, type LayoutSectionLocal as p, type LayoutSectionBounds as q, type BoxesCoordinates as r, type NodeRenderCtx as s, type NodeRenderConfig as t, type LayoutRenderingOverride as u, type BoxPropBase as v, type BoxMoveToProps as w, type BoxMoveByProps as x, type BoxAlignYProps as y, type BoxAlignXProps as z };

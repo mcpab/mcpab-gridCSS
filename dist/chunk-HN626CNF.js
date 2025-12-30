@@ -1,52 +1,90 @@
-"use strict";
-var __create = Object.create;
-var __defProp = Object.defineProperty;
-var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
-var __getOwnPropNames = Object.getOwnPropertyNames;
-var __getProtoOf = Object.getPrototypeOf;
-var __hasOwnProp = Object.prototype.hasOwnProperty;
-var __export = (target, all) => {
-  for (var name in all)
-    __defProp(target, name, { get: all[name], enumerable: true });
+// src/breakpoints.ts
+var BREAKPOINTS = ["xs", "sm", "md", "lg", "xl"];
+
+// src/gridErrorShape.ts
+var GRID_ERROR_CODE = {
+  // --- Core grid / geometry issues ----------------------------
+  OVERLAP_NOT_ALLOWED: "OVERLAP_NOT_ALLOWED",
+  // --- Pattern / semantic node issues -------------------------
+  INVALID_TRANSFORMATION_PARAMS: "INVALID_TRANSFORMATION_PARAMS",
+  // --- Runtime layout / builder anomalies --------------------
+  NO_BOXES_PROCESSED: "NO_BOXES_PROCESSED",
+  NO_SECTION_ID: "NO_SECTION_ID",
+  BOX_SHAPE_MISSING_BP: "BOX_SHAPE_MISSING_BP",
+  UNKNOWN_TRANSFORMATION: "UNKNOWN_TRANSFORMATION",
+  EMPTY_GRID: "EMPTY_GRID",
+  GRID_NORMALIZED_TO_POSITIVE_LINES: "GRID_NORMALIZED_TO_POSITIVE_LINES",
+  MISSING_COORDINATES: "MISSING_COORDINATES",
+  SECTION_SHAPES_MISSING_BP: "SECTION_SHAPES_MISSING_BP",
+  UNKNOWN_NODE_ID: "UNKNOWN_NODE_ID",
+  UNKNOWN_ANCHOR: "UNKNOWN_ANCHOR",
+  BOX_SPAN_MISSING: "BOX_SPAN_MISSING",
+  MISSING_BOX: "MISSING_BOX",
+  CONSTRAINT_VIOLATION: "CONSTRAINT_VIOLATION"
 };
-var __copyProps = (to, from, except, desc) => {
-  if (from && typeof from === "object" || typeof from === "function") {
-    for (let key of __getOwnPropNames(from))
-      if (!__hasOwnProp.call(to, key) && key !== except)
-        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+function makeDiagnostic(severity, origin, code, message, extras = {}) {
+  return {
+    severity,
+    origin,
+    issue: {
+      code,
+      message,
+      ...extras
+    }
+  };
+}
+function makeError(origin, code, message, extras = {}) {
+  return makeDiagnostic("error", origin, code, message, extras);
+}
+function makeWarning(origin, code, message, extras = {}) {
+  return makeDiagnostic("warning", origin, code, message, extras);
+}
+function makeInfo(origin, code, message, extras = {}) {
+  return makeDiagnostic("info", origin, code, message, extras);
+}
+
+// src/cssStringify.ts
+function cssLengthToString(len) {
+  return `${len.value}${len.unit}`;
+}
+function isCssLength(v) {
+  return typeof v === "object" && v !== null && "unit" in v && "value" in v && v.unit && typeof v.value === "number";
+}
+function trackBreadthToString(b) {
+  if (isCssLength(b)) return cssLengthToString(b);
+  switch (b.unit) {
+    case "fr":
+      return `${b.value}fr`;
+    case "auto":
+      return "auto";
+    case "min-content":
+      return "min-content";
+    case "max-content":
+      return "max-content";
+    case "fit-content":
+      return `fit-content(${cssLengthToString(b.value)})`;
+    default: {
+      const _never = b;
+      return String(_never);
+    }
   }
-  return to;
-};
-var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
-  // If the importer is in node compatibility mode or this is not an ESM
-  // file that has been converted to a CommonJS file using a Babel-
-  // compatible transform (i.e. "__esModule" has not been set), then set
-  // "default" to the CommonJS "module.exports" for node compatibility.
-  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
-  mod
-));
-var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
-
-// src/mui.ts
-var mui_exports = {};
-__export(mui_exports, {
-  DefaultNodeRender: () => DefaultNodeRender,
-  GridCssMuiRenderer: () => GridCssMuiRenderer,
-  getNodeDomProps: () => getNodeDomProps,
-  getNodeSxProps: () => getNodeSxProps,
-  partialRecordKeys: () => partialRecordKeys,
-  recordKeys: () => recordKeys
-});
-module.exports = __toCommonJS(mui_exports);
-
-// src/integration/mui/GridCssMuiRenderer.tsx
-var import_Box2 = __toESM(require("@mui/material/Box"), 1);
+}
+function gridUnitValueToString(v) {
+  if (typeof v === "object" && v !== null && "unit" in v && v.unit === "minmax") {
+    const mm = v;
+    return `minmax(${trackBreadthToString(mm.min)}, ${trackBreadthToString(mm.max)})`;
+  }
+  return trackBreadthToString(v);
+}
+function gapValueToString(g) {
+  return cssLengthToString(g);
+}
 
 // src/integration/mui/DefaultNodeRender.tsx
-var import_styles = require("@mui/material/styles");
-var import_useMediaQuery = __toESM(require("@mui/material/useMediaQuery"), 1);
-var import_Box = __toESM(require("@mui/material/Box"), 1);
-var import_jsx_runtime = require("react/jsx-runtime");
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import Box from "@mui/material/Box";
+import { jsx } from "react/jsx-runtime";
 var visuallyHiddenStyle = {
   position: "absolute",
   width: 1,
@@ -104,14 +142,14 @@ function DefaultNodeRender({
 }) {
   const nodeSx = getNodeSxProps(content.view);
   const domProps = getNodeDomProps(content.view);
-  const theme = (0, import_styles.useTheme)();
-  const upSm = (0, import_useMediaQuery.default)(theme.breakpoints.up("sm"));
-  const upMd = (0, import_useMediaQuery.default)(theme.breakpoints.up("md"));
-  const upLg = (0, import_useMediaQuery.default)(theme.breakpoints.up("lg"));
-  const upXl = (0, import_useMediaQuery.default)(theme.breakpoints.up("xl"));
+  const theme = useTheme();
+  const upSm = useMediaQuery(theme.breakpoints.up("sm"));
+  const upMd = useMediaQuery(theme.breakpoints.up("md"));
+  const upLg = useMediaQuery(theme.breakpoints.up("lg"));
+  const upXl = useMediaQuery(theme.breakpoints.up("xl"));
   const bp = upXl ? "xl" : upLg ? "lg" : upMd ? "md" : upSm ? "sm" : "xs";
-  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-    import_Box.default,
+  return /* @__PURE__ */ jsx(
+    Box,
     {
       ...domProps,
       sx: {
@@ -170,84 +208,9 @@ function DefaultNodeRender({
   );
 }
 
-// src/breakpoints.ts
-var BREAKPOINTS = ["xs", "sm", "md", "lg", "xl"];
-
-// src/cssStringify.ts
-function cssLengthToString(len) {
-  return `${len.value}${len.unit}`;
-}
-function isCssLength(v) {
-  return typeof v === "object" && v !== null && "unit" in v && "value" in v && v.unit && typeof v.value === "number";
-}
-function trackBreadthToString(b) {
-  if (isCssLength(b)) return cssLengthToString(b);
-  switch (b.unit) {
-    case "fr":
-      return `${b.value}fr`;
-    case "auto":
-      return "auto";
-    case "min-content":
-      return "min-content";
-    case "max-content":
-      return "max-content";
-    case "fit-content":
-      return `fit-content(${cssLengthToString(b.value)})`;
-    default: {
-      const _never = b;
-      return String(_never);
-    }
-  }
-}
-function gridUnitValueToString(v) {
-  if (typeof v === "object" && v !== null && "unit" in v && v.unit === "minmax") {
-    const mm = v;
-    return `minmax(${trackBreadthToString(mm.min)}, ${trackBreadthToString(mm.max)})`;
-  }
-  return trackBreadthToString(v);
-}
-function gapValueToString(g) {
-  return cssLengthToString(g);
-}
-
-// src/gridErrorShape.ts
-var GRID_ERROR_CODE = {
-  // --- Core grid / geometry issues ----------------------------
-  OVERLAP_NOT_ALLOWED: "OVERLAP_NOT_ALLOWED",
-  // --- Pattern / semantic node issues -------------------------
-  INVALID_TRANSFORMATION_PARAMS: "INVALID_TRANSFORMATION_PARAMS",
-  // --- Runtime layout / builder anomalies --------------------
-  NO_BOXES_PROCESSED: "NO_BOXES_PROCESSED",
-  NO_SECTION_ID: "NO_SECTION_ID",
-  BOX_SHAPE_MISSING_BP: "BOX_SHAPE_MISSING_BP",
-  UNKNOWN_TRANSFORMATION: "UNKNOWN_TRANSFORMATION",
-  EMPTY_GRID: "EMPTY_GRID",
-  GRID_NORMALIZED_TO_POSITIVE_LINES: "GRID_NORMALIZED_TO_POSITIVE_LINES",
-  MISSING_COORDINATES: "MISSING_COORDINATES",
-  SECTION_SHAPES_MISSING_BP: "SECTION_SHAPES_MISSING_BP",
-  UNKNOWN_NODE_ID: "UNKNOWN_NODE_ID",
-  UNKNOWN_ANCHOR: "UNKNOWN_ANCHOR",
-  BOX_SPAN_MISSING: "BOX_SPAN_MISSING",
-  MISSING_BOX: "MISSING_BOX",
-  CONSTRAINT_VIOLATION: "CONSTRAINT_VIOLATION"
-};
-function makeDiagnostic(severity, origin, code, message, extras = {}) {
-  return {
-    severity,
-    origin,
-    issue: {
-      code,
-      message,
-      ...extras
-    }
-  };
-}
-function makeError(origin, code, message, extras = {}) {
-  return makeDiagnostic("error", origin, code, message, extras);
-}
-
 // src/integration/mui/GridCssMuiRenderer.tsx
-var import_jsx_runtime2 = require("react/jsx-runtime");
+import Box2 from "@mui/material/Box";
+import { Fragment, jsx as jsx2 } from "react/jsx-runtime";
 function getSxProps(gridOptions) {
   const gapCss = gridOptions.gap ? gapValueToString(gridOptions.gap) : "0px";
   return {
@@ -284,8 +247,8 @@ function TopContainer({
   children
 }) {
   const gridOptionsResolved = getSxProps(gridOptionsOverride || {});
-  return /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
-    import_Box2.default,
+  return /* @__PURE__ */ jsx2(
+    Box2,
     {
       sx: {
         display: "grid",
@@ -387,7 +350,7 @@ function GridCssMuiRenderer({
         }
         const nodeKey = `${String(sectionId)}::${String(boxId)}`;
         const resolved = layoutRendering?.[sectionId]?.[bp]?.[boxId] ?? {
-          contentRenderer: () => /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(import_jsx_runtime2.Fragment, {}),
+          contentRenderer: () => /* @__PURE__ */ jsx2(Fragment, {}),
           // Empty fragment as fallback
           view: {}
           // Empty view options as fallback
@@ -436,12 +399,12 @@ function GridCssMuiRenderer({
       }
     }
   }
-  return /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
+  return /* @__PURE__ */ jsx2(
     TopContainer,
     {
       layoutAbsolute,
       gridOptionsOverride,
-      children: Object.entries(nodes).map(([nodeKey, node]) => /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
+      children: Object.entries(nodes).map(([nodeKey, node]) => /* @__PURE__ */ jsx2(
         DefaultNodeRender,
         {
           cssCoordinateBPs: node.coordinate,
@@ -454,13 +417,23 @@ function GridCssMuiRenderer({
     }
   );
 }
-// Annotate the CommonJS export names for ESM import in node:
-0 && (module.exports = {
-  DefaultNodeRender,
-  GridCssMuiRenderer,
-  getNodeDomProps,
+
+export {
+  BREAKPOINTS,
+  GRID_ERROR_CODE,
+  makeDiagnostic,
+  makeError,
+  makeWarning,
+  makeInfo,
+  cssLengthToString,
+  trackBreadthToString,
+  gridUnitValueToString,
+  gapValueToString,
   getNodeSxProps,
+  getNodeDomProps,
+  DefaultNodeRender,
   partialRecordKeys,
-  recordKeys
-});
-//# sourceMappingURL=mui.cjs.map
+  recordKeys,
+  GridCssMuiRenderer
+};
+//# sourceMappingURL=chunk-HN626CNF.js.map
