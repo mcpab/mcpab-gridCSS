@@ -189,9 +189,8 @@ function TopContainer<
 export type GridCssMuiRendererProps<
   sectionID extends SectionIDs,
   blockID extends BlocksIDs,
-  LA extends LayoutAbsolute<sectionID, blockID>
 > = {
-  layoutAbsolute: LA; // Layout with absolute CSS coordinates
+  layoutAbsolute: LayoutAbsolute<sectionID, blockID>; // Layout with absolute CSS coordinates
   diagnostics: DiagnosticEntry[]; // Array to collect errors and warnings
   layoutRendering?: LayoutRenderingOverride<sectionID, blockID>; // Optional custom rendering overrides
   gridOptionsOverride?: Partial<GridOptions>; // Optional grid behavior configuration
@@ -263,7 +262,7 @@ const fallbackCSSCoordinates: CSSCoordinates = {
   gridRowStart: 1, // Start at first row
   gridRowEnd: 2, // End after first row (1 row tall)
 };
- 
+
 /**
  * Main Grid CSS MUI Renderer Component
  *
@@ -290,13 +289,13 @@ const fallbackCSSCoordinates: CSSCoordinates = {
 export function GridCssMuiRenderer<
   sectionID extends SectionIDs,
   blockID extends BlocksIDs,
-  LA extends LayoutAbsolute<sectionID, blockID>
+
 >({
   layoutAbsolute,
   layoutRendering,
   diagnostics,
   gridOptionsOverride,
-}: GridCssMuiRendererProps<sectionID, blockID, LA>) {
+}: GridCssMuiRendererProps<sectionID, blockID>) {
   // Registry for all nodes to be rendered, indexed by unique key
   const nodes: Record<string, BoxRenderer<sectionID, blockID>> = {};
 

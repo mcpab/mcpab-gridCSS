@@ -3,7 +3,7 @@ import {
   GridCssMuiRenderer,
   getNodeDomProps,
   getNodeSxProps
-} from "./chunk-BIJFHEWD.js";
+} from "./chunk-QZG5IVUS.js";
 export {
   DefaultNodeRender,
   GridCssMuiRenderer,

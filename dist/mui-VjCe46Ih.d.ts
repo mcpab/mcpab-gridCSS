@@ -1671,8 +1671,8 @@ type GridOptions = {
  * @template blockID - Union type of valid block/box identifiers
  * @template LA - Layout type extending LayoutAbsolute
  */
-type GridCssMuiRendererProps<sectionID extends SectionIDs, blockID extends BlocksIDs, LA extends LayoutAbsolute<sectionID, blockID>> = {
-    layoutAbsolute: LA;
+type GridCssMuiRendererProps<sectionID extends SectionIDs, blockID extends BlocksIDs> = {
+    layoutAbsolute: LayoutAbsolute<sectionID, blockID>;
     diagnostics: DiagnosticEntry[];
     layoutRendering?: LayoutRenderingOverride<sectionID, blockID>;
     gridOptionsOverride?: Partial<GridOptions>;
@@ -1700,7 +1700,7 @@ type GridCssMuiRendererProps<sectionID extends SectionIDs, blockID extends Block
  * @param props - Component props including layout, rendering overrides, and options
  * @returns Rendered CSS Grid layout with positioned nodes
  */
-declare function GridCssMuiRenderer<sectionID extends SectionIDs, blockID extends BlocksIDs, LA extends LayoutAbsolute<sectionID, blockID>>({ layoutAbsolute, layoutRendering, diagnostics, gridOptionsOverride, }: GridCssMuiRendererProps<sectionID, blockID, LA>): react_jsx_runtime.JSX.Element;
+declare function GridCssMuiRenderer<sectionID extends SectionIDs, blockID extends BlocksIDs>({ layoutAbsolute, layoutRendering, diagnostics, gridOptionsOverride, }: GridCssMuiRendererProps<sectionID, blockID>): react_jsx_runtime.JSX.Element;
 
 type MuiTheme = Theme;
 type MuiSystemStyleObject = SystemStyleObject<MuiTheme>;
