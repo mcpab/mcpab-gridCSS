@@ -66,7 +66,7 @@ export * from './gridOptionsTypes';
 export * from './nodeViewOptions';
 
 // Template and identifier types
-export *from './templates';
+export * from './templates';
 
 // Breakpoint system
 export * from './breakpoints';
