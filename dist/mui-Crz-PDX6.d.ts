@@ -1007,65 +1007,7 @@ type BoxSpan = {
  * };
  * ```
  */
-type Layout = Partial<Record<SectionIDs, Partial<Record<BlocksIDs, BoxSpan>>>>;
-/**
- * Extracts all section IDs that are present in a specific layout.
- * Provides type-safe access to only the sections that exist in the layout.
- *
- * @template E - The layout type to extract section IDs from
- *
- * @example
- * ```typescript
- * const myLayout = {
- *   header: { block_1: { spanX: 1, spanY: 1 } },
- *   footer: { block_2: { spanX: 1, spanY: 1 } }
- * } satisfies Layout;
- *
- * type MySections = SectionsIDSFromLayout<typeof myLayout>;  // 'header' | 'footer'
- * ```
- */
-type SectionsIDSFromLayout<E extends Layout> = Extract<keyof E, SectionIDs>;
-/**
- * Extracts all block IDs from a specific section within a layout.
- * Provides type-safe access to blocks that exist in a particular section.
- *
- * @template E - The layout type
- * @template S - The section ID within the layout
- *
- * @example
- * ```typescript
- * const layout = {
- *   header: {
- *     block_1: { spanX: 1, spanY: 1 },
- *     block_3: { spanX: 3, spanY: 1 }
- *   }
- * } satisfies Layout;
- *
- * type HeaderBlocks = BlockIDSFromSectionAndLayout<typeof layout, 'header'>;
- * // Result: 'block_1' | 'block_3'
- * ```
- */
-type BlockIDSFromSectionAndLayout<E extends Layout, S extends SectionsIDSFromLayout<E>> = Extract<keyof NonNullable<E[S]>, BlocksIDs>;
-/**
- * Creates a union type of all block IDs from all sections in a layout.
- * Useful for operations that need to reference any block across the entire layout.
- *
- * @template E - The layout type to extract all block IDs from
- *
- * @example
- * ```typescript
- * const layout = {
- *   header: { block_1: { spanX: 1, spanY: 1 }, block_2: { spanX: 2, spanY: 1 } },
- *   main: { block_3: { spanX: 1, spanY: 3 }, block_4: { spanX: 3, spanY: 3 } }
- * } satisfies Layout;
- *
- * type AllBlocks = UnionBlockIDSfromLayout<typeof layout>;
- * // Result: 'block_1' | 'block_2' | 'block_3' | 'block_4'
- * ```
- */
-type UnionBlockIDSfromLayout<E extends Layout> = Extract<{
-    [S in SectionsIDSFromLayout<E>]: Extract<keyof NonNullable<E[S]>, BlocksIDs>;
-}[SectionsIDSFromLayout<E>], BlocksIDs>;
+type Layout<sectionIDs extends SectionIDs, blockIDs extends BlocksIDs> = Partial<Record<sectionIDs, Partial<Record<blockIDs, BoxSpan>>>>;
 /**
  * Box transformations configuration across breakpoints.
  * Defines all possible transformations that can be applied to boxes in the layout.
@@ -1307,7 +1249,6 @@ type LayoutWithTx<sectionIDs extends SectionIDs, blockIDs extends BlocksIDs> = {
  * type MySections = SectionsInLayoutWithTx<MyLayout>; // 'header' | 'main'
  * ```
  */
-type SectionsInLayoutWithTx<L extends LayoutWithTx<any, any>> = keyof L["sections"] & SectionIDs;
 /**
  * Extracts all block IDs from a LayoutWithTx type.
  * Creates a union of all block IDs that exist across all sections in the layout.
@@ -1320,9 +1261,6 @@ type SectionsInLayoutWithTx<L extends LayoutWithTx<any, any>> = keyof L["section
  * type MyBlocks = BlocksInLayoutWithTx<MyLayout>; // 'block_1' | 'block_2' | 'block_3'
  * ```
  */
-type BlocksInLayoutWithTx<L extends LayoutWithTx<any, any>> = {
-    [S in keyof L["sections"]]: keyof NonNullable<L["sections"][S]> & BlocksIDs;
-}[keyof L["sections"]];
 /**
  * Layout after applying transformations to section children.
  * Contains local grid boxes per section with relative coordinates within each section.
@@ -1838,4 +1776,4 @@ type DefaultNodeRenderProps<sectionIDs extends SectionIDs, blockIDs extends Bloc
  */
 declare function DefaultNodeRender<sectionIDs extends SectionIDs, blockIDs extends BlocksIDs>({ section, boxId, cssCoordinateBPs, content, }: DefaultNodeRenderProps<sectionIDs, blockIDs>): react_jsx_runtime.JSX.Element;
 
-export { GRID_ERROR_CODE as $, type BoxPropBase as A, type BlocksIDs as B, type Coordinate as C, type DiagnosticEntry as D, type BoxMoveByProps as E, type BoxAlignYProps as F, type GridBox as G, type BoxAlignXProps as H, type BoxProps as I, type AllBoxMovesProps as J, type BoxMovesFunctionsProps as K, type LayoutWithTx as L, transformationIDs as M, type NodeID as N, type Anchor as O, type GridNodeLayoutFlags as P, type CSSCoordinatesBPS as Q, type Rows as R, type SectionIDs as S, type TransformationIDs as T, type UnionBlockIDSfromLayout as U, type Cards as V, type Breakpoint as W, type PartialBps as X, type DiagnosticSeverity as Y, type DiagnosticOrigin as Z, type GridErrorCode as _, BREAKPOINTS as a, type GridIssue as a0, makeDiagnostic as a1, makeError as a2, makeWarning as a3, makeInfo as a4, type CoordinateTransformation as a5, type CssLength as a6, type TrackBreadth as a7, type GridUnitValue as a8, type GapValue as a9, cssLengthToString as aa, trackBreadthToString as ab, gridUnitValueToString as ac, gapValueToString as ad, GridCssMuiRenderer as ae, type GridCssMuiRendererProps as af, DefaultNodeRender as ag, getNodeSxProps as ah, getNodeDomProps as ai, type LayoutAbsolute as b, type LayoutSectionBounds as c, type LayoutSectionLocal as d, type Layout as e, type SectionsIDSFromLayout as f, type BlockIDSFromSectionAndLayout as g, type BoxSpan as h, type BoxTransformations as i, type GridNodeViewOptions as j, type GridOptions as k, type BoxMovesFunctions as l, type BPs as m, type GridBoxPointPosition as n, type BoxesCoordinates as o, type SectionsInLayoutWithTx as p, type BlocksInLayoutWithTx as q, type BoxMovesProps as r, type BoxMovesPropsObject as s, type BoxMoveToProps as t, type CSSCoordinates as u, type BPSGridBoxes as v, type GridBoxesAndTx as w, type NodeRenderCtx as x, type NodeRenderConfig as y, type LayoutRenderingOverride as z };
+export { makeInfo as $, type BoxProps as A, type BlocksIDs as B, type Coordinate as C, type DiagnosticEntry as D, type AllBoxMovesProps as E, type BoxMovesFunctionsProps as F, type GridBox as G, transformationIDs as H, type Anchor as I, type GridNodeLayoutFlags as J, type CSSCoordinatesBPS as K, type LayoutWithTx as L, type Cards as M, type NodeID as N, type Breakpoint as O, type PartialBps as P, type DiagnosticSeverity as Q, type Rows as R, type SectionIDs as S, type TransformationIDs as T, type DiagnosticOrigin as U, type GridErrorCode as V, GRID_ERROR_CODE as W, type GridIssue as X, makeDiagnostic as Y, makeError as Z, makeWarning as _, BREAKPOINTS as a, type CoordinateTransformation as a0, type CssLength as a1, type TrackBreadth as a2, type GridUnitValue as a3, type GapValue as a4, cssLengthToString as a5, trackBreadthToString as a6, gridUnitValueToString as a7, gapValueToString as a8, GridCssMuiRenderer as a9, type GridCssMuiRendererProps as aa, DefaultNodeRender as ab, getNodeSxProps as ac, getNodeDomProps as ad, type LayoutAbsolute as b, type LayoutSectionBounds as c, type LayoutSectionLocal as d, type Layout as e, type BoxSpan as f, type BoxTransformations as g, type GridNodeViewOptions as h, type GridOptions as i, type BoxMovesFunctions as j, type BPs as k, type GridBoxPointPosition as l, type BoxesCoordinates as m, type BoxMovesProps as n, type BoxMovesPropsObject as o, type BoxMoveToProps as p, type CSSCoordinates as q, type BPSGridBoxes as r, type GridBoxesAndTx as s, type NodeRenderCtx as t, type NodeRenderConfig as u, type LayoutRenderingOverride as v, type BoxPropBase as w, type BoxMoveByProps as x, type BoxAlignYProps as y, type BoxAlignXProps as z };

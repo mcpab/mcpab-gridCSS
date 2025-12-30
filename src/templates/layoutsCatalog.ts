@@ -162,7 +162,7 @@ const layoutsCatalog = {
       row_1: {
         block_1: { spanX: 20, spanY: 1 },
       },
-    } satisfies Layout,
+    } satisfies Layout<"row_1", "block_1">,
 
     /**
      * Classic header-content-footer layout.
@@ -179,7 +179,7 @@ const layoutsCatalog = {
       footer: {
         block_1: { spanX: 20, spanY: 1 },
       },
-    } satisfies Layout,
+    } satisfies Layout<"header" | "content" | "footer", "block_1">,
 
     /**
      * Equal two-column layout (10/10 split).
@@ -197,7 +197,7 @@ const layoutsCatalog = {
       footer: {
         block_1: { spanX: 20, spanY: 1 },
       },
-    } satisfies Layout,
+    } satisfies Layout<"header" | "main" | "footer", "block_1" | "block_2">,
 
     /**
      * Narrow sidebar with wide content (5/15 split).
@@ -215,7 +215,7 @@ const layoutsCatalog = {
       footer: {
         block_1: { spanX: 20, spanY: 1 },
       },
-    } satisfies Layout,
+    } satisfies Layout<"header" | "main" | "footer", "block_1" | "block_2">,
 
     /**
      * Wide content with narrow sidebar (15/5 split).
@@ -233,7 +233,7 @@ const layoutsCatalog = {
       footer: {
         block_1: { spanX: 20, spanY: 1 },
       },
-    } satisfies Layout,
+    } satisfies Layout<"header" | "main" | "footer", "block_1" | "block_2">,
 
     /**
      * Very narrow sidebar layout (4/16 split).
@@ -251,7 +251,7 @@ const layoutsCatalog = {
       footer: {
         block_1: { spanX: 20, spanY: 1 },
       },
-    } satisfies Layout,
+    } satisfies Layout<"header" | "main" | "footer", "block_1" | "block_2">,
 
     /**
      * Wide content with very narrow sidebar (16/4 split).
@@ -269,7 +269,7 @@ const layoutsCatalog = {
       footer: {
         block_1: { spanX: 20, spanY: 1 },
       },
-    } satisfies Layout,
+    } satisfies Layout<"header" | "main" | "footer", "block_1" | "block_2">,
 
     /**
      * Medium sidebar with main content (8/12 split).
@@ -287,7 +287,7 @@ const layoutsCatalog = {
       footer: {
         block_1: { spanX: 20, spanY: 1 },
       },
-    } satisfies Layout,
+    } satisfies Layout<"header" | "main" | "footer", "block_1" | "block_2">,
 
     /**
      * Main content with medium sidebar (12/8 split).
@@ -305,7 +305,7 @@ const layoutsCatalog = {
       footer: {
         block_1: { spanX: 20, spanY: 1 },
       },
-    } satisfies Layout,
+    } satisfies Layout<"header" | "main" | "footer", "block_1" | "block_2">,
 
     /**
      * Balanced three-column layout (5/10/5 split).
@@ -324,7 +324,7 @@ const layoutsCatalog = {
       footer: {
         block_1: { spanX: 20, spanY: 1 },
       },
-    } satisfies Layout,
+    } satisfies Layout<"header" | "main" | "footer", "block_1" | "block_2" | "block_3">,
 
     /**
      * Documentation-style layout (3/14/3 split).
@@ -343,7 +343,7 @@ const layoutsCatalog = {
       footer: {
         block_1: { spanX: 20, spanY: 1 },
       },
-    } satisfies Layout,
+    } satisfies Layout<"header" | "main" | "footer", "block_1" | "block_2" | "block_3">,
 
     /**
      * Wider documentation layout (4/12/4 split).
@@ -362,7 +362,7 @@ const layoutsCatalog = {
       footer: {
         block_1: { spanX: 20, spanY: 1 },
       },
-    } satisfies Layout,
+    } satisfies Layout<"header" | "main" | "footer", "block_1" | "block_2" | "block_3">,
 
     /**
      * Equal four-column layout (5/5/5/5 split).
@@ -382,7 +382,7 @@ const layoutsCatalog = {
       footer: {
         block_1: { spanX: 20, spanY: 1 },
       },
-    } satisfies Layout,
+    } satisfies Layout<"header" | "main" | "footer", "block_1" | "block_2" | "block_3" | "block_4">,
 
     /**
      * Dashboard layout with KPI row and content section.
@@ -407,7 +407,7 @@ const layoutsCatalog = {
       footer: {
         block_1: { spanX: 20, spanY: 1 },
       },
-    } satisfies Layout,
+    } satisfies Layout<"header" | "main" | "content" | "footer", "block_1" | "block_2" | "block_3" | "block_4">,
   },
 
   /**
@@ -425,7 +425,7 @@ const layoutsCatalog = {
       row_1: {
         block_1: { spanX: 1, spanY: 1 },
       },
-    } satisfies Layout,
+    } satisfies Layout<"row_1", "block_1">,
 
     /**
      * Simple two-cell layout.
@@ -437,7 +437,7 @@ const layoutsCatalog = {
         block_1: { spanX: 1, spanY: 1 },
         block_2: { spanX: 1, spanY: 1 },
       },
-    } satisfies Layout,
+    } satisfies Layout<"row_1", "block_1" | "block_2">,
 
     /**
      * Sidebar with content layout.
@@ -449,7 +449,7 @@ const layoutsCatalog = {
         block_1: { spanX: 1, spanY: 1 },
         block_2: { spanX: 5, spanY: 1 },
       },
-    } satisfies Layout,
+    } satisfies Layout<"row_1", "block_1" | "block_2">,
 
     /**
      * Header-footer layout with 5-column content.
@@ -472,7 +472,7 @@ const layoutsCatalog = {
         block_1: { spanX: 1, spanY: 1 },
         block_2: { spanX: 5, spanY: 1 },
       },
-    } satisfies Layout,
+    } satisfies Layout<"header" | "content" | "footer", "block_1" | "block_2" | "block_3" | "block_4" | "block_5">,
 
     /**
      * Simple header-content-footer with 3 columns.
@@ -491,7 +491,7 @@ const layoutsCatalog = {
       footer: {
         block_1: { spanX: 3, spanY: 1 },
       },
-    } satisfies Layout,
+    } satisfies Layout<"header" | "content" | "footer", "block_1" | "block_2" | "block_3">,
 
     /**
      * Header with 2-column content and footer.
@@ -509,7 +509,7 @@ const layoutsCatalog = {
       footer: {
         block_1: { spanX: 1, spanY: 1 },
       },
-    } satisfies Layout,
+    } satisfies Layout<"header" | "content" | "footer", "block_1" | "block_2">,
 
     /**
      * Header with 3-column content and footer.
@@ -528,7 +528,7 @@ const layoutsCatalog = {
       footer: {
         block_1: { spanX: 1, spanY: 1 },
       },
-    } satisfies Layout,
+    } satisfies Layout<"header" | "content" | "footer", "block_1" | "block_2" | "block_3">,
 
     /**
      * Two rows with 3 columns each.
@@ -546,7 +546,7 @@ const layoutsCatalog = {
         block_2: { spanX: 1, spanY: 1 },
         block_3: { spanX: 1, spanY: 1 },
       },
-    } satisfies Layout,
+    } satisfies Layout<"row_1" | "row_2", "block_1" | "block_2" | "block_3">,
 
     /**
      * Two rows with 6 columns each.
@@ -570,7 +570,7 @@ const layoutsCatalog = {
         block_5: { spanX: 1, spanY: 1 },
         block_6: { spanX: 1, spanY: 1 },
       },
-    } satisfies Layout,
+    } satisfies Layout<"row_1" | "row_2", "block_1" | "block_2" | "block_3" | "block_4" | "block_5" | "block_6">,
 
     /**
      * Mixed density showcase layout.
@@ -612,7 +612,7 @@ const layoutsCatalog = {
         block_5: { spanX: 1, spanY: 1 },
         block_6: { spanX: 1, spanY: 1 },
       },
-    } satisfies Layout,
+    } satisfies Layout<"header" | 'row_1'|'row_2'|'row_3'|'row_4'|"footer", "block_1" | "block_2" | "block_3" | "block_4" | "block_5" | "block_6">,
 
     /**
      * Featured row with 4 blocks (one double-wide).
@@ -626,7 +626,7 @@ const layoutsCatalog = {
         block_3: { spanX: 1, spanY: 1 },
         block_4: { spanX: 1, spanY: 1 },
       },
-    } satisfies Layout,
+    } satisfies Layout<"row_1", "block_1" | "block_2" | "block_3" | "block_4">,
 
     /**
      * Featured row with 5 blocks (one double-wide).
@@ -641,7 +641,7 @@ const layoutsCatalog = {
         block_4: { spanX: 1, spanY: 1 },
         block_5: { spanX: 1, spanY: 1 },
       },
-    } satisfies Layout,
+    } satisfies Layout<"row_1", "block_1" | "block_2" | "block_3" | "block_4" | "block_5">,
 
     /**
      * Featured row with prominent triple-wide block.
@@ -656,6 +656,6 @@ const layoutsCatalog = {
         block_4: { spanX: 1, spanY: 1 },
         block_5: { spanX: 1, spanY: 1 },
       },
-    } satisfies Layout,
+    } satisfies Layout<"row_1", "block_1" | "block_2" | "block_3" | "block_4" | "block_5">,
   },
 };

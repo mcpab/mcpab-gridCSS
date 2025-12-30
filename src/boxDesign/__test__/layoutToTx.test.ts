@@ -88,7 +88,7 @@ describe('layoutToTx', () => {
         block_1: { spanX: 2, spanY: 1 },
         block_2: undefined, // missing span
       },
-    } as Layout;
+    } as Layout<'main', 'block_1' | 'block_2'>;
 
     const diagnostic: DiagnosticEntry[] = [];
     const theme = getDefaultTheme(layout);
@@ -111,7 +111,7 @@ describe('layoutToTx', () => {
     const layout = {
       header: { block_1: { spanX: 1, spanY: 1 } },
       main: undefined,
-    } as Layout;
+    } as Layout<'header' | 'main', 'block_1'>;
 
     const diagnostic: DiagnosticEntry[] = [];
     const theme = getDefaultTheme(layout);

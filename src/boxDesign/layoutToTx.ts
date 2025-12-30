@@ -7,36 +7,22 @@
  */
 
 import { GridBox } from '../box/gridBoxTypes';
+ 
 import {
-  BlockIDSFromSectionAndLayout,
+ 
   BPSGridBoxes,
   GridBoxesAndTx,
   Layout,
   LayoutWithTx,
-  SectionsIDSFromLayout,
-  UnionBlockIDSfromLayout,
+ 
 } from '../boxLayout/boxLayoutTypes';
 import { BREAKPOINTS } from '../breakpoints';
 import { DiagnosticEntry, GRID_ERROR_CODE, makeError } from '../gridErrorShape';
 import { getDefaultTheme } from '../layoutTheme/defaultLayoutTheme';
 import { ThemeForLayout } from '../layoutTheme/layoutThemeTypes';
-import { BlocksIDs } from '../templates';
+import { BlocksIDs , SectionIDs} from '../templates';
 
-/**
- * Type alias for section IDs extracted from a layout type.
- * Simplifies type references in function signatures and improves readability.
- * 
- * @template L - The layout type to extract section IDs from
- */
-type S<L extends Layout> = SectionsIDSFromLayout<L>;
-
-/**
- * Type alias for all block IDs extracted from a layout type.
- * Represents the union of all block IDs across all sections in the layout.
- * 
- * @template L - The layout type to extract block IDs from
- */
-type B<L extends Layout> = UnionBlockIDSfromLayout<L>;
+ 
 
 /**
  * Extracts section keys that are actually present in the layout at runtime.
@@ -65,8 +51,8 @@ type B<L extends Layout> = UnionBlockIDSfromLayout<L>;
  * // Returns: ['header', 'footer'] (main is excluded)
  * ```
  */
-export function layoutSectionKeysPresent<L extends Layout>(layout: L): Array<S<L>> {
-  return Object.keys(layout).filter((k) => (layout as any)[k] != null) as Array<S<L>>;
+export function layoutSectionKeysPresent<sectionIDS extends SectionIDs, blockIDS extends BlocksIDs>(layout: Layout<sectionIDS, blockIDS>): Array<sectionIDS> {
+  return Object.keys(layout).filter((k) => (layout as any)[k] != null) as Array<sectionIDS>;
 }
 
 /**
@@ -131,14 +117,14 @@ export function isBlocksID(k: string): k is BlocksIDs {
  * // Returns: ['block_3']
  * ```
  */
-export function layoutBlockKeysPresent<L extends Layout, Sec extends S<L>>(
-  layout: L,
-  section: Sec,
-): Array<BlockIDSFromSectionAndLayout<L, Sec>> {
+export function layoutBlockKeysPresent<sectionIDS extends SectionIDs, blockIDS extends BlocksIDs>(
+  layout: Layout<sectionIDS, blockIDS>,
+  section: sectionIDS,
+): Array<blockIDS> {
   const blocks = layout[section];
   if (!blocks) return [];
 
-  return Object.keys(blocks).filter(isBlocksID) as Array<BlockIDSFromSectionAndLayout<L, Sec>>;
+  return Object.keys(blocks).filter(isBlocksID) as Array<blockIDS>;
 }
 
 /**
@@ -187,19 +173,19 @@ export function layoutBlockKeysPresent<L extends Layout, Sec extends S<L>>(
  * }
  * ```
  */
-export function layoutToTx<L extends Layout>(
-  layout: L,
+export function layoutToTx<sectionIDS extends SectionIDs, blockIDS extends BlocksIDs>(
+  layout: Layout<sectionIDS, blockIDS>,
   diagnostic: DiagnosticEntry[],
-  theme?: ThemeForLayout<L>,
-): LayoutWithTx<S<L>, B<L>> {
+  theme?: ThemeForLayout<sectionIDS, blockIDS>,
+): LayoutWithTx<sectionIDS, blockIDS> {
   //
   if (!theme) {
     theme = getDefaultTheme(layout);
   }
 
-  let layoutWithTx = {} as LayoutWithTx<S<L>, B<L>>;
+  let layoutWithTx = {} as LayoutWithTx<sectionIDS, blockIDS>;
 
-  layoutWithTx.sections = {} as Record<S<L>, GridBoxesAndTx<B<L>>>;
+  layoutWithTx.sections = {} as Record<sectionIDS, GridBoxesAndTx<blockIDS>>;
   layoutWithTx.transformations = theme.layoutTransforms(layout);
 
   const sectionsIDS = layoutSectionKeysPresent(layout);
@@ -220,9 +206,9 @@ export function layoutToTx<L extends Layout>(
       continue;
     }
 
-    layoutWithTx.sections[sectionID] = {} as GridBoxesAndTx<B<L>>;
+    layoutWithTx.sections[sectionID] = {} as GridBoxesAndTx<blockIDS>;
 
-    layoutWithTx.sections[sectionID].gridBoxes = {} as BPSGridBoxes<B<L>>;
+    layoutWithTx.sections[sectionID].gridBoxes = {} as BPSGridBoxes<blockIDS>;
     layoutWithTx.sections[sectionID].transformations = theme.sectionBoxTransforms(
       sectionID,
       layout,
@@ -230,7 +216,7 @@ export function layoutToTx<L extends Layout>(
 
     BREAKPOINTS.forEach((bp) => {
       //
-      layoutWithTx.sections[sectionID].gridBoxes[bp] = {} as Partial<Record<B<L>, GridBox>>;
+      layoutWithTx.sections[sectionID].gridBoxes[bp] = {} as Partial<Record<blockIDS, GridBox>>;
 
       for (const boxID of layoutBlockKeysPresent(layout, sectionID)) {
         const boxSpan = section[boxID];
@@ -287,7 +273,7 @@ const blockKeys = keys.filter(isBlocksID);
 const layoutExample3 = {
   header: { block_1: { spanX: 2, spanY: 1 }, block_2: { spanX: 1, spanY: 1 } },
   main: { block_3: { spanX: 4, spanY: 2 } }
-} as const satisfies Layout;
+} as const satisfies Layout<'header' | 'main', 'block_1' | 'block_2' | 'block_3'>;
 
 const headerBlocks = layoutBlockKeysPresent(layoutExample3, 'header');
 // Returns: ['block_1', 'block_2']
@@ -299,7 +285,7 @@ const mainBlocks = layoutBlockKeysPresent(layoutExample3, 'main');
 const layoutExample4 = {
   header: { block_1: { spanX: 4, spanY: 1 }, block_2: { spanX: 2, spanY: 1 } },
   main: { block_3: { spanX: 6, spanY: 4 } }
-} as const satisfies Layout;
+} as const satisfies Layout<'header' | 'main', 'block_1' | 'block_2' | 'block_3'>;
 
 const diagnostics: DiagnosticEntry[] = [];
 const layoutWithTx = layoutToTx(layoutExample4, diagnostics);

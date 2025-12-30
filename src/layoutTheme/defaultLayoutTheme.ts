@@ -8,17 +8,17 @@
 import { GridBox } from "../box/gridBoxTypes";
 import { makeGridBox } from "../box/gridBoxUtils";
 import {
-  BlockIDSFromSectionAndLayout,
+
   BoxSpan,
   BoxTransformations,
   Layout,
-  SectionsIDSFromLayout,
+
 } from "../boxLayout/boxLayoutTypes";
 import { BREAKPOINTS } from "../breakpoints";
 import { getOrigin } from "../geometry";
 import { GridOptions } from "../gridOptionsTypes";
 import { GridNodeViewOptions } from "../nodeViewOptions";
-import { NodeID } from "../templates";
+import { BlocksIDs, NodeID, SectionIDs } from "../templates";
 
 import { ThemeForLayout } from "./layoutThemeTypes";
 
@@ -264,12 +264,12 @@ export const DefaultTransformationsResponsiveColumns = {
  * const transforms = theme.sectionBoxTransforms('header', myLayout);
  * ```
  */
-export const getDefaultTheme = <L extends Layout>(layout: L) => {
+export const getDefaultTheme = <sectionIDS extends SectionIDs, blockIDS extends BlocksIDs>(layout: Layout<sectionIDS, blockIDS>) => {
   const theme = {
-    resolveBoxSpan: <S extends SectionsIDSFromLayout<L>>(
+    resolveBoxSpan: <S extends SectionIDs, B extends BlocksIDs>(
       section: S,
-      boxId: BlockIDSFromSectionAndLayout<L, S>,
-      layout: L,
+      boxId: B,
+      layout: Layout<sectionIDS, blockIDS>,
       span: BoxSpan,
       bp: (typeof BREAKPOINTS)[number]
     ) => {
@@ -283,18 +283,18 @@ export const getDefaultTheme = <L extends Layout>(layout: L) => {
       const gridBox: GridBox = makeGridBox(getOrigin(), { x: dx, y: dy });
       return gridBox;
     },
-    sectionBoxTransforms: <S extends SectionsIDSFromLayout<L>>(
+    sectionBoxTransforms: <S extends SectionIDs, B extends BlocksIDs>(
       section: S,
-      layout: L
+      layout: Layout<sectionIDS, blockIDS>
     ) => {
       return DefaultTransformationsResponsiveRows;
     },
-    layoutTransforms: (layout: L) => {
+    layoutTransforms: (layout: Layout<sectionIDS, blockIDS>) => {
       return DefaultTransformationsResponsiveColumns;
     },
     gridNodeOptions: { ...DEFAULT_GRID_NODE_VIEW_OPTIONS },
     gridOptions: { ...DEFAULT_GRID_OPTIONS },
-  } satisfies ThemeForLayout<L>;
+  } satisfies ThemeForLayout<sectionIDS, blockIDS>;
 
   return theme;
 };
@@ -316,7 +316,7 @@ const exampleLayout = {
     block_6: { spanX: 6, spanY: 1 },
     block_7: { spanX: 6, spanY: 1 }
   }
-} as const satisfies Layout;
+} as const satisfies Layout<'header' | 'main' | 'footer', 'block_1' | 'block_2' | 'block_3' | 'block_4' | 'block_5' | 'block_6' | 'block_7'>;
 
 const defaultTheme = getDefaultTheme(exampleLayout);
 
@@ -362,9 +362,9 @@ const customTheme = getDefaultTheme(exampleLayout);
 // Override specific methods while keeping defaults for others
 const enhancedTheme = {
   ...customTheme,
-  resolveBoxSpan: <S extends SectionsIDSFromLayout<typeof exampleLayout>>(
+  resolveBoxSpan:  <S extends SectionIDs,B extends BlocksIDs>(
     section: S,
-    boxId: BlockIDSFromSectionAndLayout<typeof exampleLayout, S>,
+    boxId: B,
     layout: typeof exampleLayout,
     span: BoxSpan,
     bp: (typeof BREAKPOINTS)[number]

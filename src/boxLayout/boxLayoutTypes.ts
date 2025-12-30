@@ -53,82 +53,87 @@ export type BoxSpan = { spanX: number; spanY: number };
  * };
  * ```
  */
-export type Layout = Partial<
-  Record<SectionIDs, Partial<Record<BlocksIDs, BoxSpan>>>
->;
+// export type Layout = Partial<
+//   Record<SectionIDs, Partial<Record<BlocksIDs, BoxSpan>>>
+// >;
 
-/**
- * Extracts all section IDs that are present in a specific layout.
- * Provides type-safe access to only the sections that exist in the layout.
- *
- * @template E - The layout type to extract section IDs from
- *
- * @example
- * ```typescript
- * const myLayout = {
- *   header: { block_1: { spanX: 1, spanY: 1 } },
- *   footer: { block_2: { spanX: 1, spanY: 1 } }
- * } satisfies Layout;
- *
- * type MySections = SectionsIDSFromLayout<typeof myLayout>;  // 'header' | 'footer'
- * ```
- */
-export type SectionsIDSFromLayout<E extends Layout> = Extract<
-  keyof E,
-  SectionIDs
->;
+export type Layout<
+  sectionIDs extends SectionIDs,
+  blockIDs extends BlocksIDs
+> =  Partial< Record<sectionIDs,  Partial<Record<blockIDs, BoxSpan>>>>;
 
-/**
- * Extracts all block IDs from a specific section within a layout.
- * Provides type-safe access to blocks that exist in a particular section.
- *
- * @template E - The layout type
- * @template S - The section ID within the layout
- *
- * @example
- * ```typescript
- * const layout = {
- *   header: {
- *     block_1: { spanX: 1, spanY: 1 },
- *     block_3: { spanX: 3, spanY: 1 }
- *   }
- * } satisfies Layout;
- *
- * type HeaderBlocks = BlockIDSFromSectionAndLayout<typeof layout, 'header'>;
- * // Result: 'block_1' | 'block_3'
- * ```
- */
-export type BlockIDSFromSectionAndLayout<
-  E extends Layout,
-  S extends SectionsIDSFromLayout<E>
-> = Extract<keyof NonNullable<E[S]>, BlocksIDs>;
+// /**
+//  * Extracts all section IDs that are present in a specific layout.
+//  * Provides type-safe access to only the sections that exist in the layout.
+//  *
+//  * @template E - The layout type to extract section IDs from
+//  *
+//  * @example
+//  * ```typescript
+//  * const myLayout = {
+//  *   header: { block_1: { spanX: 1, spanY: 1 } },
+//  *   footer: { block_2: { spanX: 1, spanY: 1 } }
+//  * } satisfies Layout;
+//  *
+//  * type MySections = SectionsIDSFromLayout<typeof myLayout>;  // 'header' | 'footer'
+//  * ```
+//  */
+// export type SectionsIDSFromLayout<E extends Layout> = Extract<
+//   keyof E,
+//   SectionIDs
+// >;
 
-/**
- * Creates a union type of all block IDs from all sections in a layout.
- * Useful for operations that need to reference any block across the entire layout.
- *
- * @template E - The layout type to extract all block IDs from
- *
- * @example
- * ```typescript
- * const layout = {
- *   header: { block_1: { spanX: 1, spanY: 1 }, block_2: { spanX: 2, spanY: 1 } },
- *   main: { block_3: { spanX: 1, spanY: 3 }, block_4: { spanX: 3, spanY: 3 } }
- * } satisfies Layout;
- *
- * type AllBlocks = UnionBlockIDSfromLayout<typeof layout>;
- * // Result: 'block_1' | 'block_2' | 'block_3' | 'block_4'
- * ```
- */
-export type UnionBlockIDSfromLayout<E extends Layout> = Extract<
-  {
-    [S in SectionsIDSFromLayout<E>]: Extract<
-      keyof NonNullable<E[S]>,
-      BlocksIDs
-    >;
-  }[SectionsIDSFromLayout<E>],
-  BlocksIDs
->;
+// /**
+//  * Extracts all block IDs from a specific section within a layout.
+//  * Provides type-safe access to blocks that exist in a particular section.
+//  *
+//  * @template E - The layout type
+//  * @template S - The section ID within the layout
+//  *
+//  * @example
+//  * ```typescript
+//  * const layout = {
+//  *   header: {
+//  *     block_1: { spanX: 1, spanY: 1 },
+//  *     block_3: { spanX: 3, spanY: 1 }
+//  *   }
+//  * } satisfies Layout;
+//  *
+//  * type HeaderBlocks = BlockIDSFromSectionAndLayout<typeof layout, 'header'>;
+//  * // Result: 'block_1' | 'block_3'
+//  * ```
+//  */
+// export type BlockIDSFromSectionAndLayout<
+//   E extends Layout,
+//   S extends SectionsIDSFromLayout<E>
+// > = Extract<keyof NonNullable<E[S]>, BlocksIDs>;
+
+// /**
+//  * Creates a union type of all block IDs from all sections in a layout.
+//  * Useful for operations that need to reference any block across the entire layout.
+//  *
+//  * @template E - The layout type to extract all block IDs from
+//  *
+//  * @example
+//  * ```typescript
+//  * const layout = {
+//  *   header: { block_1: { spanX: 1, spanY: 1 }, block_2: { spanX: 2, spanY: 1 } },
+//  *   main: { block_3: { spanX: 1, spanY: 3 }, block_4: { spanX: 3, spanY: 3 } }
+//  * } satisfies Layout;
+//  *
+//  * type AllBlocks = UnionBlockIDSfromLayout<typeof layout>;
+//  * // Result: 'block_1' | 'block_2' | 'block_3' | 'block_4'
+//  * ```
+//  */
+// export type UnionBlockIDSfromLayout<E extends Layout> = Extract<
+//   {
+//     [S in SectionsIDSFromLayout<E>]: Extract<
+//       keyof NonNullable<E[S]>,
+//       BlocksIDs
+//     >;
+//   }[SectionsIDSFromLayout<E>],
+//   BlocksIDs
+// >;
 
 /**
  * Box transformations configuration across breakpoints.
@@ -383,8 +388,8 @@ export type LayoutWithTx<
  * type MySections = SectionsInLayoutWithTx<MyLayout>; // 'header' | 'main'
  * ```
  */
-export type SectionsInLayoutWithTx<L extends LayoutWithTx<any, any>> =
-  keyof L["sections"] & SectionIDs;
+// export type SectionsInLayoutWithTx<L extends LayoutWithTx<any, any>> =
+//   keyof L["sections"] & SectionIDs;
 /**
  * Extracts all block IDs from a LayoutWithTx type.
  * Creates a union of all block IDs that exist across all sections in the layout.
@@ -397,9 +402,9 @@ export type SectionsInLayoutWithTx<L extends LayoutWithTx<any, any>> =
  * type MyBlocks = BlocksInLayoutWithTx<MyLayout>; // 'block_1' | 'block_2' | 'block_3'
  * ```
  */
-export type BlocksInLayoutWithTx<L extends LayoutWithTx<any, any>> = {
-  [S in keyof L["sections"]]: keyof NonNullable<L["sections"][S]> & BlocksIDs;
-}[keyof L["sections"]];
+// export type BlocksInLayoutWithTx<L extends LayoutWithTx<any, any>> = {
+//   [S in keyof L["sections"]]: keyof NonNullable<L["sections"][S]> & BlocksIDs;
+// }[keyof L["sections"]];
 
 // =============================================================================
 // Layout Processing Types
@@ -670,7 +675,7 @@ const singleBox: BoxSpan = { spanX: 1, spanY: 1 };
 const banner: BoxSpan = { spanX: 4, spanY: 1 };
 
 // Layout examples
-const layout: Layout = {
+const layout: Layout<"header" | "main" | "footer", "block_1" | "block_2"> = {
   header: {
     block_1: { spanX: 2, spanY: 1 },
     block_2: { spanX: 6, spanY: 1 },
@@ -688,9 +693,9 @@ const layout: Layout = {
 const myLayout = {
   header: { block_1: { spanX: 1, spanY: 1 } },
   footer: { block_2: { spanX: 1, spanY: 1 } },
-} satisfies Layout;
+} satisfies Layout<"header" | "footer", "block_1" | "block_2">;
 
-type MySections = SectionsIDSFromLayout<typeof myLayout>; // 'header' | 'footer'
+
 
 // BlockIDSFromSectionAndLayout examples
 const layoutForBlocks = {
@@ -698,23 +703,18 @@ const layoutForBlocks = {
     block_1: { spanX: 1, spanY: 1 },
     block_3: { spanX: 3, spanY: 1 },
   },
-} satisfies Layout;
+} satisfies Layout<"header", "block_1" | "block_3">;
 
-type HeaderBlocks = BlockIDSFromSectionAndLayout<
-  typeof layoutForBlocks,
-  "header"
->;
+ 
 // Result: 'block_1' | 'block_3'
 
 // UnionBlockIDSfromLayout examples
 const layoutForUnion = {
   header: { block_1: { spanX: 1, spanY: 1 }, block_2: { spanX: 2, spanY: 1 } },
   main: { block_3: { spanX: 1, spanY: 3 }, block_4: { spanX: 3, spanY: 3 } },
-} satisfies Layout;
+} satisfies Layout<"header" | "main", "block_1" | "block_2" | "block_3" | "block_4">;
 
-type AllBlocks = UnionBlockIDSfromLayout<typeof layoutForUnion>;
-// Result: 'block_1' | 'block_2' | 'block_3' | 'block_4'
-
+ 
 // BoxTransformations examples
 const transformations: BoxTransformations<"block_1" | "block_2"> = {
   xs: [

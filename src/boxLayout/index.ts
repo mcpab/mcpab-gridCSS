@@ -9,11 +9,7 @@ export type {
   BoxSpan,
   Layout,
   
-  // Layout utility types
-  SectionsIDSFromLayout,
-  BlockIDSFromSectionAndLayout,
-  UnionBlockIDSfromLayout,
-  
+ 
   // Transformation and grid box types
   BoxTransformations,
   BPSGridBoxes,
@@ -21,8 +17,7 @@ export type {
   
   // Complete layout types
   LayoutWithTx,
-  SectionsInLayoutWithTx,
-  BlocksInLayoutWithTx,
+ 
   
   // Layout processing types
   LayoutSectionLocal,

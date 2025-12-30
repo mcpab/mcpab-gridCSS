@@ -54,9 +54,7 @@ export type {
   BoxTransformations,
   BoxesCoordinates,
   
-  // Helper types for extracting IDs from layouts
-  SectionsInLayoutWithTx,
-  BlocksInLayoutWithTx,
+ 
 } from '../boxLayout/boxLayoutTypes';
 
 export type {

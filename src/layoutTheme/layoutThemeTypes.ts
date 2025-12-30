@@ -9,16 +9,16 @@
 
 import { GridBox } from "../box/gridBoxTypes";
 import {
-  BlockIDSFromSectionAndLayout,
+ 
   BoxSpan,
   BoxTransformations,
   Layout,
-  SectionsIDSFromLayout,
+ 
 } from "../boxLayout/boxLayoutTypes";
 import { BREAKPOINTS } from "../breakpoints";
 import { GridOptions } from "../gridOptionsTypes";
 import { GridNodeViewOptions } from "../nodeViewOptions";
-
+import { BlocksIDs, SectionIDs } from "../templates";
 /**
  * Theme configuration interface for a specific layout type.
  * Provides all the necessary functions and options to control how a layout
@@ -61,9 +61,9 @@ import { GridNodeViewOptions } from "../nodeViewOptions";
  *     gutterSize: 20
  *   }
  * };
- * ```
+ * ``` 
  */
-export type ThemeForLayout<L extends Layout> = {
+export type ThemeForLayout<sectionIDS extends SectionIDs,blockIDS extends BlocksIDs> = {
   /**
    * Resolves a box span definition into a concrete GridBox for a specific breakpoint.
    * This function is responsible for converting the abstract spanX/spanY values
@@ -95,10 +95,10 @@ export type ThemeForLayout<L extends Layout> = {
    * // Result: GridBox with calculated position and size
    * ```
    */
-  resolveBoxSpan: <S extends SectionsIDSFromLayout<L>>(
+  resolveBoxSpan: <S extends SectionIDs,B extends BlocksIDs >(
     section: S,
-    boxId: BlockIDSFromSectionAndLayout<L, S>,
-    layout: L,
+    boxId: B,
+    layout: Layout<sectionIDS, blockIDS>,
     span: BoxSpan,
     bp: (typeof BREAKPOINTS)[number]
   ) => GridBox;
@@ -125,10 +125,10 @@ export type ThemeForLayout<L extends Layout> = {
    * // Might return: { xs: [{ stackVertically: {} }], md: [{ stackHorizontally: {} }] }
    * ```
    */
-  sectionBoxTransforms: <S extends SectionsIDSFromLayout<L>>(
+  sectionBoxTransforms: <S extends SectionIDs, B extends BlocksIDs>(
     section: S,
-    layout: L
-  ) => BoxTransformations<BlockIDSFromSectionAndLayout<L, S>>;
+    layout: Layout<sectionIDS, blockIDS>
+  ) => BoxTransformations<B>;
 
   /**
    * Provides default section-level transformations for the entire layout.
@@ -154,7 +154,7 @@ export type ThemeForLayout<L extends Layout> = {
    * // }
    * ```
    */
-  layoutTransforms: (layout: L) => BoxTransformations<SectionsIDSFromLayout<L>>;
+  layoutTransforms: (layout: Layout<sectionIDS, blockIDS>) => BoxTransformations<sectionIDS>;
 
   /**
    * Configuration options for grid node rendering and visual appearance.
@@ -198,8 +198,9 @@ export type ThemeForLayout<L extends Layout> = {
 // Examples extracted from documentation comments above
 
 import { makeGridBox } from "../box/gridBoxUtils";
+ 
 
-// Example 1: Theme configuration from main interface documentation
+// Example 1: Theme configuration from mimport { BlocksIDs } from "../templates";
 const myLayout = {
   header: {
     block_1: { spanX: 2, spanY: 1 },
@@ -208,9 +209,9 @@ const myLayout = {
   main: {
     block_3: { spanX: 3, spanY: 2 },
   },
-} as const satisfies Layout;
+} as const satisfies Layout<"header" | "main", "block_1" | "block_2" | "block_3">;
 
-const myTheme: ThemeForLayout<typeof myLayout> = {
+const myTheme: ThemeForLayout<"header" | "main", "block_1" | "block_2" | "block_3"> = {
   resolveBoxSpan: (section, boxId, layout, span, bp) => {
     // Convert span to GridBox for this breakpoint
     return makeGridBox(

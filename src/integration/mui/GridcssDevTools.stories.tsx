@@ -170,7 +170,7 @@ export const DevTools: Story = () => {
   const diagnostics: DiagnosticEntry[] = [];
 
   // 1) get Layout (cloned) from catalog
-  const layout: Layout = getLayoutFromCatalog(category, layoutKey );
+  const layout = getLayoutFromCatalog(category, layoutKey );
 
   // 2) Layout -> LayoutWithTx (theme optional)
   const layoutWithTx = layoutToTx(layout, diagnostics /*, theme? */);

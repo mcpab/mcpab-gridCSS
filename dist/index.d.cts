@@ -1,5 +1,5 @@
-import { C as Coordinate, S as SectionIDs, B as BlocksIDs, L as LayoutWithTx, D as DiagnosticEntry, a as BREAKPOINTS, b as LayoutAbsolute, c as LayoutSectionBounds, d as LayoutSectionLocal, e as Layout, f as SectionsIDSFromLayout, g as BlockIDSFromSectionAndLayout, h as BoxSpan, G as GridBox, i as BoxTransformations, j as GridNodeViewOptions, k as GridOptions, U as UnionBlockIDSfromLayout, l as BoxMovesFunctions, N as NodeID, m as BPs, n as GridBoxPointPosition } from './mui-DoBuYGYl.cjs';
-export { J as AllBoxMovesProps, O as Anchor, v as BPSGridBoxes, q as BlocksInLayoutWithTx, H as BoxAlignXProps, F as BoxAlignYProps, E as BoxMoveByProps, t as BoxMoveToProps, K as BoxMovesFunctionsProps, r as BoxMovesProps, s as BoxMovesPropsObject, A as BoxPropBase, I as BoxProps, o as BoxesCoordinates, W as Breakpoint, u as CSSCoordinates, Q as CSSCoordinatesBPS, V as Cards, a5 as CoordinateTransformation, a6 as CssLength, ag as DefaultNodeRender, Z as DiagnosticOrigin, Y as DiagnosticSeverity, $ as GRID_ERROR_CODE, a9 as GapValue, w as GridBoxesAndTx, ae as GridCssMuiRenderer, af as GridCssMuiRendererProps, _ as GridErrorCode, a0 as GridIssue, P as GridNodeLayoutFlags, a8 as GridUnitValue, z as LayoutRenderingOverride, y as NodeRenderConfig, x as NodeRenderCtx, X as PartialBps, R as Rows, p as SectionsInLayoutWithTx, a7 as TrackBreadth, T as TransformationIDs, aa as cssLengthToString, ad as gapValueToString, ai as getNodeDomProps, ah as getNodeSxProps, ac as gridUnitValueToString, a1 as makeDiagnostic, a2 as makeError, a4 as makeInfo, a3 as makeWarning, ab as trackBreadthToString, M as transformationIDs } from './mui-DoBuYGYl.cjs';
+import { C as Coordinate, S as SectionIDs, B as BlocksIDs, L as LayoutWithTx, D as DiagnosticEntry, a as BREAKPOINTS, b as LayoutAbsolute, c as LayoutSectionBounds, d as LayoutSectionLocal, e as Layout, f as BoxSpan, G as GridBox, g as BoxTransformations, h as GridNodeViewOptions, i as GridOptions, j as BoxMovesFunctions, N as NodeID, k as BPs, l as GridBoxPointPosition } from './mui-Crz-PDX6.cjs';
+export { E as AllBoxMovesProps, I as Anchor, r as BPSGridBoxes, z as BoxAlignXProps, y as BoxAlignYProps, x as BoxMoveByProps, p as BoxMoveToProps, F as BoxMovesFunctionsProps, n as BoxMovesProps, o as BoxMovesPropsObject, w as BoxPropBase, A as BoxProps, m as BoxesCoordinates, O as Breakpoint, q as CSSCoordinates, K as CSSCoordinatesBPS, M as Cards, a0 as CoordinateTransformation, a1 as CssLength, ab as DefaultNodeRender, U as DiagnosticOrigin, Q as DiagnosticSeverity, W as GRID_ERROR_CODE, a4 as GapValue, s as GridBoxesAndTx, a9 as GridCssMuiRenderer, aa as GridCssMuiRendererProps, V as GridErrorCode, X as GridIssue, J as GridNodeLayoutFlags, a3 as GridUnitValue, v as LayoutRenderingOverride, u as NodeRenderConfig, t as NodeRenderCtx, P as PartialBps, R as Rows, a2 as TrackBreadth, T as TransformationIDs, a5 as cssLengthToString, a8 as gapValueToString, ad as getNodeDomProps, ac as getNodeSxProps, a7 as gridUnitValueToString, Y as makeDiagnostic, Z as makeError, $ as makeInfo, _ as makeWarning, a6 as trackBreadthToString, H as transformationIDs } from './mui-Crz-PDX6.cjs';
 import 'react/jsx-runtime';
 import '@mui/material/styles';
 import '@mui/system';
@@ -2068,7 +2068,7 @@ declare function layoutTxToSectionLocal<sectionIDs extends SectionIDs, blockIDs 
  * };
  * ```
  */
-type ThemeForLayout<L extends Layout> = {
+type ThemeForLayout<sectionIDS extends SectionIDs, blockIDS extends BlocksIDs> = {
     /**
      * Resolves a box span definition into a concrete GridBox for a specific breakpoint.
      * This function is responsible for converting the abstract spanX/spanY values
@@ -2100,7 +2100,7 @@ type ThemeForLayout<L extends Layout> = {
      * // Result: GridBox with calculated position and size
      * ```
      */
-    resolveBoxSpan: <S extends SectionsIDSFromLayout<L>>(section: S, boxId: BlockIDSFromSectionAndLayout<L, S>, layout: L, span: BoxSpan, bp: (typeof BREAKPOINTS)[number]) => GridBox;
+    resolveBoxSpan: <S extends SectionIDs, B extends BlocksIDs>(section: S, boxId: B, layout: Layout<sectionIDS, blockIDS>, span: BoxSpan, bp: (typeof BREAKPOINTS)[number]) => GridBox;
     /**
      * Provides default box-level transformations applied within each section.
      * These transformations are applied to blocks within sections unless
@@ -2123,7 +2123,7 @@ type ThemeForLayout<L extends Layout> = {
      * // Might return: { xs: [{ stackVertically: {} }], md: [{ stackHorizontally: {} }] }
      * ```
      */
-    sectionBoxTransforms: <S extends SectionsIDSFromLayout<L>>(section: S, layout: L) => BoxTransformations<BlockIDSFromSectionAndLayout<L, S>>;
+    sectionBoxTransforms: <S extends SectionIDs, B extends BlocksIDs>(section: S, layout: Layout<sectionIDS, blockIDS>) => BoxTransformations<B>;
     /**
      * Provides default section-level transformations for the entire layout.
      * These transformations control how sections are arranged and positioned
@@ -2148,7 +2148,7 @@ type ThemeForLayout<L extends Layout> = {
      * // }
      * ```
      */
-    layoutTransforms: (layout: L) => BoxTransformations<SectionsIDSFromLayout<L>>;
+    layoutTransforms: (layout: Layout<sectionIDS, blockIDS>) => BoxTransformations<sectionIDS>;
     /**
      * Configuration options for grid node rendering and visual appearance.
      * Controls how individual nodes (blocks and sections) are displayed,
@@ -2195,20 +2195,6 @@ type ThemeForLayout<L extends Layout> = {
  */
 
 /**
- * Type alias for section IDs extracted from a layout type.
- * Simplifies type references in function signatures and improves readability.
- *
- * @template L - The layout type to extract section IDs from
- */
-type S<L extends Layout> = SectionsIDSFromLayout<L>;
-/**
- * Type alias for all block IDs extracted from a layout type.
- * Represents the union of all block IDs across all sections in the layout.
- *
- * @template L - The layout type to extract block IDs from
- */
-type B<L extends Layout> = UnionBlockIDSfromLayout<L>;
-/**
  * Extracts section keys that are actually present in the layout at runtime.
  * Provides both runtime and type safety by filtering based on value existence rather than just key presence.
  * This prevents processing of undefined or null sections that might exist as keys but have no content.
@@ -2235,7 +2221,7 @@ type B<L extends Layout> = UnionBlockIDSfromLayout<L>;
  * // Returns: ['header', 'footer'] (main is excluded)
  * ```
  */
-declare function layoutSectionKeysPresent<L extends Layout>(layout: L): Array<S<L>>;
+declare function layoutSectionKeysPresent<sectionIDS extends SectionIDs, blockIDS extends BlocksIDs>(layout: Layout<sectionIDS, blockIDS>): Array<sectionIDS>;
 /**
  * Runtime type guard to validate that a string matches the BlocksIDs pattern.
  * Ensures that only properly formatted block identifiers are processed, preventing
@@ -2295,7 +2281,7 @@ declare function isBlocksID(k: string): k is BlocksIDs;
  * // Returns: ['block_3']
  * ```
  */
-declare function layoutBlockKeysPresent<L extends Layout, Sec extends S<L>>(layout: L, section: Sec): Array<BlockIDSFromSectionAndLayout<L, Sec>>;
+declare function layoutBlockKeysPresent<sectionIDS extends SectionIDs, blockIDS extends BlocksIDs>(layout: Layout<sectionIDS, blockIDS>, section: sectionIDS): Array<blockIDS>;
 /**
  * Converts an abstract layout definition into a concrete layout with transformations and grid boxes.
  * This is the main transformation function that processes layout specifications and generates
@@ -2342,7 +2328,7 @@ declare function layoutBlockKeysPresent<L extends Layout, Sec extends S<L>>(layo
  * }
  * ```
  */
-declare function layoutToTx<L extends Layout>(layout: L, diagnostic: DiagnosticEntry[], theme?: ThemeForLayout<L>): LayoutWithTx<S<L>, B<L>>;
+declare function layoutToTx<sectionIDS extends SectionIDs, blockIDS extends BlocksIDs>(layout: Layout<sectionIDS, blockIDS>, diagnostic: DiagnosticEntry[], theme?: ThemeForLayout<sectionIDS, blockIDS>): LayoutWithTx<sectionIDS, blockIDS>;
 
 /**
  * @fileoverview Default implementations of box transformation functions for CSS Grid layout system.
@@ -2737,9 +2723,9 @@ declare const DefaultTransformationsResponsiveColumns: {
  * const transforms = theme.sectionBoxTransforms('header', myLayout);
  * ```
  */
-declare const getDefaultTheme: <L extends Layout>(layout: L) => {
-    resolveBoxSpan: <S extends SectionsIDSFromLayout<L>>(section: S, boxId: BlockIDSFromSectionAndLayout<L, S>, layout: L, span: BoxSpan, bp: (typeof BREAKPOINTS)[number]) => GridBox;
-    sectionBoxTransforms: <S extends SectionsIDSFromLayout<L>>(section: S, layout: L) => {
+declare const getDefaultTheme: <sectionIDS extends SectionIDs, blockIDS extends BlocksIDs>(layout: Layout<sectionIDS, blockIDS>) => {
+    resolveBoxSpan: <S extends SectionIDs, B extends BlocksIDs>(section: S, boxId: B, layout: Layout<sectionIDS, blockIDS>, span: BoxSpan, bp: (typeof BREAKPOINTS)[number]) => GridBox;
+    sectionBoxTransforms: <S extends SectionIDs, B_1 extends BlocksIDs>(section: S, layout: Layout<sectionIDS, blockIDS>) => {
         readonly xs: [{
             readonly stackVertically: {};
         }];
@@ -2756,7 +2742,7 @@ declare const getDefaultTheme: <L extends Layout>(layout: L) => {
             readonly stackHorizontally: {};
         }];
     };
-    layoutTransforms: (layout: L) => {
+    layoutTransforms: (layout: Layout<sectionIDS, blockIDS>) => {
         readonly xs: [{
             readonly stackVertically: {};
         }];
@@ -2848,4 +2834,4 @@ declare const getDefaultTheme: <L extends Layout>(layout: L) => {
  */
 declare function typedKeys<T extends object>(obj: T): Array<keyof T>;
 
-export { BPs, BREAKPOINTS, BlockIDSFromSectionAndLayout, BlocksIDs, BoxMovesFunctions, BoxSpan, BoxTransformations, CSSLayout, type CatalogEntries, Coordinate, DEFAULT_GRID_NODE_VIEW_OPTIONS, DEFAULT_GRID_OPTIONS, DefaultBoxTransformations, DefaultTransformationsResponsiveColumns, DefaultTransformationsResponsiveRows, DiagnosticEntry, type DiagonalMatrix, GridBox, GridBoxPointPosition, GridNodeViewOptions, GridOptions, Layout, LayoutAbsolute, LayoutSectionBounds, LayoutSectionLocal, LayoutWithTx, type LayoutsCatalog, type LayoutsEntries, type Matrix2x2, NodeID, SectionIDs, SectionsIDSFromLayout, type SymmetricMatrix, type ThemeForLayout, UnionBlockIDSfromLayout, type UnitMatrix, addCoordinates, angleBetween, boundingBox, boxPosition, checkSectionsOverlap, clamp, copyCoordinate, copyGridBox, distance, dot, getCatalogCategoryKeys, getDefaultTheme, getLayoutFromCatalog, getLayoutKeysForCategory, getOrigin, invert, isBlocksID, layoutBlockKeysPresent, layoutSectionBtoAbsolute, layoutSectionKeysPresent, layoutSectionToBounds, layoutToTx, layoutTxToSectionLocal, lerp, linearCombination, makeGridBox, maxCoordinate, minCoordinate, multiply, multiplyScalar, norm, normalize, reflectOnXAxis, reflectOnYAxis, reflectionOnXAxis, reflectionOnYAxis, resolveGridNodeViewOptions, resolveGridOptions, rotateByClockWise, rotationByThetaClockWise, subtractCoordinates, transformBoxMove, typedKeys, unitMatrix, zeroMatrix };
+export { BPs, BREAKPOINTS, BlocksIDs, BoxMovesFunctions, BoxSpan, BoxTransformations, CSSLayout, type CatalogEntries, Coordinate, DEFAULT_GRID_NODE_VIEW_OPTIONS, DEFAULT_GRID_OPTIONS, DefaultBoxTransformations, DefaultTransformationsResponsiveColumns, DefaultTransformationsResponsiveRows, DiagnosticEntry, type DiagonalMatrix, GridBox, GridBoxPointPosition, GridNodeViewOptions, GridOptions, Layout, LayoutAbsolute, LayoutSectionBounds, LayoutSectionLocal, LayoutWithTx, type LayoutsCatalog, type LayoutsEntries, type Matrix2x2, NodeID, SectionIDs, type SymmetricMatrix, type ThemeForLayout, type UnitMatrix, addCoordinates, angleBetween, boundingBox, boxPosition, checkSectionsOverlap, clamp, copyCoordinate, copyGridBox, distance, dot, getCatalogCategoryKeys, getDefaultTheme, getLayoutFromCatalog, getLayoutKeysForCategory, getOrigin, invert, isBlocksID, layoutBlockKeysPresent, layoutSectionBtoAbsolute, layoutSectionKeysPresent, layoutSectionToBounds, layoutToTx, layoutTxToSectionLocal, lerp, linearCombination, makeGridBox, maxCoordinate, minCoordinate, multiply, multiplyScalar, norm, normalize, reflectOnXAxis, reflectOnYAxis, reflectionOnXAxis, reflectionOnYAxis, resolveGridNodeViewOptions, resolveGridOptions, rotateByClockWise, rotationByThetaClockWise, subtractCoordinates, transformBoxMove, typedKeys, unitMatrix, zeroMatrix };
