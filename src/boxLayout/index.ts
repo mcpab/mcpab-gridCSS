@@ -29,4 +29,5 @@ export type {
   NodeRenderCtx,
   NodeRenderConfig,
   LayoutRenderingOverride,
+  LayoutRenderOverrideFor
 } from './boxLayoutTypes';
