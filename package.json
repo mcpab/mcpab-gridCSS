@@ -24,19 +24,21 @@
   },
   "scripts": {
     "build": "tsup",
-    "clean": "rimraf dist"
+    "clean": "rimraf dist",
+    "ladle": "ladle"
   },
   "peerDependencies": {
-    "@mui/material": ">=5",
-    "react": ">=18",
-    "react-dom": ">=18",
     "@emotion/react": ">=11",
     "@emotion/styled": ">=11",
-    "@mui/system": ">=5"
+    "@mui/material": ">=5",
+    "@mui/system": ">=5",
+    "react": ">=18",
+    "react-dom": ">=18"
   },
   "devDependencies": {
     "@emotion/react": "^11.0.0",
     "@emotion/styled": "^11.0.0",
+    "@ladle/react": "^5.1.1",
     "@mui/material": "^5.0.0",
     "@mui/system": "^7.3.6",
     "@types/jest": "^30.0.0",
