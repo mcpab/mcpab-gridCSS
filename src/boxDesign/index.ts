@@ -28,6 +28,7 @@ export { checkSectionsOverlap, recordKeys, partialRecordKeys } from './CSSlayout
 export { layoutSectionBtoAbsolute } from './layoutSectionBtoAbsolute';
 export { layoutSectionToBounds } from './layoutSectionToBounds';
 export { layoutTxToSectionLocal } from './layoutTxToSectionLocal';
+export { layoutToTx } from './layoutToTx';
 
 // Box transformation engine
 export { transformBoxMove } from './transformBoxMove';

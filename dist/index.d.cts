@@ -1,5 +1,5 @@
-import { C as Coordinate, L as LayoutWithTx, S as SectionIDs, B as BlocksIDs, D as DiagnosticEntry, a as BREAKPOINTS, b as LayoutAbsolute, c as SectionsInLayoutWithTx, d as BlocksInLayoutWithTx, e as BoxMovesFunctions, N as NodeID, f as Layout, g as SectionsIDSFromLayout, h as BlockIDSFromSectionAndLayout, i as BoxSpan, G as GridBox, j as BoxTransformations, k as GridNodeViewOptions, l as GridOptions, m as GridBoxPointPosition } from './mui-Bqg7jDIb.cjs';
-export { H as AllBoxMovesProps, K as Anchor, n as BPSGridBoxes, W as BPs, z as BoxAlignXProps, y as BoxAlignYProps, x as BoxMoveByProps, w as BoxMoveToProps, I as BoxMovesFunctionsProps, F as BoxMovesProps, E as BoxMovesPropsObject, v as BoxPropBase, A as BoxProps, r as BoxesCoordinates, V as Breakpoint, O as CSSCoordinates, P as CSSCoordinatesBPS, Q as Cards, a5 as CoordinateTransformation, a6 as CssLength, ag as DefaultNodeRender, Z as DiagnosticOrigin, Y as DiagnosticSeverity, $ as GRID_ERROR_CODE, a9 as GapValue, o as GridBoxesAndTx, ae as GridCssMuiRenderer, af as GridCssMuiRendererProps, _ as GridErrorCode, a0 as GridIssue, M as GridNodeLayoutFlags, a8 as GridUnitValue, u as LayoutRenderingOverride, q as LayoutSectionBounds, p as LayoutSectionLocal, t as NodeRenderConfig, s as NodeRenderCtx, X as PartialBps, R as Rows, a7 as TrackBreadth, T as TransformationIDs, U as UnionBlockIDSfromLayout, aa as cssLengthToString, ad as gapValueToString, ai as getNodeDomProps, ah as getNodeSxProps, ac as gridUnitValueToString, a1 as makeDiagnostic, a2 as makeError, a4 as makeInfo, a3 as makeWarning, ak as partialRecordKeys, aj as recordKeys, ab as trackBreadthToString, J as transformationIDs } from './mui-Bqg7jDIb.cjs';
+import { C as Coordinate, L as LayoutWithTx, S as SectionIDs, B as BlocksIDs, D as DiagnosticEntry, a as BREAKPOINTS, b as LayoutAbsolute, c as SectionsInLayoutWithTx, d as BlocksInLayoutWithTx, e as Layout, f as SectionsIDSFromLayout, g as BlockIDSFromSectionAndLayout, h as BoxSpan, G as GridBox, i as BoxTransformations, j as GridNodeViewOptions, k as GridOptions, l as BoxMovesFunctions, N as NodeID, m as GridBoxPointPosition } from './mui-CHYnjWEU.cjs';
+export { H as AllBoxMovesProps, K as Anchor, n as BPSGridBoxes, W as BPs, z as BoxAlignXProps, y as BoxAlignYProps, x as BoxMoveByProps, w as BoxMoveToProps, I as BoxMovesFunctionsProps, F as BoxMovesProps, E as BoxMovesPropsObject, v as BoxPropBase, A as BoxProps, r as BoxesCoordinates, V as Breakpoint, O as CSSCoordinates, P as CSSCoordinatesBPS, Q as Cards, a5 as CoordinateTransformation, a6 as CssLength, ag as DefaultNodeRender, Z as DiagnosticOrigin, Y as DiagnosticSeverity, $ as GRID_ERROR_CODE, a9 as GapValue, o as GridBoxesAndTx, ae as GridCssMuiRenderer, af as GridCssMuiRendererProps, _ as GridErrorCode, a0 as GridIssue, M as GridNodeLayoutFlags, a8 as GridUnitValue, u as LayoutRenderingOverride, q as LayoutSectionBounds, p as LayoutSectionLocal, t as NodeRenderConfig, s as NodeRenderCtx, X as PartialBps, R as Rows, a7 as TrackBreadth, T as TransformationIDs, U as UnionBlockIDSfromLayout, aa as cssLengthToString, ad as gapValueToString, ai as getNodeDomProps, ah as getNodeSxProps, ac as gridUnitValueToString, a1 as makeDiagnostic, a2 as makeError, a4 as makeInfo, a3 as makeWarning, ak as partialRecordKeys, aj as recordKeys, ab as trackBreadthToString, J as transformationIDs } from './mui-CHYnjWEU.cjs';
 import 'react/jsx-runtime';
 import '@mui/material/styles';
 import '@mui/system';
@@ -1882,62 +1882,6 @@ type CSSLayoutProps<L extends LayoutWithTx<SectionIDs, BlocksIDs>> = {
 declare function CSSLayout<L extends LayoutWithTx<any, any>>({ layoutWithTx, diagnostics, gridDiagnostic, }: CSSLayoutProps<L>): LayoutAbsolute<SectionsInLayoutWithTx<L>, BlocksInLayoutWithTx<L>>;
 
 /**
- * @fileoverview Default implementations of box transformation functions for CSS Grid layout system.
- * Provides concrete implementations for all transformation operations defined in boxTransformationsProps.
- * These functions modify box positions and dimensions in a sparse map object structure.
- * @module DefaultBoxTransformations
- */
-
-/**
- * Factory function that creates the default transformation registry.
- * Returns a complete implementation of all box transformation functions
- * defined in the BoxMovesFunctions interface. This serves as the standard
- * implementation of the transformation system.
- *
- * The registry provides implementations for:
- * - `moveTo`: Move box to specific position or another box's anchor
- * - `moveBy`: Move box by relative amount
- * - `alignToY`: Align box vertically while preserving X position
- * - `alignToX`: Align box horizontally while preserving Y position
- * - `alignAllToX`: Align all boxes to same X coordinate
- * - `alignAllToY`: Align all boxes to same Y coordinate
- * - `stackHorizontally`: Arrange boxes in horizontal sequence
- * - `stackVertically`: Arrange boxes in vertical sequence
- *
- * @returns Complete registry of transformation functions
- *
- * @example
- * ```typescript
- * // Get the default transformation registry
- * const transformations = DefaultBoxTransformations();
- *
- * // Use a specific transformation
- * const result = transformations.moveTo({
- *   boxprops: {
- *     from: { boxId: 'block_1', anchor: 'center' },
- *     to: { x: 100, y: 200 }
- *   },
- *   boxes: myBoxes,
- *   diagnostics: []
- * });
- *
- * // Apply multiple transformations
- * transformations.stackHorizontally({
- *   boxprops: { gap: 20 },
- *   boxes: myBoxes,
- *   diagnostics: []
- * });
- *
- * transformations.alignAllToY({
- *   boxprops: { to: 100, anchor: 'center' },
- *   boxes: myBoxes,
- *   diagnostics: []
- * });
- * ```
- */
-declare const DefaultBoxTransformations: () => BoxMovesFunctions<NodeID>;
-
-/**
  * @fileoverview Layout theme type definitions for CSS Grid layout system.
  * Defines theming interfaces that provide styling and transformation behaviors for layouts.
  * Themes control how layouts are rendered, transformed, and visually presented.
@@ -2108,6 +2052,62 @@ type ThemeForLayout<L extends Layout> = {
      */
     gridOptions: GridOptions;
 };
+
+/**
+ * @fileoverview Default implementations of box transformation functions for CSS Grid layout system.
+ * Provides concrete implementations for all transformation operations defined in boxTransformationsProps.
+ * These functions modify box positions and dimensions in a sparse map object structure.
+ * @module DefaultBoxTransformations
+ */
+
+/**
+ * Factory function that creates the default transformation registry.
+ * Returns a complete implementation of all box transformation functions
+ * defined in the BoxMovesFunctions interface. This serves as the standard
+ * implementation of the transformation system.
+ *
+ * The registry provides implementations for:
+ * - `moveTo`: Move box to specific position or another box's anchor
+ * - `moveBy`: Move box by relative amount
+ * - `alignToY`: Align box vertically while preserving X position
+ * - `alignToX`: Align box horizontally while preserving Y position
+ * - `alignAllToX`: Align all boxes to same X coordinate
+ * - `alignAllToY`: Align all boxes to same Y coordinate
+ * - `stackHorizontally`: Arrange boxes in horizontal sequence
+ * - `stackVertically`: Arrange boxes in vertical sequence
+ *
+ * @returns Complete registry of transformation functions
+ *
+ * @example
+ * ```typescript
+ * // Get the default transformation registry
+ * const transformations = DefaultBoxTransformations();
+ *
+ * // Use a specific transformation
+ * const result = transformations.moveTo({
+ *   boxprops: {
+ *     from: { boxId: 'block_1', anchor: 'center' },
+ *     to: { x: 100, y: 200 }
+ *   },
+ *   boxes: myBoxes,
+ *   diagnostics: []
+ * });
+ *
+ * // Apply multiple transformations
+ * transformations.stackHorizontally({
+ *   boxprops: { gap: 20 },
+ *   boxes: myBoxes,
+ *   diagnostics: []
+ * });
+ *
+ * transformations.alignAllToY({
+ *   boxprops: { to: 100, anchor: 'center' },
+ *   boxes: myBoxes,
+ *   diagnostics: []
+ * });
+ * ```
+ */
+declare const DefaultBoxTransformations: () => BoxMovesFunctions<NodeID>;
 
 /**
  * Creates a normalized {@link GridBox} from an origin and a diagonal vector.
