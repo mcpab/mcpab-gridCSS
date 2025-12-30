@@ -20,10 +20,10 @@
 
 // Layout type definitions for different transformation stages
 import {
-  BlocksInLayoutWithTx,     // Block IDs extracted from layout with transformations
+ 
   LayoutAbsolute,           // Final layout with absolute CSS coordinates
   LayoutWithTx,             // Input layout with transformation configurations
-  SectionsInLayoutWithTx,   // Section IDs extracted from layout with transformations
+ 
 } from "../boxLayout/boxLayoutTypes";
 
 // Responsive breakpoint definitions
@@ -70,7 +70,7 @@ type GridDiagnostic = {
  * @property diagnostics - Array to collect errors and warnings
  * @property gridDiagnostic - Optional validation configuration
  */
-type CSSLayoutProps<L extends LayoutWithTx<SectionIDs, BlocksIDs>> = {
+type CSSLayoutProps<sectionIDs extends SectionIDs, blockIDs extends BlocksIDs,L extends LayoutWithTx<sectionIDs, blockIDs>> = {
   layoutWithTx: L;
   diagnostics: DiagnosticEntry[];
   gridDiagnostic?: GridDiagnostic;
@@ -93,13 +93,13 @@ type CSSLayoutProps<L extends LayoutWithTx<SectionIDs, BlocksIDs>> = {
  * @param props - Configuration object containing layout, diagnostics, and validation options
  * @returns Layout with absolute CSS Grid coordinates for all sections and boxes
  */
-export function CSSLayout<L extends LayoutWithTx<any, any>>({
+export function CSSLayout<sectionIDs extends SectionIDs, blockIDs extends BlocksIDs, L extends LayoutWithTx<sectionIDs, blockIDs>>({
   layoutWithTx,
   diagnostics,
   gridDiagnostic = { overlapPolicy: "allow", breakpoints: BREAKPOINTS },
-}: CSSLayoutProps<L>): LayoutAbsolute<
-  SectionsInLayoutWithTx<L>,
-  BlocksInLayoutWithTx<L>
+}: CSSLayoutProps<sectionIDs, blockIDs, L>): LayoutAbsolute<
+ sectionIDs,
+  blockIDs
 > {
   // Step 1: Apply transformations and convert to local section coordinates
   // This resolves all transformation rules and positions boxes within sections
@@ -120,7 +120,7 @@ export function CSSLayout<L extends LayoutWithTx<any, any>>({
   // Step 4: Optional overlap detection and validation
   // Check for overlapping boxes if overlap policy is not "allow"
   if (overlapPolicy !== "allow") {
-    checkSectionsOverlap<SectionsInLayoutWithTx<L>, BlocksInLayoutWithTx<L>>(
+    checkSectionsOverlap<sectionIDs, blockIDs>(
       layoutSecAbs,
       diagnostics,
       overlapPolicy,
