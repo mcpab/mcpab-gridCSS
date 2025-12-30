@@ -1740,26 +1740,6 @@ type GridCssMuiRendererProps<sectionID extends SectionIDs, blockID extends Block
     gridOptionsOverride?: Partial<GridOptions>;
 };
 /**
- * Extract keys from a Partial Record type
- *
- * Type-safe utility for getting object keys when some properties may be undefined.
- * Used for iterating over box collections where some boxes may not exist.
- *
- * @param obj - Partial record with potentially missing keys
- * @returns Array of present keys with correct typing
- */
-declare function partialRecordKeys<K extends string, V>(obj: Partial<Record<K, V>>): K[];
-/**
- * Extract keys from a complete Record type
- *
- * Type-safe utility for getting object keys when all properties are present.
- * Used for iterating over section collections.
- *
- * @param obj - Record with all keys present
- * @returns Array of keys with correct typing
- */
-declare function recordKeys<K extends string, V>(obj: Record<K, V>): K[];
-/**
  * Main Grid CSS MUI Renderer Component
  *
  * Renders a complete CSS Grid layout using Material-UI components. This is the primary
@@ -1858,4 +1838,4 @@ type DefaultNodeRenderProps<sectionIDs extends SectionIDs, blockIDs extends Bloc
  */
 declare function DefaultNodeRender<sectionIDs extends SectionIDs, blockIDs extends BlocksIDs>({ section, boxId, cssCoordinateBPs, content, }: DefaultNodeRenderProps<sectionIDs, blockIDs>): react_jsx_runtime.JSX.Element;
 
-export { GRID_ERROR_CODE as $, type BoxProps as A, type BlocksIDs as B, type Coordinate as C, type DiagnosticEntry as D, type BoxMovesPropsObject as E, type BoxMovesProps as F, type GridBox as G, type AllBoxMovesProps as H, type BoxMovesFunctionsProps as I, transformationIDs as J, type Anchor as K, type LayoutWithTx as L, type GridNodeLayoutFlags as M, type NodeID as N, type CSSCoordinates as O, type CSSCoordinatesBPS as P, type Cards as Q, type Rows as R, type SectionIDs as S, type TransformationIDs as T, type UnionBlockIDSfromLayout as U, type Breakpoint as V, type BPs as W, type PartialBps as X, type DiagnosticSeverity as Y, type DiagnosticOrigin as Z, type GridErrorCode as _, BREAKPOINTS as a, type GridIssue as a0, makeDiagnostic as a1, makeError as a2, makeWarning as a3, makeInfo as a4, type CoordinateTransformation as a5, type CssLength as a6, type TrackBreadth as a7, type GridUnitValue as a8, type GapValue as a9, cssLengthToString as aa, trackBreadthToString as ab, gridUnitValueToString as ac, gapValueToString as ad, GridCssMuiRenderer as ae, type GridCssMuiRendererProps as af, DefaultNodeRender as ag, getNodeSxProps as ah, getNodeDomProps as ai, recordKeys as aj, partialRecordKeys as ak, type LayoutAbsolute as b, type SectionsInLayoutWithTx as c, type BlocksInLayoutWithTx as d, type Layout as e, type SectionsIDSFromLayout as f, type BlockIDSFromSectionAndLayout as g, type BoxSpan as h, type BoxTransformations as i, type GridNodeViewOptions as j, type GridOptions as k, type BoxMovesFunctions as l, type GridBoxPointPosition as m, type BPSGridBoxes as n, type GridBoxesAndTx as o, type LayoutSectionLocal as p, type LayoutSectionBounds as q, type BoxesCoordinates as r, type NodeRenderCtx as s, type NodeRenderConfig as t, type LayoutRenderingOverride as u, type BoxPropBase as v, type BoxMoveToProps as w, type BoxMoveByProps as x, type BoxAlignYProps as y, type BoxAlignXProps as z };
+export { GRID_ERROR_CODE as $, type BoxPropBase as A, type BlocksIDs as B, type Coordinate as C, type DiagnosticEntry as D, type BoxMoveByProps as E, type BoxAlignYProps as F, type GridBox as G, type BoxAlignXProps as H, type BoxProps as I, type AllBoxMovesProps as J, type BoxMovesFunctionsProps as K, type LayoutWithTx as L, transformationIDs as M, type NodeID as N, type Anchor as O, type GridNodeLayoutFlags as P, type CSSCoordinatesBPS as Q, type Rows as R, type SectionIDs as S, type TransformationIDs as T, type UnionBlockIDSfromLayout as U, type Cards as V, type Breakpoint as W, type PartialBps as X, type DiagnosticSeverity as Y, type DiagnosticOrigin as Z, type GridErrorCode as _, BREAKPOINTS as a, type GridIssue as a0, makeDiagnostic as a1, makeError as a2, makeWarning as a3, makeInfo as a4, type CoordinateTransformation as a5, type CssLength as a6, type TrackBreadth as a7, type GridUnitValue as a8, type GapValue as a9, cssLengthToString as aa, trackBreadthToString as ab, gridUnitValueToString as ac, gapValueToString as ad, GridCssMuiRenderer as ae, type GridCssMuiRendererProps as af, DefaultNodeRender as ag, getNodeSxProps as ah, getNodeDomProps as ai, type LayoutAbsolute as b, type SectionsInLayoutWithTx as c, type BlocksInLayoutWithTx as d, type LayoutSectionBounds as e, type LayoutSectionLocal as f, type Layout as g, type SectionsIDSFromLayout as h, type BlockIDSFromSectionAndLayout as i, type BoxSpan as j, type BoxTransformations as k, type GridNodeViewOptions as l, type GridOptions as m, type BoxMovesFunctions as n, type BPs as o, type GridBoxPointPosition as p, type BoxesCoordinates as q, type BoxMovesProps as r, type BoxMovesPropsObject as s, type BoxMoveToProps as t, type CSSCoordinates as u, type BPSGridBoxes as v, type GridBoxesAndTx as w, type NodeRenderCtx as x, type NodeRenderConfig as y, type LayoutRenderingOverride as z };

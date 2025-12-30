@@ -12,10 +12,8 @@ import {
   makeError,
   makeInfo,
   makeWarning,
-  partialRecordKeys,
-  recordKeys,
   trackBreadthToString
-} from "./chunk-HN626CNF.js";
+} from "./chunk-BIJFHEWD.js";
 
 // src/box/boxPositions.ts
 var boxPosition = (box, boxAnchor) => {
@@ -243,7 +241,7 @@ var copyGridBox = (box) => {
 };
 
 // src/boxTransformations/defaultBoxTransformations.ts
-function getCoordinateBoxTo(to2, boxes2, diagnostics2, source) {
+function getCoordinateBoxTo(to2, boxes2, diagnostics3, source) {
   let toPoint;
   if (typeof to2 === "number") {
     toPoint = { x: to2, y: to2 };
@@ -252,7 +250,7 @@ function getCoordinateBoxTo(to2, boxes2, diagnostics2, source) {
   } else if ("boxId" in to2 && "anchor" in to2) {
     const boxTo = boxes2[to2.boxId];
     if (!boxTo) {
-      diagnostics2.push(
+      diagnostics3.push(
         makeError(
           source,
           GRID_ERROR_CODE.UNKNOWN_NODE_ID,
@@ -263,7 +261,7 @@ function getCoordinateBoxTo(to2, boxes2, diagnostics2, source) {
     }
     const anchorCoord = boxPosition(boxTo, to2.anchor);
     if (!anchorCoord) {
-      diagnostics2.push(
+      diagnostics3.push(
         makeError(
           source,
           GRID_ERROR_CODE.UNKNOWN_ANCHOR,
@@ -274,7 +272,7 @@ function getCoordinateBoxTo(to2, boxes2, diagnostics2, source) {
     }
     toPoint = anchorCoord;
   } else {
-    diagnostics2.push(
+    diagnostics3.push(
       makeError(
         source,
         GRID_ERROR_CODE.INVALID_TRANSFORMATION_PARAMS,
@@ -285,10 +283,10 @@ function getCoordinateBoxTo(to2, boxes2, diagnostics2, source) {
   }
   return toPoint;
 }
-function validateBoxFrom(boxId, boxes2, diagnostics2, source) {
+function validateBoxFrom(boxId, boxes2, diagnostics3, source) {
   const boxFrom = boxes2[boxId];
   if (!boxFrom) {
-    diagnostics2.push(
+    diagnostics3.push(
       makeError(
         source,
         GRID_ERROR_CODE.UNKNOWN_NODE_ID,
@@ -300,19 +298,19 @@ function validateBoxFrom(boxId, boxes2, diagnostics2, source) {
   return boxFrom;
 }
 var moveTo = (props) => {
-  const { boxprops, boxes: boxes2, diagnostics: diagnostics2 } = props;
+  const { boxprops, boxes: boxes2, diagnostics: diagnostics3 } = props;
   const { from: from2, to: to2, gap } = boxprops;
-  const boxFrom = validateBoxFrom(from2.boxId, boxes2, diagnostics2, "moveTo");
+  const boxFrom = validateBoxFrom(from2.boxId, boxes2, diagnostics3, "moveTo");
   if (!boxFrom) {
     return void 0;
   }
-  let toPoint = getCoordinateBoxTo(to2, boxes2, diagnostics2, "moveTo");
+  let toPoint = getCoordinateBoxTo(to2, boxes2, diagnostics3, "moveTo");
   if (!toPoint) {
     return void 0;
   }
   const fromAnchor = boxPosition(boxFrom, from2.anchor);
   if (!fromAnchor) {
-    diagnostics2.push(
+    diagnostics3.push(
       makeError(
         "moveTo",
         GRID_ERROR_CODE.UNKNOWN_ANCHOR,
@@ -331,9 +329,9 @@ var moveTo = (props) => {
   return newBox;
 };
 var moveBy = (props) => {
-  const { boxprops, boxes: boxes2, diagnostics: diagnostics2 } = props;
+  const { boxprops, boxes: boxes2, diagnostics: diagnostics3 } = props;
   const { from: from2, by, gap } = boxprops;
-  const boxFrom = validateBoxFrom(from2.boxId, boxes2, diagnostics2, "moveBy");
+  const boxFrom = validateBoxFrom(from2.boxId, boxes2, diagnostics3, "moveBy");
   if (!boxFrom) {
     return void 0;
   }
@@ -343,7 +341,7 @@ var moveBy = (props) => {
   } else if ("x" in by && "y" in by) {
     delta = by;
   } else {
-    diagnostics2.push(
+    diagnostics3.push(
       makeError(
         "moveBy",
         GRID_ERROR_CODE.INVALID_TRANSFORMATION_PARAMS,
@@ -361,19 +359,19 @@ var moveBy = (props) => {
   return newBox;
 };
 var alignToY = (props) => {
-  const { boxprops, boxes: boxes2, diagnostics: diagnostics2 } = props;
+  const { boxprops, boxes: boxes2, diagnostics: diagnostics3 } = props;
   const { from: from2, to: to2, gap } = boxprops;
-  const boxFrom = validateBoxFrom(from2.boxId, boxes2, diagnostics2, "alignToY");
+  const boxFrom = validateBoxFrom(from2.boxId, boxes2, diagnostics3, "alignToY");
   if (!boxFrom) {
     return void 0;
   }
-  const toPoint = getCoordinateBoxTo(to2, boxes2, diagnostics2, "alignToY");
+  const toPoint = getCoordinateBoxTo(to2, boxes2, diagnostics3, "alignToY");
   if (!toPoint) {
     return void 0;
   }
   const fromAnchor = boxPosition(boxFrom, from2.anchor);
   if (!fromAnchor) {
-    diagnostics2.push(
+    diagnostics3.push(
       makeError(
         "alignToY",
         GRID_ERROR_CODE.UNKNOWN_ANCHOR,
@@ -393,19 +391,19 @@ var alignToY = (props) => {
   return newBox;
 };
 var alignToX = (props) => {
-  const { boxprops, boxes: boxes2, diagnostics: diagnostics2 } = props;
+  const { boxprops, boxes: boxes2, diagnostics: diagnostics3 } = props;
   const { from: from2, to: to2, gap } = boxprops;
-  const boxFrom = validateBoxFrom(from2.boxId, boxes2, diagnostics2, "alignToX");
+  const boxFrom = validateBoxFrom(from2.boxId, boxes2, diagnostics3, "alignToX");
   if (!boxFrom) {
     return void 0;
   }
-  const toPoint = getCoordinateBoxTo(to2, boxes2, diagnostics2, "alignToX");
+  const toPoint = getCoordinateBoxTo(to2, boxes2, diagnostics3, "alignToX");
   if (!toPoint) {
     return void 0;
   }
   const fromAnchor = boxPosition(boxFrom, from2.anchor);
   if (!fromAnchor) {
-    diagnostics2.push(
+    diagnostics3.push(
       makeError(
         "alignToX",
         GRID_ERROR_CODE.UNKNOWN_ANCHOR,
@@ -425,7 +423,7 @@ var alignToX = (props) => {
   return newBox;
 };
 var alignAllToX = (props) => {
-  const { boxprops, boxes: boxes2, diagnostics: diagnostics2 } = props;
+  const { boxprops, boxes: boxes2, diagnostics: diagnostics3 } = props;
   const { to: to2, anchor } = boxprops;
   let newBoxes = {};
   for (const boxId in boxes2) {
@@ -439,7 +437,7 @@ var alignAllToX = (props) => {
         to: to2
       },
       boxes: boxes2,
-      diagnostics: diagnostics2
+      diagnostics: diagnostics3
     });
     if (newBox) {
       newBoxes[id] = newBox;
@@ -447,7 +445,7 @@ var alignAllToX = (props) => {
     }
   }
   if (Object.keys(newBoxes).length === 0) {
-    diagnostics2.push(
+    diagnostics3.push(
       makeError(
         "alignAllToX",
         GRID_ERROR_CODE.NO_BOXES_PROCESSED,
@@ -459,7 +457,7 @@ var alignAllToX = (props) => {
   return newBoxes;
 };
 var alignAllToY = (props) => {
-  const { boxprops, boxes: boxes2, diagnostics: diagnostics2 } = props;
+  const { boxprops, boxes: boxes2, diagnostics: diagnostics3 } = props;
   const { to: to2, anchor } = boxprops;
   let newBoxes = {};
   for (const boxId in boxes2) {
@@ -473,7 +471,7 @@ var alignAllToY = (props) => {
         to: to2
       },
       boxes: boxes2,
-      diagnostics: diagnostics2
+      diagnostics: diagnostics3
     });
     if (newBox) {
       newBoxes[id] = newBox;
@@ -481,7 +479,7 @@ var alignAllToY = (props) => {
     }
   }
   if (Object.keys(newBoxes).length === 0) {
-    diagnostics2.push(
+    diagnostics3.push(
       makeError(
         "alignAllToY",
         GRID_ERROR_CODE.NO_BOXES_PROCESSED,
@@ -493,7 +491,7 @@ var alignAllToY = (props) => {
   return newBoxes;
 };
 var stackHorizontally = (props) => {
-  const { boxprops, boxes: boxes2, diagnostics: diagnostics2 } = props;
+  const { boxprops, boxes: boxes2, diagnostics: diagnostics3 } = props;
   const { gap } = boxprops;
   let newBoxes = {};
   let x0 = 0;
@@ -508,7 +506,7 @@ var stackHorizontally = (props) => {
         to: x0
       },
       boxes: boxes2,
-      diagnostics: diagnostics2
+      diagnostics: diagnostics3
     });
     if (newBox) {
       newBoxes[id] = newBox;
@@ -517,7 +515,7 @@ var stackHorizontally = (props) => {
     }
   }
   if (Object.keys(newBoxes).length === 0) {
-    diagnostics2.push(
+    diagnostics3.push(
       makeError(
         "stackHorizontally",
         GRID_ERROR_CODE.NO_BOXES_PROCESSED,
@@ -529,7 +527,7 @@ var stackHorizontally = (props) => {
   return newBoxes;
 };
 var stackVertically = (props) => {
-  const { boxprops, boxes: boxes2, diagnostics: diagnostics2 } = props;
+  const { boxprops, boxes: boxes2, diagnostics: diagnostics3 } = props;
   const { gap } = boxprops;
   let newBoxes = {};
   let y0 = 0;
@@ -544,7 +542,7 @@ var stackVertically = (props) => {
         to: y0
       },
       boxes: boxes2,
-      diagnostics: diagnostics2
+      diagnostics: diagnostics3
     });
     if (newBox) {
       newBoxes[id] = newBox;
@@ -553,7 +551,7 @@ var stackVertically = (props) => {
     }
   }
   if (Object.keys(newBoxes).length === 0) {
-    diagnostics2.push(
+    diagnostics3.push(
       makeError(
         "stackVertically",
         GRID_ERROR_CODE.NO_BOXES_PROCESSED,
@@ -733,7 +731,7 @@ var transformationIDs = [
 ];
 
 // src/boxDesign/transformBoxMove.ts
-var transformBoxMove = (transformationFactory, boxTransformations, gridBoxes, diagnostics2) => {
+var transformBoxMove = (transformationFactory, boxTransformations, gridBoxes, diagnostics3) => {
   BREAKPOINTS.forEach((bp) => {
     if (!(bp in boxTransformations)) {
       return;
@@ -746,7 +744,7 @@ var transformBoxMove = (transformationFactory, boxTransformations, gridBoxes, di
       const tr = tx;
       const txID = Object.keys(tr)[0];
       if (!transformationIDs.includes(txID)) {
-        diagnostics2.push(makeError(
+        diagnostics3.push(makeError(
           "transformBoxMove",
           GRID_ERROR_CODE.UNKNOWN_TRANSFORMATION,
           `Unknown transformation key: ${txID}`
@@ -760,10 +758,10 @@ var transformBoxMove = (transformationFactory, boxTransformations, gridBoxes, di
             let result2 = transformationFactory.moveTo({
               boxprops: propsMove,
               boxes: gridBoxes[bp],
-              diagnostics: diagnostics2
+              diagnostics: diagnostics3
             });
             if (!result2) {
-              diagnostics2.push(makeError(
+              diagnostics3.push(makeError(
                 "transformBoxMove",
                 GRID_ERROR_CODE.CONSTRAINT_VIOLATION,
                 `moveTo transformation failed for box ${JSON.stringify(propsMove)}`
@@ -777,10 +775,10 @@ var transformBoxMove = (transformationFactory, boxTransformations, gridBoxes, di
             let result2 = transformationFactory.moveBy({
               boxprops: propsMoveBy,
               boxes: gridBoxes[bp],
-              diagnostics: diagnostics2
+              diagnostics: diagnostics3
             });
             if (!result2) {
-              diagnostics2.push(makeError(
+              diagnostics3.push(makeError(
                 "transformBoxMove",
                 GRID_ERROR_CODE.CONSTRAINT_VIOLATION,
                 `moveBy transformation failed for box ${JSON.stringify(propsMoveBy)}`
@@ -794,10 +792,10 @@ var transformBoxMove = (transformationFactory, boxTransformations, gridBoxes, di
             let result2 = transformationFactory.alignToY({
               boxprops: propsAlignY,
               boxes: gridBoxes[bp],
-              diagnostics: diagnostics2
+              diagnostics: diagnostics3
             });
             if (!result2) {
-              diagnostics2.push(makeError(
+              diagnostics3.push(makeError(
                 "transformBoxMove",
                 GRID_ERROR_CODE.CONSTRAINT_VIOLATION,
                 `alignToY transformation failed for box ${JSON.stringify(propsAlignY)}`
@@ -811,10 +809,10 @@ var transformBoxMove = (transformationFactory, boxTransformations, gridBoxes, di
             let result2 = transformationFactory.alignToX({
               boxprops: propsAlignX,
               boxes: gridBoxes[bp],
-              diagnostics: diagnostics2
+              diagnostics: diagnostics3
             });
             if (!result2) {
-              diagnostics2.push(makeError(
+              diagnostics3.push(makeError(
                 "transformBoxMove",
                 GRID_ERROR_CODE.CONSTRAINT_VIOLATION,
                 `alignToX transformation failed for box ${JSON.stringify(propsAlignX)}`
@@ -828,10 +826,10 @@ var transformBoxMove = (transformationFactory, boxTransformations, gridBoxes, di
             let result2 = transformationFactory.alignAllToY({
               boxprops: propsAlignAllY,
               boxes: gridBoxes[bp],
-              diagnostics: diagnostics2
+              diagnostics: diagnostics3
             });
             if (!result2) {
-              diagnostics2.push(makeError(
+              diagnostics3.push(makeError(
                 "transformBoxMove",
                 GRID_ERROR_CODE.CONSTRAINT_VIOLATION,
                 `alignAllToY transformation failed for box ${JSON.stringify(propsAlignAllY)}`
@@ -845,10 +843,10 @@ var transformBoxMove = (transformationFactory, boxTransformations, gridBoxes, di
             let result2 = transformationFactory.alignAllToX({
               boxprops: propsAlignAllX,
               boxes: gridBoxes[bp],
-              diagnostics: diagnostics2
+              diagnostics: diagnostics3
             });
             if (!result2) {
-              diagnostics2.push(makeError(
+              diagnostics3.push(makeError(
                 "transformBoxMove",
                 GRID_ERROR_CODE.CONSTRAINT_VIOLATION,
                 `alignAllToX transformation failed for box ${JSON.stringify(propsAlignAllX)}`
@@ -862,10 +860,10 @@ var transformBoxMove = (transformationFactory, boxTransformations, gridBoxes, di
             let result2 = transformationFactory.stackVertically({
               boxprops: propsStackV,
               boxes: gridBoxes[bp],
-              diagnostics: diagnostics2
+              diagnostics: diagnostics3
             });
             if (!result2) {
-              diagnostics2.push(makeError(
+              diagnostics3.push(makeError(
                 "transformBoxMove",
                 GRID_ERROR_CODE.CONSTRAINT_VIOLATION,
                 `stackVertically transformation failed for box ${JSON.stringify(propsStackV)}`
@@ -879,10 +877,10 @@ var transformBoxMove = (transformationFactory, boxTransformations, gridBoxes, di
             let result2 = transformationFactory.stackHorizontally({
               boxprops: propsStackH,
               boxes: gridBoxes[bp],
-              diagnostics: diagnostics2
+              diagnostics: diagnostics3
             });
             if (!result2) {
-              diagnostics2.push(makeError(
+              diagnostics3.push(makeError(
                 "transformBoxMove",
                 GRID_ERROR_CODE.CONSTRAINT_VIOLATION,
                 `stackHorizontally transformation failed for box ${JSON.stringify(propsStackH)}`
@@ -891,7 +889,7 @@ var transformBoxMove = (transformationFactory, boxTransformations, gridBoxes, di
           }
           break;
         default:
-          diagnostics2.push(makeError(
+          diagnostics3.push(makeError(
             "transformBoxMove",
             GRID_ERROR_CODE.UNKNOWN_TRANSFORMATION,
             `Unhandled transformation key: ${txID}`
@@ -909,7 +907,7 @@ function layoutSectionKeys(sections) {
     (k) => sections[k] != null
   );
 }
-function layoutSectionBtoAbsolute(layoutSectionBounds, diagnostics2) {
+function layoutSectionBtoAbsolute(layoutSectionBounds, diagnostics3) {
   let LayoutAbsolute = {};
   let defaultBoxTransformations = DefaultBoxTransformations();
   let transformations2 = layoutSectionBounds.transformations ? layoutSectionBounds.transformations : {};
@@ -940,7 +938,7 @@ function layoutSectionBtoAbsolute(layoutSectionBounds, diagnostics2) {
     defaultBoxTransformations,
     transformations2,
     layoutSectionBounds.boundingBoxes,
-    diagnostics2
+    diagnostics3
   );
   BREAKPOINTS.forEach((bp) => {
     const localGridBoxesPerBp = layoutSectionBounds.boundingBoxes[bp];
@@ -1017,7 +1015,7 @@ function layoutSectionBtoAbsolute(layoutSectionBounds, diagnostics2) {
   }
   BREAKPOINTS.forEach((bp) => {
     if (minCoordinate2[bp].x === Infinity && minCoordinate2[bp].y === Infinity) {
-      diagnostics2.push(
+      diagnostics3.push(
         makeWarning(
           "layoutSectionBtoAbsolute",
           GRID_ERROR_CODE.EMPTY_GRID,
@@ -1041,7 +1039,7 @@ function layoutSectionBtoAbsolute(layoutSectionBounds, diagnostics2) {
     }
     LayoutAbsolute.gridDimensions.columns[bp] += dx;
     LayoutAbsolute.gridDimensions.rows[bp] += dy;
-    diagnostics2.push(
+    diagnostics3.push(
       makeWarning(
         "layoutSectionBtoAbsolute",
         GRID_ERROR_CODE.GRID_NORMALIZED_TO_POSITIVE_LINES,
@@ -1084,7 +1082,7 @@ function layoutSectionKeys2(sections) {
     (k) => sections[k] != null
   );
 }
-function layoutSectionToBounds(layoutSectionLocal, diagnostics2) {
+function layoutSectionToBounds(layoutSectionLocal, diagnostics3) {
   let layoutSectionBounds = {};
   layoutSectionBounds.sections = layoutSectionLocal.sections;
   layoutSectionBounds.boundingBoxes = {
@@ -1118,7 +1116,7 @@ function layoutSectionToBounds(layoutSectionLocal, diagnostics2) {
         foundAnyBox = true;
       }
       if (!foundAnyBox) {
-        diagnostics2.push(
+        diagnostics3.push(
           makeError(
             "layoutSectionToBounds",
             GRID_ERROR_CODE.MISSING_BOX,
@@ -1155,7 +1153,7 @@ function layoutTxSectionKeys(sections) {
     (k) => sections[k] != null
   );
 }
-function layoutTxToSectionLocal(layoutTx, diagnostics2) {
+function layoutTxToSectionLocal(layoutTx, diagnostics3) {
   const defaultBoxTransformations = DefaultBoxTransformations();
   let layoutSectionLocal = {
     sections: {},
@@ -1178,7 +1176,7 @@ function layoutTxToSectionLocal(layoutTx, diagnostics2) {
       defaultBoxTransformations,
       transformations2,
       localGridBoxesPerBp,
-      diagnostics2
+      diagnostics3
     );
   }
   return layoutSectionLocal;
@@ -1263,29 +1261,29 @@ var layoutLevelTransforms = sectionLocalExample.transformations;
 
 // src/boxDesign/CSSlayout.ts
 function CSSLayout({
-  layoutWithTx,
-  diagnostics: diagnostics2,
+  layoutWithTx: layoutWithTx2,
+  diagnostics: diagnostics3,
   gridDiagnostic = { overlapPolicy: "allow", breakpoints: BREAKPOINTS }
 }) {
-  const layoutSectionLocal = layoutTxToSectionLocal(layoutWithTx, diagnostics2);
-  const layoutSecBonds = layoutSectionToBounds(layoutSectionLocal, diagnostics2);
-  const layoutSecAbs = layoutSectionBtoAbsolute(layoutSecBonds, diagnostics2);
+  const layoutSectionLocal = layoutTxToSectionLocal(layoutWithTx2, diagnostics3);
+  const layoutSecBonds = layoutSectionToBounds(layoutSectionLocal, diagnostics3);
+  const layoutSecAbs = layoutSectionBtoAbsolute(layoutSecBonds, diagnostics3);
   const overlapPolicy = gridDiagnostic.overlapPolicy || "allow";
   const breakpoints = gridDiagnostic.breakpoints || BREAKPOINTS;
   if (overlapPolicy !== "allow") {
     checkSectionsOverlap(
       layoutSecAbs,
-      diagnostics2,
+      diagnostics3,
       overlapPolicy,
       breakpoints
     );
   }
   return layoutSecAbs;
 }
-function recordKeys2(obj) {
+function recordKeys(obj) {
   return Object.keys(obj);
 }
-function partialRecordKeys2(obj) {
+function partialRecordKeys(obj) {
   return Object.keys(obj);
 }
 function overlaps(a2, b2) {
@@ -1294,14 +1292,14 @@ function overlaps(a2, b2) {
   a2.gridRowStart < b2.gridRowEnd && // a's top < b's bottom
   b2.gridRowStart < a2.gridRowEnd;
 }
-function checkSectionsOverlap(layoutAbsolute, diagnostics2, overlapPolicy, breakpoints) {
-  const sectionIds = recordKeys2(layoutAbsolute.sections);
+function checkSectionsOverlap(layoutAbsolute, diagnostics3, overlapPolicy, breakpoints) {
+  const sectionIds = recordKeys(layoutAbsolute.sections);
   for (const bp of breakpoints) {
     const boxesByBp = [];
     for (const sectionId of sectionIds) {
       const sectionBoxes = layoutAbsolute.sections[sectionId].coordinates[bp];
       if (!sectionBoxes) continue;
-      const boxIds = partialRecordKeys2(sectionBoxes);
+      const boxIds = partialRecordKeys(sectionBoxes);
       for (const boxId of boxIds) {
         const crd = sectionBoxes[boxId];
         if (!crd) continue;
@@ -1346,7 +1344,7 @@ function checkSectionsOverlap(layoutAbsolute, diagnostics2, overlapPolicy, break
           // Unique pair identifier
         };
         const message = `Boxes ${a2.id} and ${b2.id} are overlapping.`;
-        diagnostics2.push(
+        diagnostics3.push(
           overlapPolicy === "warn" ? makeWarning(
             "CSSLayout",
             GRID_ERROR_CODE.OVERLAP_NOT_ALLOWED,
@@ -1511,6 +1509,93 @@ var customColumnTransforms = {
   xs: [{ stackVertically: { gap: 15 } }],
   lg: [{ stackVertically: { gap: 30 } }]
 };
+
+// src/boxDesign/layoutToTx.ts
+function layoutSectionKeysPresent(layout) {
+  return Object.keys(layout).filter((k) => layout[k] != null);
+}
+function isBlocksID(k) {
+  return k.startsWith("block_");
+}
+function layoutBlockKeysPresent(layout, section) {
+  const blocks = layout[section];
+  if (!blocks) return [];
+  return Object.keys(blocks).filter(isBlocksID);
+}
+function layoutToTx(layout, diagnostic, theme) {
+  if (!theme) {
+    theme = getDefaultTheme(layout);
+  }
+  let layoutWithTx2 = {};
+  layoutWithTx2.sections = {};
+  layoutWithTx2.transformations = theme.layoutTransforms(layout);
+  const sectionsIDS = layoutSectionKeysPresent(layout);
+  for (const sectionID of sectionsIDS) {
+    const section = layout[sectionID];
+    if (!section) {
+      diagnostic.push(
+        makeError(
+          "layoutToTx",
+          GRID_ERROR_CODE.NO_SECTION_ID,
+          `Section ${sectionID} has no boxes defined in layout. Skipping layoutToTx for this section.`
+        )
+      );
+      continue;
+    }
+    layoutWithTx2.sections[sectionID] = {};
+    layoutWithTx2.sections[sectionID].gridBoxes = {};
+    layoutWithTx2.sections[sectionID].transformations = theme.sectionBoxTransforms(
+      sectionID,
+      layout
+    );
+    BREAKPOINTS.forEach((bp) => {
+      layoutWithTx2.sections[sectionID].gridBoxes[bp] = {};
+      for (const boxID of layoutBlockKeysPresent(layout, sectionID)) {
+        const boxSpan = section[boxID];
+        if (!boxSpan) {
+          diagnostic.push(
+            makeError(
+              "layoutToTx",
+              GRID_ERROR_CODE.BOX_SPAN_MISSING,
+              `Box ${boxID} in section ${sectionID} has no box span defined in layout. Skipping layoutToTx for this box.`
+            )
+          );
+          continue;
+        }
+        layoutWithTx2.sections[sectionID].gridBoxes[bp][boxID] = theme.resolveBoxSpan(
+          sectionID,
+          boxID,
+          layout,
+          boxSpan,
+          bp
+        );
+      }
+    });
+  }
+  return layoutWithTx2;
+}
+var isValidBlock1 = isBlocksID("block_1");
+var isValidBlock2 = isBlocksID("block_header");
+var isValidBlock3 = isBlocksID("section_1");
+var isValidBlock4 = isBlocksID("invalid");
+var someObject = { block_1: "valid", section_1: "invalid", block_2: "valid", other: "invalid" };
+var keys2 = Object.keys(someObject);
+var blockKeys = keys2.filter(isBlocksID);
+var layoutExample3 = {
+  header: { block_1: { spanX: 2, spanY: 1 }, block_2: { spanX: 1, spanY: 1 } },
+  main: { block_3: { spanX: 4, spanY: 2 } }
+};
+var headerBlocks = layoutBlockKeysPresent(layoutExample3, "header");
+var mainBlocks = layoutBlockKeysPresent(layoutExample3, "main");
+var layoutExample4 = {
+  header: { block_1: { spanX: 4, spanY: 1 }, block_2: { spanX: 2, spanY: 1 } },
+  main: { block_3: { spanX: 6, spanY: 4 } }
+};
+var diagnostics2 = [];
+var layoutWithTx = layoutToTx(layoutExample4, diagnostics2);
+if (diagnostics2.length > 0) {
+  console.log("Processing issues:", diagnostics2);
+}
 
 // src/templates/layoutsCatalog.ts
 var getCatalogCategoryKeys = () => Object.keys(layoutsCatalog);
@@ -2029,6 +2114,7 @@ export {
   angleBetween,
   boundingBox,
   boxPosition,
+  checkSectionsOverlap,
   clamp,
   copyCoordinate,
   copyGridBox,
@@ -2045,6 +2131,13 @@ export {
   getOrigin,
   gridUnitValueToString,
   invert,
+  isBlocksID,
+  layoutBlockKeysPresent,
+  layoutSectionBtoAbsolute,
+  layoutSectionKeysPresent,
+  layoutSectionToBounds,
+  layoutToTx,
+  layoutTxToSectionLocal,
   lerp,
   linearCombination,
   makeDiagnostic,
@@ -2058,8 +2151,6 @@ export {
   multiplyScalar,
   norm,
   normalize,
-  partialRecordKeys,
-  recordKeys,
   reflectOnXAxis,
   reflectOnYAxis,
   reflectionOnXAxis,
@@ -2070,6 +2161,7 @@ export {
   rotationByThetaClockWise,
   subtractCoordinates,
   trackBreadthToString,
+  transformBoxMove,
   transformationIDs,
   typedKeys,
   unitMatrix,

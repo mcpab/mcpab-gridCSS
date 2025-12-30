@@ -232,7 +232,7 @@ const dummyCSSCoordinates: CSSCoordinates = {
  * @param obj - Partial record with potentially missing keys
  * @returns Array of present keys with correct typing
  */
-export function partialRecordKeys<K extends string, V>(
+function partialRecordKeys<K extends string, V>(
   obj: Partial<Record<K, V>>
 ): K[] {
   return Object.keys(obj) as K[];
@@ -247,7 +247,7 @@ export function partialRecordKeys<K extends string, V>(
  * @param obj - Record with all keys present
  * @returns Array of keys with correct typing
  */
-export function recordKeys<K extends string, V>(obj: Record<K, V>): K[] {
+function recordKeys<K extends string, V>(obj: Record<K, V>): K[] {
   return Object.keys(obj) as K[];
 }
 

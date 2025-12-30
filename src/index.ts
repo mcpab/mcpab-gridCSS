@@ -50,7 +50,7 @@
  */
 
 // Core transformation pipeline
-export { CSSLayout } from './boxDesign';
+export * from './boxDesign';
 export * from "./boxLayout";    
 
 // Box positioning and transformation functions

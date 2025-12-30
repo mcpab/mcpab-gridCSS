@@ -33,9 +33,7 @@ __export(mui_exports, {
   DefaultNodeRender: () => DefaultNodeRender,
   GridCssMuiRenderer: () => GridCssMuiRenderer,
   getNodeDomProps: () => getNodeDomProps,
-  getNodeSxProps: () => getNodeSxProps,
-  partialRecordKeys: () => partialRecordKeys,
-  recordKeys: () => recordKeys
+  getNodeSxProps: () => getNodeSxProps
 });
 module.exports = __toCommonJS(mui_exports);
 
@@ -459,8 +457,6 @@ function GridCssMuiRenderer({
   DefaultNodeRender,
   GridCssMuiRenderer,
   getNodeDomProps,
-  getNodeSxProps,
-  partialRecordKeys,
-  recordKeys
+  getNodeSxProps
 });
 //# sourceMappingURL=mui.cjs.map

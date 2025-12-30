@@ -1,5 +1,5 @@
-import { C as Coordinate, L as LayoutWithTx, S as SectionIDs, B as BlocksIDs, D as DiagnosticEntry, a as BREAKPOINTS, b as LayoutAbsolute, c as SectionsInLayoutWithTx, d as BlocksInLayoutWithTx, e as Layout, f as SectionsIDSFromLayout, g as BlockIDSFromSectionAndLayout, h as BoxSpan, G as GridBox, i as BoxTransformations, j as GridNodeViewOptions, k as GridOptions, l as BoxMovesFunctions, N as NodeID, m as GridBoxPointPosition } from './mui-CHYnjWEU.cjs';
-export { H as AllBoxMovesProps, K as Anchor, n as BPSGridBoxes, W as BPs, z as BoxAlignXProps, y as BoxAlignYProps, x as BoxMoveByProps, w as BoxMoveToProps, I as BoxMovesFunctionsProps, F as BoxMovesProps, E as BoxMovesPropsObject, v as BoxPropBase, A as BoxProps, r as BoxesCoordinates, V as Breakpoint, O as CSSCoordinates, P as CSSCoordinatesBPS, Q as Cards, a5 as CoordinateTransformation, a6 as CssLength, ag as DefaultNodeRender, Z as DiagnosticOrigin, Y as DiagnosticSeverity, $ as GRID_ERROR_CODE, a9 as GapValue, o as GridBoxesAndTx, ae as GridCssMuiRenderer, af as GridCssMuiRendererProps, _ as GridErrorCode, a0 as GridIssue, M as GridNodeLayoutFlags, a8 as GridUnitValue, u as LayoutRenderingOverride, q as LayoutSectionBounds, p as LayoutSectionLocal, t as NodeRenderConfig, s as NodeRenderCtx, X as PartialBps, R as Rows, a7 as TrackBreadth, T as TransformationIDs, U as UnionBlockIDSfromLayout, aa as cssLengthToString, ad as gapValueToString, ai as getNodeDomProps, ah as getNodeSxProps, ac as gridUnitValueToString, a1 as makeDiagnostic, a2 as makeError, a4 as makeInfo, a3 as makeWarning, ak as partialRecordKeys, aj as recordKeys, ab as trackBreadthToString, J as transformationIDs } from './mui-CHYnjWEU.cjs';
+import { C as Coordinate, L as LayoutWithTx, S as SectionIDs, B as BlocksIDs, D as DiagnosticEntry, a as BREAKPOINTS, b as LayoutAbsolute, c as SectionsInLayoutWithTx, d as BlocksInLayoutWithTx, e as LayoutSectionBounds, f as LayoutSectionLocal, g as Layout, h as SectionsIDSFromLayout, i as BlockIDSFromSectionAndLayout, j as BoxSpan, G as GridBox, k as BoxTransformations, l as GridNodeViewOptions, m as GridOptions, U as UnionBlockIDSfromLayout, n as BoxMovesFunctions, N as NodeID, o as BPs, p as GridBoxPointPosition } from './mui-Da9eTlxl.cjs';
+export { J as AllBoxMovesProps, O as Anchor, v as BPSGridBoxes, H as BoxAlignXProps, F as BoxAlignYProps, E as BoxMoveByProps, t as BoxMoveToProps, K as BoxMovesFunctionsProps, r as BoxMovesProps, s as BoxMovesPropsObject, A as BoxPropBase, I as BoxProps, q as BoxesCoordinates, W as Breakpoint, u as CSSCoordinates, Q as CSSCoordinatesBPS, V as Cards, a5 as CoordinateTransformation, a6 as CssLength, ag as DefaultNodeRender, Z as DiagnosticOrigin, Y as DiagnosticSeverity, $ as GRID_ERROR_CODE, a9 as GapValue, w as GridBoxesAndTx, ae as GridCssMuiRenderer, af as GridCssMuiRendererProps, _ as GridErrorCode, a0 as GridIssue, P as GridNodeLayoutFlags, a8 as GridUnitValue, z as LayoutRenderingOverride, y as NodeRenderConfig, x as NodeRenderCtx, X as PartialBps, R as Rows, a7 as TrackBreadth, T as TransformationIDs, aa as cssLengthToString, ad as gapValueToString, ai as getNodeDomProps, ah as getNodeSxProps, ac as gridUnitValueToString, a1 as makeDiagnostic, a2 as makeError, a4 as makeInfo, a3 as makeWarning, ab as trackBreadthToString, M as transformationIDs } from './mui-Da9eTlxl.cjs';
 import 'react/jsx-runtime';
 import '@mui/material/styles';
 import '@mui/system';
@@ -1880,6 +1880,140 @@ type CSSLayoutProps<L extends LayoutWithTx<SectionIDs, BlocksIDs>> = {
  * @returns Layout with absolute CSS Grid coordinates for all sections and boxes
  */
 declare function CSSLayout<L extends LayoutWithTx<any, any>>({ layoutWithTx, diagnostics, gridDiagnostic, }: CSSLayoutProps<L>): LayoutAbsolute<SectionsInLayoutWithTx<L>, BlocksInLayoutWithTx<L>>;
+/**
+ * Check for overlapping boxes across all sections and report violations
+ *
+ * This function performs comprehensive overlap detection across the entire layout,
+ * checking all boxes against each other within each breakpoint. It generates
+ * detailed diagnostic reports for any overlaps found.
+ *
+ * Algorithm:
+ * 1. Flatten all boxes from all sections into a single list per breakpoint
+ * 2. Compare every box against every other box (O(n²) complexity)
+ * 3. For each overlap, generate detailed diagnostic information
+ * 4. Add warnings or errors to diagnostics based on overlap policy
+ *
+ * @template sectionIDs - Section identifier type
+ * @template blockIDs - Block identifier type
+ * @param layoutAbsolute - Layout with final absolute CSS coordinates
+ * @param diagnostics - Array to add overlap reports to
+ * @param overlapPolicy - Whether to generate warnings or errors for overlaps
+ * @param breakpoints - Which breakpoints to check for overlaps
+ */
+declare function checkSectionsOverlap<sectionIDs extends SectionIDs, blockIDs extends BlocksIDs>(layoutAbsolute: LayoutAbsolute<sectionIDs, blockIDs>, diagnostics: DiagnosticEntry[], overlapPolicy: "warn" | "error", breakpoints: readonly (typeof BREAKPOINTS)[number][]): void;
+
+/**
+ * Layout Section Bounds to Absolute
+ *
+ * This module converts layout sections with bounding boxes to absolute CSS grid coordinates.
+ * It performs coordinate transformations to position sections and their contained boxes
+ * in absolute CSS grid coordinates, handling responsive breakpoints and ensuring
+ * all coordinates are positive (≥1) as required by CSS Grid specification.
+ *
+ * The transformation process involves:
+ * 1. Converting box positions from local to relative-to-bounding-box coordinates
+ * 2. Positioning bounding boxes at (1,1) and applying transformations
+ * 3. Converting relative positions back to absolute coordinates
+ * 4. Normalizing all coordinates to ensure they are ≥1
+ */
+
+/**
+ * Convert layout sections with bounding boxes to absolute CSS grid coordinates
+ *
+ * This function performs a complex coordinate transformation process to convert
+ * sections with bounded layouts into absolute CSS grid coordinates. The process
+ * ensures all coordinates are valid for CSS Grid (≥1) and properly positioned.
+ *
+ * Transformation steps:
+ * 1. Convert box origins from absolute to relative-to-bounding-box coordinates
+ * 2. Position all bounding boxes at (1,1) as starting reference point
+ * 3. Apply any configured transformations to bounding boxes
+ * 4. Convert box coordinates back to absolute positions
+ * 5. Calculate grid dimensions and normalize coordinates to positive values
+ *
+ * @template sectionIDs - Type representing the available section identifiers
+ * @template blockIDs - Type representing the available block/box identifiers
+ * @param layoutSectionBounds - Layout with sections and their calculated bounding boxes
+ * @param diagnostics - Array to collect any errors or warnings during processing
+ * @returns Layout with absolute CSS grid coordinates for all sections and boxes
+ */
+declare function layoutSectionBtoAbsolute<sectionIDs extends SectionIDs, blockIDs extends BlocksIDs>(layoutSectionBounds: LayoutSectionBounds<sectionIDs, blockIDs>, diagnostics: DiagnosticEntry[]): LayoutAbsolute<sectionIDs, blockIDs>;
+
+/**
+ * Layout Section To Bounds
+ *
+ * This module converts layout sections with local positioning to sections with bounding boxes.
+ * It calculates the minimum bounding rectangle that contains all boxes within each section
+ * across different breakpoints (responsive design sizes).
+ */
+
+/**
+ * Convert layout sections with local positioning to sections with bounding boxes
+ *
+ * This function calculates the minimum bounding rectangle (bounds) that contains all boxes
+ * within each section across different responsive breakpoints. It processes each section
+ * and breakpoint combination to find the smallest rectangle that encompasses all boxes.
+ *
+ * @template sectionIDs - Type representing the available section identifiers
+ * @template blockIDs - Type representing the available block/box identifiers
+ * @param layoutSectionLocal - Layout with sections containing boxes positioned locally
+ * @param diagnostics - Array to collect any errors or warnings during processing
+ * @returns Layout with calculated bounding boxes for each section at each breakpoint
+ */
+declare function layoutSectionToBounds<sectionIDs extends SectionIDs, blockIDs extends BlocksIDs>(layoutSectionLocal: LayoutSectionLocal<sectionIDs, blockIDs>, diagnostics: DiagnosticEntry[]): LayoutSectionBounds<sectionIDs, blockIDs>;
+
+/**
+ * @fileoverview Layout transformation to section-local coordinate conversion.
+ * Converts layout transformations into section-local coordinates and applies box transformations.
+ * Handles the transition from layout-level coordinates to section-specific positioning.
+ * @module LayoutTxToSectionLocal
+ */
+
+/**
+ * Converts a layout with transformations into section-local coordinate space.
+ * This function processes the transformation pipeline by applying section-level box transformations
+ * while maintaining the layout structure in local coordinates relative to each section.
+ *
+ * Processing pipeline:
+ * 1. Initializes default box transformations for movement operations
+ * 2. Creates section-local layout structure with grid boxes from the layout transformation
+ * 3. Copies grid box data for each breakpoint to maintain positioning information
+ * 4. Applies section-specific transformations using the box movement system
+ * 5. Returns the final layout in section-local coordinate space
+ *
+ * Key behaviors:
+ * - Preserves layout-level transformations in the output structure
+ * - Converts grid boxes from layout coordinates to section-relative coordinates
+ * - Applies transformation functions (stacking, alignment, etc.) within each section
+ * - Collects diagnostic information for any transformation issues
+ * - Handles missing transformations gracefully by skipping affected sections
+ *
+ * @template sectionIDs - The section identifier types for this layout
+ * @template blockIDs - The block identifier types for this layout
+ * @param layoutTx - Layout with transformations containing positioned grid boxes
+ * @param diagnostics - Array to collect diagnostic information and errors during processing
+ * @returns Layout in section-local coordinates with applied transformations
+ *
+ * @example
+ * ```typescript
+ * const layoutWithTx: LayoutWithTx<'header' | 'main', 'block_1' | 'block_2'> = {
+ *   sections: {
+ *     header: {
+ *       gridBoxes: { xs: { block_1: gridBox1 }, md: { block_1: gridBox1 } },
+ *       transformations: { xs: [{ stackHorizontally: {} }] }
+ *     }
+ *   },
+ *   transformations: { xs: [{ stackVertically: {} }] }
+ * };
+ *
+ * const diagnostics: DiagnosticEntry[] = [];
+ * const sectionLocal = layoutTxToSectionLocal(layoutWithTx, diagnostics);
+ *
+ * // Result contains section-relative positioned boxes with applied transformations
+ * // sectionLocal.sections[sectionId][breakpoint][blockId] = transformed GridBox
+ * ```
+ */
+declare function layoutTxToSectionLocal<sectionIDs extends SectionIDs, blockIDs extends BlocksIDs>(layoutTx: LayoutWithTx<sectionIDs, blockIDs>, diagnostics: DiagnosticEntry[]): LayoutSectionLocal<sectionIDs, blockIDs>;
 
 /**
  * @fileoverview Layout theme type definitions for CSS Grid layout system.
@@ -2054,6 +2188,163 @@ type ThemeForLayout<L extends Layout> = {
 };
 
 /**
+ * @fileoverview Layout to transformation converter for CSS Grid layout system.
+ * Transforms abstract layout definitions into concrete grid transformations with positioning data.
+ * Handles the conversion from layout specifications to executable grid configurations across breakpoints.
+ * @module LayoutToTx
+ */
+
+/**
+ * Type alias for section IDs extracted from a layout type.
+ * Simplifies type references in function signatures and improves readability.
+ *
+ * @template L - The layout type to extract section IDs from
+ */
+type S<L extends Layout> = SectionsIDSFromLayout<L>;
+/**
+ * Type alias for all block IDs extracted from a layout type.
+ * Represents the union of all block IDs across all sections in the layout.
+ *
+ * @template L - The layout type to extract block IDs from
+ */
+type B<L extends Layout> = UnionBlockIDSfromLayout<L>;
+/**
+ * Extracts section keys that are actually present in the layout at runtime.
+ * Provides both runtime and type safety by filtering based on value existence rather than just key presence.
+ * This prevents processing of undefined or null sections that might exist as keys but have no content.
+ *
+ * Key behaviors:
+ * - Filters by VALUE existence, not just key presence
+ * - Runtime-safe boundary checking prevents null reference errors
+ * - Type-safe return maintains compile-time guarantees
+ * - Handles dynamic layout structures where sections may be conditionally defined
+ *
+ * @template L - The layout type to extract section keys from
+ * @param layout - The layout object to extract present section keys from
+ * @returns Array of section IDs that have actual content (not null/undefined)
+ *
+ * @example
+ * ```typescript
+ * const layout = {
+ *   header: { block_1: { spanX: 2, spanY: 1 } },
+ *   main: null, // This section will be filtered out
+ *   footer: { block_2: { spanX: 1, spanY: 1 } }
+ * };
+ *
+ * const presentSections = layoutSectionKeysPresent(layout);
+ * // Returns: ['header', 'footer'] (main is excluded)
+ * ```
+ */
+declare function layoutSectionKeysPresent<L extends Layout>(layout: L): Array<S<L>>;
+/**
+ * Runtime type guard to validate that a string matches the BlocksIDs pattern.
+ * Ensures that only properly formatted block identifiers are processed, preventing
+ * issues with malformed or unexpected keys that might exist in dynamic layouts.
+ *
+ * Block IDs must follow the pattern 'block_' followed by additional characters.
+ * This function acts as a runtime safety net for type checking that can't be
+ * enforced at compile time when dealing with dynamic object keys.
+ *
+ * @param k - The string to validate as a BlocksID
+ * @returns True if the string is a valid BlocksID, false otherwise
+ *
+ * @example
+ * ```typescript
+ * isBlocksID('block_1'); // true
+ * isBlocksID('block_header'); // true
+ * isBlocksID('section_1'); // false
+ * isBlocksID('invalid'); // false
+ *
+ * // Usage in filtering
+ * const keys = Object.keys(someObject);
+ * const blockKeys = keys.filter(isBlocksID);
+ * ```
+ */
+declare function isBlocksID(k: string): k is BlocksIDs;
+/**
+ * Extracts block keys that are actually present within a specific section of a layout.
+ * Provides type-safe access to blocks within a section, ensuring that the returned
+ * block IDs are valid for the specific layout and section combination.
+ *
+ * Key features:
+ * - Layout-bound generics tie L and S to actual runtime arguments
+ * - No free-floating generic parameters that could cause type mismatches
+ * - Runtime filtering ensures only valid block IDs are returned
+ * - Type safety guarantees that returned IDs exist in the specified section
+ *
+ * This function is essential for the transformation pipeline as it ensures
+ * that only blocks that actually exist in the layout are processed for grid conversion.
+ *
+ * @template L - The layout type (inferred from the layout parameter)
+ * @template Sec - The section type (inferred from the section parameter, constrained to valid sections in L)
+ * @param layout - The complete layout object
+ * @param section - The section key to extract block keys from
+ * @returns Array of block IDs that exist within the specified section
+ *
+ * @example
+ * ```typescript
+ * const layout = {
+ *   header: { block_1: { spanX: 2, spanY: 1 }, block_2: { spanX: 1, spanY: 1 } },
+ *   main: { block_3: { spanX: 4, spanY: 2 } }
+ * };
+ *
+ * const headerBlocks = layoutBlockKeysPresent(layout, 'header');
+ * // Returns: ['block_1', 'block_2']
+ *
+ * const mainBlocks = layoutBlockKeysPresent(layout, 'main');
+ * // Returns: ['block_3']
+ * ```
+ */
+declare function layoutBlockKeysPresent<L extends Layout, Sec extends S<L>>(layout: L, section: Sec): Array<BlockIDSFromSectionAndLayout<L, Sec>>;
+/**
+ * Converts an abstract layout definition into a concrete layout with transformations and grid boxes.
+ * This is the main transformation function that processes layout specifications and generates
+ * executable grid configurations for all breakpoints using the provided or default theme.
+ *
+ * Processing pipeline:
+ * 1. Applies default theme if none provided
+ * 2. Extracts present sections from the layout
+ * 3. For each section, extracts present blocks
+ * 4. For each block at each breakpoint, resolves box spans to concrete GridBox coordinates
+ * 5. Applies section and layout-level transformations
+ * 6. Collects diagnostic information for any issues encountered
+ *
+ * Error handling:
+ * - Missing sections are logged and skipped
+ * - Missing box spans are logged and skipped
+ * - Diagnostic entries provide detailed error information for debugging
+ * - Process continues despite individual failures to maximize valid output
+ *
+ * @template L - The layout type being processed
+ * @param layout - The abstract layout definition to convert
+ * @param diagnostic - Array to collect diagnostic information and errors
+ * @param theme - Optional theme for customizing the conversion process (uses default if not provided)
+ * @returns Complete layout with transformations and positioned grid boxes for all breakpoints
+ *
+ * @example
+ * ```typescript
+ * const layout = {
+ *   header: { block_1: { spanX: 4, spanY: 1 }, block_2: { spanX: 2, spanY: 1 } },
+ *   main: { block_3: { spanX: 6, spanY: 4 } }
+ * };
+ *
+ * const diagnostics: DiagnosticEntry[] = [];
+ * const layoutWithTx = layoutToTx(layout, diagnostics);
+ *
+ * // Result contains:
+ * // - layoutWithTx.sections[sectionId].gridBoxes[breakpoint][blockId] = GridBox
+ * // - layoutWithTx.sections[sectionId].transformations = section-level transforms
+ * // - layoutWithTx.transformations = layout-level transforms
+ *
+ * // Check for any issues
+ * if (diagnostics.length > 0) {
+ *   console.log('Processing issues:', diagnostics);
+ * }
+ * ```
+ */
+declare function layoutToTx<L extends Layout>(layout: L, diagnostic: DiagnosticEntry[], theme?: ThemeForLayout<L>): LayoutWithTx<S<L>, B<L>>;
+
+/**
  * @fileoverview Default implementations of box transformation functions for CSS Grid layout system.
  * Provides concrete implementations for all transformation operations defined in boxTransformationsProps.
  * These functions modify box positions and dimensions in a sparse map object structure.
@@ -2108,6 +2399,45 @@ type ThemeForLayout<L extends Layout> = {
  * ```
  */
 declare const DefaultBoxTransformations: () => BoxMovesFunctions<NodeID>;
+
+/**
+ * Transform Box Move Engine
+ *
+ * This module provides the core transformation engine that applies box movement and alignment
+ * transformations to grid layouts. It processes transformation configurations across all
+ * responsive breakpoints and applies them using a pluggable transformation factory.
+ *
+ * Supported Transformations:
+ * - moveTo: Position box at specific coordinates
+ * - moveBy: Translate box by offset amounts
+ * - alignToX/alignToY: Align box to specific coordinate
+ * - alignAllToX/alignAllToY: Align multiple boxes to same coordinate
+ * - stackVertically/stackHorizontally: Arrange boxes in stacks
+ *
+ * The engine is type-safe and provides comprehensive error handling with detailed
+ * diagnostic reporting for transformation failures.
+ */
+
+/**
+ * Apply box movement transformations across all responsive breakpoints
+ *
+ * This is the main transformation engine that processes box transformation configurations
+ * and applies them to grid layouts. It handles multiple transformation types and provides
+ * comprehensive error handling and diagnostic reporting.
+ *
+ * Processing Flow:
+ * 1. Iterate through each responsive breakpoint (xs, sm, md, lg, xl)
+ * 2. For each breakpoint, process all configured transformations in sequence
+ * 3. Validate transformation types and apply using the transformation factory
+ * 4. Report errors and constraint violations through diagnostics
+ *
+ * @template BoxID - Type extending NodeID for box identifiers
+ * @param transformationFactory - Factory providing transformation function implementations
+ * @param boxTransformations - Configuration of transformations per breakpoint
+ * @param gridBoxes - Grid boxes to transform, organized by breakpoint
+ * @param diagnostics - Array to collect errors and warnings during processing
+ */
+declare const transformBoxMove: <BoxID extends NodeID>(transformationFactory: BoxMovesFunctions<BoxID>, boxTransformations: BoxTransformations<BoxID>, gridBoxes: BPs<Partial<Record<BoxID, GridBox>>>, diagnostics: DiagnosticEntry[]) => void;
 
 /**
  * Creates a normalized {@link GridBox} from an origin and a diagonal vector.
@@ -2518,4 +2848,4 @@ declare const getDefaultTheme: <L extends Layout>(layout: L) => {
  */
 declare function typedKeys<T extends object>(obj: T): Array<keyof T>;
 
-export { BREAKPOINTS, BlockIDSFromSectionAndLayout, BlocksIDs, BlocksInLayoutWithTx, BoxMovesFunctions, BoxSpan, BoxTransformations, CSSLayout, type CatalogEntries, Coordinate, DEFAULT_GRID_NODE_VIEW_OPTIONS, DEFAULT_GRID_OPTIONS, DefaultBoxTransformations, DefaultTransformationsResponsiveColumns, DefaultTransformationsResponsiveRows, DiagnosticEntry, type DiagonalMatrix, GridBox, GridBoxPointPosition, GridNodeViewOptions, GridOptions, Layout, LayoutAbsolute, LayoutWithTx, type LayoutsCatalog, type LayoutsEntries, type Matrix2x2, NodeID, SectionIDs, SectionsIDSFromLayout, SectionsInLayoutWithTx, type SymmetricMatrix, type ThemeForLayout, type UnitMatrix, addCoordinates, angleBetween, boundingBox, boxPosition, clamp, copyCoordinate, copyGridBox, distance, dot, getCatalogCategoryKeys, getDefaultTheme, getLayoutFromCatalog, getLayoutKeysForCategory, getOrigin, invert, lerp, linearCombination, makeGridBox, maxCoordinate, minCoordinate, multiply, multiplyScalar, norm, normalize, reflectOnXAxis, reflectOnYAxis, reflectionOnXAxis, reflectionOnYAxis, resolveGridNodeViewOptions, resolveGridOptions, rotateByClockWise, rotationByThetaClockWise, subtractCoordinates, typedKeys, unitMatrix, zeroMatrix };
+export { BPs, BREAKPOINTS, BlockIDSFromSectionAndLayout, BlocksIDs, BlocksInLayoutWithTx, BoxMovesFunctions, BoxSpan, BoxTransformations, CSSLayout, type CatalogEntries, Coordinate, DEFAULT_GRID_NODE_VIEW_OPTIONS, DEFAULT_GRID_OPTIONS, DefaultBoxTransformations, DefaultTransformationsResponsiveColumns, DefaultTransformationsResponsiveRows, DiagnosticEntry, type DiagonalMatrix, GridBox, GridBoxPointPosition, GridNodeViewOptions, GridOptions, Layout, LayoutAbsolute, LayoutSectionBounds, LayoutSectionLocal, LayoutWithTx, type LayoutsCatalog, type LayoutsEntries, type Matrix2x2, NodeID, SectionIDs, SectionsIDSFromLayout, SectionsInLayoutWithTx, type SymmetricMatrix, type ThemeForLayout, UnionBlockIDSfromLayout, type UnitMatrix, addCoordinates, angleBetween, boundingBox, boxPosition, checkSectionsOverlap, clamp, copyCoordinate, copyGridBox, distance, dot, getCatalogCategoryKeys, getDefaultTheme, getLayoutFromCatalog, getLayoutKeysForCategory, getOrigin, invert, isBlocksID, layoutBlockKeysPresent, layoutSectionBtoAbsolute, layoutSectionKeysPresent, layoutSectionToBounds, layoutToTx, layoutTxToSectionLocal, lerp, linearCombination, makeGridBox, maxCoordinate, minCoordinate, multiply, multiplyScalar, norm, normalize, reflectOnXAxis, reflectOnYAxis, reflectionOnXAxis, reflectionOnYAxis, resolveGridNodeViewOptions, resolveGridOptions, rotateByClockWise, rotationByThetaClockWise, subtractCoordinates, transformBoxMove, typedKeys, unitMatrix, zeroMatrix };

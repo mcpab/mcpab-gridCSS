@@ -15,9 +15,4 @@ export {
   getNodeDomProps 
 } from './DefaultNodeRender';
 
-// Utility functions for type-safe object key extraction
-export { 
-  recordKeys, 
-  partialRecordKeys, 
  
-} from './GridCssMuiRenderer';

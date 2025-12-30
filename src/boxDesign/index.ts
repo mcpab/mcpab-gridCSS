@@ -22,7 +22,7 @@
 export { CSSLayout } from './CSSlayout';
 
 // Overlap detection and validation utilities
-export { checkSectionsOverlap, recordKeys, partialRecordKeys } from './CSSlayout';
+export { checkSectionsOverlap } from './CSSlayout';
 
 // Core transformation pipeline functions
 export { layoutSectionBtoAbsolute } from './layoutSectionBtoAbsolute';
