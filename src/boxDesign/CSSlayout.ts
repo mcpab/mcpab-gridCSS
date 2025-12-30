@@ -20,6 +20,7 @@
 
 // Layout type definitions for different transformation stages
 import {
+  Layout,
   LayoutAbsolute,           // Final layout with absolute CSS coordinates
   LayoutWithTx,             // Input layout with transformation configurations
 } from "../boxLayout/boxLayoutTypes";
@@ -37,6 +38,7 @@ import {
 
 // CSS Grid coordinate type definitions
 import { CSSCoordinates } from "../gridNodeTypes";
+import { ThemeForLayout } from "../layoutTheme";
 
 // Template identifiers for sections and blocks
 import { BlocksIDs, SectionIDs } from "../templates";
@@ -44,6 +46,7 @@ import { BlocksIDs, SectionIDs } from "../templates";
 // Transformation pipeline functions
 import { layoutSectionBtoAbsolute } from "./layoutSectionBtoAbsolute";
 import { layoutSectionToBounds } from "./layoutSectionToBounds";
+import { layoutToTx } from "./layoutToTx";
 import { layoutTxToSectionLocal } from "./layoutTxToSectionLocal";
 
 /**
@@ -63,42 +66,68 @@ type GridDiagnostic = {
 /**
  * Props for the main CSSLayout function
  * 
- * @template L - Layout type extending LayoutWithTx
- * @property layoutWithTx - Input layout with transformation configurations
- * @property diagnostics - Array to collect errors and warnings
- * @property gridDiagnostic - Optional validation configuration
+ * @template sectionIDs - Union type of valid section identifiers
+ * @template blockIDs - Union type of valid block identifiers
+ * @property layout - Input layout definition before transformation processing
+ * @property diagnostics - Array to collect errors, warnings, and diagnostic information
+ * @property theme - Optional layout theme for applying transformations and styling
+ * @property gridDiagnostic - Optional validation configuration for overlap detection
  */
 type CSSLayoutProps<sectionIDs extends SectionIDs, blockIDs extends BlocksIDs> = {
-  layoutWithTx: LayoutWithTx<sectionIDs, blockIDs>;
+  layout: Layout<sectionIDs, blockIDs>;
   diagnostics: DiagnosticEntry[];
+  theme?: ThemeForLayout<sectionIDs, blockIDs>;
   gridDiagnostic?: GridDiagnostic;
 };
 
 /**
  * Main CSS Layout transformation function
  * 
- * Orchestrates the complete pipeline to transform a layout with transformations
- * into final CSS Grid coordinates. This is the primary entry point for the
- * layout transformation system.
+ * Orchestrates the complete transformation pipeline from layout definition
+ * to final CSS Grid coordinates. This is the primary entry point that handles
+ * the entire layout processing workflow internally.
  * 
- * Transformation Pipeline:
- * 1. layoutTxToSectionLocal - Applies transformations and converts to local coordinates
- * 2. layoutSectionToBounds - Calculates bounding boxes for each section
- * 3. layoutSectionBtoAbsolute - Converts to absolute CSS Grid coordinates
- * 4. checkSectionsOverlap - Optionally validates for overlapping elements
+ * Complete Transformation Pipeline:
+ * 1. layoutToTx - Applies theme transformations and converts to LayoutWithTx
+ * 2. layoutTxToSectionLocal - Resolves transformations to local section coordinates
+ * 3. layoutSectionToBounds - Calculates bounding boxes for each section
+ * 4. layoutSectionBtoAbsolute - Converts to absolute CSS Grid coordinates
+ * 5. checkSectionsOverlap - Validates for overlapping elements (if enabled)
  * 
- * @template L - Layout type that extends LayoutWithTx
- * @param props - Configuration object containing layout, diagnostics, and validation options
- * @returns Layout with absolute CSS Grid coordinates for all sections and boxes
+ * Features:
+ * - Handles multi-breakpoint responsive layouts automatically
+ * - Applies theme-based transformations (stacking, positioning, spacing)
+ * - Provides configurable overlap detection and validation
+ * - Generates comprehensive diagnostic reporting
+ * 
+ * @template sectionIDs - Union type of valid section identifiers  
+ * @template blockIDs - Union type of valid block identifiers
+ * @param props - Configuration object containing layout definition and options
+ * @returns Complete layout with absolute CSS Grid coordinates for all sections and blocks
+ * 
+ * @example
+ * ```typescript
+ * const diagnostics: DiagnosticEntry[] = [];
+ * const layoutAbsolute = CSSLayout({
+ *   layout: myLayout,
+ *   diagnostics,
+ *   theme: customTheme, // optional
+ *   gridDiagnostic: { overlapPolicy: 'warn' } // optional
+ * });
+ * ```
  */
 export function CSSLayout<sectionIDs extends SectionIDs, blockIDs extends BlocksIDs >({
-  layoutWithTx,
+  layout ,
   diagnostics,
+  theme,
   gridDiagnostic = { overlapPolicy: "allow", breakpoints: BREAKPOINTS },
 }: CSSLayoutProps<sectionIDs, blockIDs  >): LayoutAbsolute<
   sectionIDs,
   blockIDs
 > {
+
+  const layoutWithTx = layoutToTx(layout, diagnostics, theme);
+
   // Step 1: Apply transformations and convert to local section coordinates
   // This resolves all transformation rules and positions boxes within sections
   const layoutSectionLocal = layoutTxToSectionLocal(layoutWithTx, diagnostics);

@@ -142,7 +142,7 @@ const layoutWithTxExample: LayoutWithTx<
 };
 // Process layout into CSS Grid coordinates
 const result = CSSLayout({
-  layoutWithTx: myLayout,
+  layout: myLayout,
   diagnostics: [],
   gridDiagnostic: { overlapPolicy: "warn" },
 });
@@ -321,7 +321,7 @@ The library provides comprehensive error detection:
 ```typescript
 const diagnostics = [];
 const result = CSSLayout({
-  layoutWithTx: myLayout,
+  layout: myLayout,
   diagnostics,
   gridDiagnostic: {
     overlapPolicy: "error", // 'allow' | 'warn' | 'error'

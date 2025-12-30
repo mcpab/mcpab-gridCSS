@@ -1276,225 +1276,6 @@ function layoutSectionToBounds(layoutSectionLocal, diagnostics3) {
   return layoutSectionBounds;
 }
 
-// src/boxDesign/layoutTxToSectionLocal.ts
-function layoutTxSectionKeys(sections) {
-  return Object.keys(sections).filter(
-    (k) => sections[k] != null
-  );
-}
-function layoutTxToSectionLocal(layoutTx, diagnostics3) {
-  const defaultBoxTransformations = DefaultBoxTransformations();
-  let layoutSectionLocal = {
-    sections: {},
-    transformations: layoutTx.transformations ? layoutTx.transformations : {}
-  };
-  const sectionsKeys = layoutTxSectionKeys(layoutTx.sections);
-  for (const sectionId of sectionsKeys) {
-    layoutSectionLocal.sections[sectionId] = {};
-    BREAKPOINTS.forEach((bp) => {
-      layoutSectionLocal.sections[sectionId][bp] = layoutTx.sections[sectionId].gridBoxes[bp];
-    });
-  }
-  for (const sectionId of sectionsKeys) {
-    const transformations2 = layoutTx.sections[sectionId].transformations;
-    if (!transformations2) {
-      continue;
-    }
-    let localGridBoxesPerBp = layoutSectionLocal.sections[sectionId];
-    transformBoxMove(
-      defaultBoxTransformations,
-      transformations2,
-      localGridBoxesPerBp,
-      diagnostics3
-    );
-  }
-  return layoutSectionLocal;
-}
-var sectionsExample = {
-  header: { gridBoxes: {}, transformations: {} },
-  main: null,
-  footer: { gridBoxes: {}, transformations: {} }
-};
-var keys = layoutTxSectionKeys(sectionsExample);
-var layoutWithTxExample = {
-  sections: {
-    header: {
-      gridBoxes: {
-        xs: {
-          block_1: { origin: { x: 0, y: 0 }, diagonal: { x: 100, y: 50 }, _normalized: "GridBox" }
-        },
-        md: {
-          block_1: { origin: { x: 0, y: 0 }, diagonal: { x: 200, y: 50 }, _normalized: "GridBox" }
-        },
-        lg: {
-          block_1: { origin: { x: 0, y: 0 }, diagonal: { x: 300, y: 50 }, _normalized: "GridBox" }
-        },
-        sm: {
-          block_1: { origin: { x: 0, y: 0 }, diagonal: { x: 150, y: 50 }, _normalized: "GridBox" }
-        },
-        xl: {
-          block_1: { origin: { x: 0, y: 0 }, diagonal: { x: 400, y: 50 }, _normalized: "GridBox" }
-        }
-      },
-      transformations: {
-        xs: [{ stackHorizontally: {} }],
-        md: [{ stackHorizontally: { gap: 20 } }],
-        lg: [{ stackHorizontally: { gap: 30 } }],
-        sm: [{ stackHorizontally: { gap: 15 } }],
-        xl: [{ stackHorizontally: { gap: 40 } }]
-      }
-    },
-    main: {
-      gridBoxes: {
-        xs: {
-          block_1: { origin: { x: 0, y: 0 }, diagonal: { x: 100, y: 50 }, _normalized: "GridBox" }
-        },
-        md: {
-          block_1: { origin: { x: 0, y: 0 }, diagonal: { x: 200, y: 50 }, _normalized: "GridBox" }
-        },
-        lg: {
-          block_1: { origin: { x: 0, y: 0 }, diagonal: { x: 300, y: 50 }, _normalized: "GridBox" }
-        },
-        sm: {
-          block_1: { origin: { x: 0, y: 0 }, diagonal: { x: 150, y: 50 }, _normalized: "GridBox" }
-        },
-        xl: {
-          block_1: { origin: { x: 0, y: 0 }, diagonal: { x: 400, y: 50 }, _normalized: "GridBox" }
-        }
-      },
-      transformations: {
-        xs: [{ stackHorizontally: {} }],
-        md: [{ stackHorizontally: { gap: 20 } }],
-        lg: [{ stackHorizontally: { gap: 30 } }],
-        sm: [{ stackHorizontally: { gap: 15 } }],
-        xl: [{ stackHorizontally: { gap: 40 } }]
-      }
-    }
-  },
-  transformations: {
-    xs: [{ stackHorizontally: {} }],
-    md: [{ stackHorizontally: { gap: 20 } }],
-    lg: [{ stackHorizontally: { gap: 30 } }],
-    sm: [{ stackHorizontally: { gap: 15 } }],
-    xl: [{ stackHorizontally: { gap: 40 } }]
-  }
-};
-var diagnosticsExample = [];
-var sectionLocalExample = layoutTxToSectionLocal(layoutWithTxExample, diagnosticsExample);
-if (diagnosticsExample.length > 0) {
-  console.log("Transformation issues:", diagnosticsExample);
-}
-var headerXsBlocks = sectionLocalExample.sections.header.xs;
-var mainMdBlocks = sectionLocalExample.sections.main.md;
-var layoutLevelTransforms = sectionLocalExample.transformations;
-
-// src/boxDesign/CSSlayout.ts
-function CSSLayout({
-  layoutWithTx: layoutWithTx2,
-  diagnostics: diagnostics3,
-  gridDiagnostic = { overlapPolicy: "allow", breakpoints: BREAKPOINTS }
-}) {
-  const layoutSectionLocal = layoutTxToSectionLocal(layoutWithTx2, diagnostics3);
-  const layoutSecBonds = layoutSectionToBounds(layoutSectionLocal, diagnostics3);
-  const layoutSecAbs = layoutSectionBtoAbsolute(layoutSecBonds, diagnostics3);
-  const overlapPolicy = gridDiagnostic.overlapPolicy || "allow";
-  const breakpoints = gridDiagnostic.breakpoints || BREAKPOINTS;
-  if (overlapPolicy !== "allow") {
-    checkSectionsOverlap(
-      layoutSecAbs,
-      diagnostics3,
-      overlapPolicy,
-      breakpoints
-    );
-  }
-  return layoutSecAbs;
-}
-function recordKeys(obj) {
-  return Object.keys(obj);
-}
-function partialRecordKeys(obj) {
-  return Object.keys(obj);
-}
-function overlaps(a2, b2) {
-  return a2.gridColumnStart < b2.gridColumnEnd && // a's left < b's right
-  b2.gridColumnStart < a2.gridColumnEnd && // b's left < a's right
-  a2.gridRowStart < b2.gridRowEnd && // a's top < b's bottom
-  b2.gridRowStart < a2.gridRowEnd;
-}
-function checkSectionsOverlap(layoutAbsolute, diagnostics3, overlapPolicy, breakpoints) {
-  const sectionIds = recordKeys(layoutAbsolute.sections);
-  for (const bp of breakpoints) {
-    const boxesByBp = [];
-    for (const sectionId of sectionIds) {
-      const sectionBoxes = layoutAbsolute.sections[sectionId].coordinates[bp];
-      if (!sectionBoxes) continue;
-      const boxIds = partialRecordKeys(sectionBoxes);
-      for (const boxId of boxIds) {
-        const crd = sectionBoxes[boxId];
-        if (!crd) continue;
-        boxesByBp.push({
-          id: `${bp}::${sectionId}::${boxId}`,
-          // Unique composite identifier
-          bp,
-          sectionId,
-          boxId,
-          coords: crd
-        });
-      }
-    }
-    for (let i = 0; i < boxesByBp.length; i++) {
-      const a2 = boxesByBp[i];
-      for (let j = i + 1; j < boxesByBp.length; j++) {
-        const b2 = boxesByBp[j];
-        if (!overlaps(a2.coords, b2.coords)) continue;
-        const details = {
-          bp,
-          a: {
-            sectionId: a2.sectionId,
-            boxId: a2.boxId,
-            rect: {
-              colStart: a2.coords.gridColumnStart,
-              colEnd: a2.coords.gridColumnEnd,
-              rowStart: a2.coords.gridRowStart,
-              rowEnd: a2.coords.gridRowEnd
-            }
-          },
-          b: {
-            sectionId: b2.sectionId,
-            boxId: b2.boxId,
-            rect: {
-              colStart: b2.coords.gridColumnStart,
-              colEnd: b2.coords.gridColumnEnd,
-              rowStart: b2.coords.gridRowStart,
-              rowEnd: b2.coords.gridRowEnd
-            }
-          },
-          pairKey: `${a2.id}__${b2.id}`
-          // Unique pair identifier
-        };
-        const message = `Boxes ${a2.id} and ${b2.id} are overlapping.`;
-        diagnostics3.push(
-          overlapPolicy === "warn" ? makeWarning(
-            "CSSLayout",
-            GRID_ERROR_CODE.OVERLAP_NOT_ALLOWED,
-            message,
-            {
-              details
-            }
-          ) : makeError(
-            "CSSLayout",
-            GRID_ERROR_CODE.OVERLAP_NOT_ALLOWED,
-            message,
-            {
-              details
-            }
-          )
-        );
-      }
-    }
-  }
-}
-
 // src/layoutTheme/defaultLayoutTheme.ts
 var DEFAULT_GRID_NODE_VIEW_OPTIONS = {
   minWidth0: true,
@@ -1708,8 +1489,8 @@ var isValidBlock2 = isBlocksID("block_header");
 var isValidBlock3 = isBlocksID("section_1");
 var isValidBlock4 = isBlocksID("invalid");
 var someObject = { block_1: "valid", section_1: "invalid", block_2: "valid", other: "invalid" };
-var keys2 = Object.keys(someObject);
-var blockKeys = keys2.filter(isBlocksID);
+var keys = Object.keys(someObject);
+var blockKeys = keys.filter(isBlocksID);
 var layoutExample3 = {
   header: { block_1: { spanX: 2, spanY: 1 }, block_2: { spanX: 1, spanY: 1 } },
   main: { block_3: { spanX: 4, spanY: 2 } }
@@ -1724,6 +1505,227 @@ var diagnostics2 = [];
 var layoutWithTx = layoutToTx(layoutExample4, diagnostics2);
 if (diagnostics2.length > 0) {
   console.log("Processing issues:", diagnostics2);
+}
+
+// src/boxDesign/layoutTxToSectionLocal.ts
+function layoutTxSectionKeys(sections) {
+  return Object.keys(sections).filter(
+    (k) => sections[k] != null
+  );
+}
+function layoutTxToSectionLocal(layoutTx, diagnostics3) {
+  const defaultBoxTransformations = DefaultBoxTransformations();
+  let layoutSectionLocal = {
+    sections: {},
+    transformations: layoutTx.transformations ? layoutTx.transformations : {}
+  };
+  const sectionsKeys = layoutTxSectionKeys(layoutTx.sections);
+  for (const sectionId of sectionsKeys) {
+    layoutSectionLocal.sections[sectionId] = {};
+    BREAKPOINTS.forEach((bp) => {
+      layoutSectionLocal.sections[sectionId][bp] = layoutTx.sections[sectionId].gridBoxes[bp];
+    });
+  }
+  for (const sectionId of sectionsKeys) {
+    const transformations2 = layoutTx.sections[sectionId].transformations;
+    if (!transformations2) {
+      continue;
+    }
+    let localGridBoxesPerBp = layoutSectionLocal.sections[sectionId];
+    transformBoxMove(
+      defaultBoxTransformations,
+      transformations2,
+      localGridBoxesPerBp,
+      diagnostics3
+    );
+  }
+  return layoutSectionLocal;
+}
+var sectionsExample = {
+  header: { gridBoxes: {}, transformations: {} },
+  main: null,
+  footer: { gridBoxes: {}, transformations: {} }
+};
+var keys2 = layoutTxSectionKeys(sectionsExample);
+var layoutWithTxExample = {
+  sections: {
+    header: {
+      gridBoxes: {
+        xs: {
+          block_1: { origin: { x: 0, y: 0 }, diagonal: { x: 100, y: 50 }, _normalized: "GridBox" }
+        },
+        md: {
+          block_1: { origin: { x: 0, y: 0 }, diagonal: { x: 200, y: 50 }, _normalized: "GridBox" }
+        },
+        lg: {
+          block_1: { origin: { x: 0, y: 0 }, diagonal: { x: 300, y: 50 }, _normalized: "GridBox" }
+        },
+        sm: {
+          block_1: { origin: { x: 0, y: 0 }, diagonal: { x: 150, y: 50 }, _normalized: "GridBox" }
+        },
+        xl: {
+          block_1: { origin: { x: 0, y: 0 }, diagonal: { x: 400, y: 50 }, _normalized: "GridBox" }
+        }
+      },
+      transformations: {
+        xs: [{ stackHorizontally: {} }],
+        md: [{ stackHorizontally: { gap: 20 } }],
+        lg: [{ stackHorizontally: { gap: 30 } }],
+        sm: [{ stackHorizontally: { gap: 15 } }],
+        xl: [{ stackHorizontally: { gap: 40 } }]
+      }
+    },
+    main: {
+      gridBoxes: {
+        xs: {
+          block_1: { origin: { x: 0, y: 0 }, diagonal: { x: 100, y: 50 }, _normalized: "GridBox" }
+        },
+        md: {
+          block_1: { origin: { x: 0, y: 0 }, diagonal: { x: 200, y: 50 }, _normalized: "GridBox" }
+        },
+        lg: {
+          block_1: { origin: { x: 0, y: 0 }, diagonal: { x: 300, y: 50 }, _normalized: "GridBox" }
+        },
+        sm: {
+          block_1: { origin: { x: 0, y: 0 }, diagonal: { x: 150, y: 50 }, _normalized: "GridBox" }
+        },
+        xl: {
+          block_1: { origin: { x: 0, y: 0 }, diagonal: { x: 400, y: 50 }, _normalized: "GridBox" }
+        }
+      },
+      transformations: {
+        xs: [{ stackHorizontally: {} }],
+        md: [{ stackHorizontally: { gap: 20 } }],
+        lg: [{ stackHorizontally: { gap: 30 } }],
+        sm: [{ stackHorizontally: { gap: 15 } }],
+        xl: [{ stackHorizontally: { gap: 40 } }]
+      }
+    }
+  },
+  transformations: {
+    xs: [{ stackHorizontally: {} }],
+    md: [{ stackHorizontally: { gap: 20 } }],
+    lg: [{ stackHorizontally: { gap: 30 } }],
+    sm: [{ stackHorizontally: { gap: 15 } }],
+    xl: [{ stackHorizontally: { gap: 40 } }]
+  }
+};
+var diagnosticsExample = [];
+var sectionLocalExample = layoutTxToSectionLocal(layoutWithTxExample, diagnosticsExample);
+if (diagnosticsExample.length > 0) {
+  console.log("Transformation issues:", diagnosticsExample);
+}
+var headerXsBlocks = sectionLocalExample.sections.header.xs;
+var mainMdBlocks = sectionLocalExample.sections.main.md;
+var layoutLevelTransforms = sectionLocalExample.transformations;
+
+// src/boxDesign/CSSlayout.ts
+function CSSLayout({
+  layout,
+  diagnostics: diagnostics3,
+  theme,
+  gridDiagnostic = { overlapPolicy: "allow", breakpoints: BREAKPOINTS }
+}) {
+  const layoutWithTx2 = layoutToTx(layout, diagnostics3, theme);
+  const layoutSectionLocal = layoutTxToSectionLocal(layoutWithTx2, diagnostics3);
+  const layoutSecBonds = layoutSectionToBounds(layoutSectionLocal, diagnostics3);
+  const layoutSecAbs = layoutSectionBtoAbsolute(layoutSecBonds, diagnostics3);
+  const overlapPolicy = gridDiagnostic.overlapPolicy || "allow";
+  const breakpoints = gridDiagnostic.breakpoints || BREAKPOINTS;
+  if (overlapPolicy !== "allow") {
+    checkSectionsOverlap(
+      layoutSecAbs,
+      diagnostics3,
+      overlapPolicy,
+      breakpoints
+    );
+  }
+  return layoutSecAbs;
+}
+function recordKeys(obj) {
+  return Object.keys(obj);
+}
+function partialRecordKeys(obj) {
+  return Object.keys(obj);
+}
+function overlaps(a2, b2) {
+  return a2.gridColumnStart < b2.gridColumnEnd && // a's left < b's right
+  b2.gridColumnStart < a2.gridColumnEnd && // b's left < a's right
+  a2.gridRowStart < b2.gridRowEnd && // a's top < b's bottom
+  b2.gridRowStart < a2.gridRowEnd;
+}
+function checkSectionsOverlap(layoutAbsolute, diagnostics3, overlapPolicy, breakpoints) {
+  const sectionIds = recordKeys(layoutAbsolute.sections);
+  for (const bp of breakpoints) {
+    const boxesByBp = [];
+    for (const sectionId of sectionIds) {
+      const sectionBoxes = layoutAbsolute.sections[sectionId].coordinates[bp];
+      if (!sectionBoxes) continue;
+      const boxIds = partialRecordKeys(sectionBoxes);
+      for (const boxId of boxIds) {
+        const crd = sectionBoxes[boxId];
+        if (!crd) continue;
+        boxesByBp.push({
+          id: `${bp}::${sectionId}::${boxId}`,
+          // Unique composite identifier
+          bp,
+          sectionId,
+          boxId,
+          coords: crd
+        });
+      }
+    }
+    for (let i = 0; i < boxesByBp.length; i++) {
+      const a2 = boxesByBp[i];
+      for (let j = i + 1; j < boxesByBp.length; j++) {
+        const b2 = boxesByBp[j];
+        if (!overlaps(a2.coords, b2.coords)) continue;
+        const details = {
+          bp,
+          a: {
+            sectionId: a2.sectionId,
+            boxId: a2.boxId,
+            rect: {
+              colStart: a2.coords.gridColumnStart,
+              colEnd: a2.coords.gridColumnEnd,
+              rowStart: a2.coords.gridRowStart,
+              rowEnd: a2.coords.gridRowEnd
+            }
+          },
+          b: {
+            sectionId: b2.sectionId,
+            boxId: b2.boxId,
+            rect: {
+              colStart: b2.coords.gridColumnStart,
+              colEnd: b2.coords.gridColumnEnd,
+              rowStart: b2.coords.gridRowStart,
+              rowEnd: b2.coords.gridRowEnd
+            }
+          },
+          pairKey: `${a2.id}__${b2.id}`
+          // Unique pair identifier
+        };
+        const message = `Boxes ${a2.id} and ${b2.id} are overlapping.`;
+        diagnostics3.push(
+          overlapPolicy === "warn" ? makeWarning(
+            "CSSLayout",
+            GRID_ERROR_CODE.OVERLAP_NOT_ALLOWED,
+            message,
+            {
+              details
+            }
+          ) : makeError(
+            "CSSLayout",
+            GRID_ERROR_CODE.OVERLAP_NOT_ALLOWED,
+            message,
+            {
+              details
+            }
+          )
+        );
+      }
+    }
+  }
 }
 
 // src/templates/layoutsCatalog.ts

@@ -31,7 +31,7 @@
  * 
  * // Process a layout definition into CSS Grid coordinates
  * const result = CSSLayout({
- *   layoutWithTx: myLayout,
+ *   layout: myLayout,
  *   diagnostics: [],
  *   gridDiagnostic: { overlapPolicy: 'warn' }
  * });

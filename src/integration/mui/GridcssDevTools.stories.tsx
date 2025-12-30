@@ -10,7 +10,7 @@ import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import Typography from '@mui/material/Typography';
 import * as React from 'react';
-import { layoutToTx, CSSLayout } from '../../boxDesign';
+import { CSSLayout } from '../../boxDesign';
 import { Layout, LayoutRenderingOverride } from '../../boxLayout';
 import { BREAKPOINTS } from '../../breakpoints';
 import { DiagnosticEntry } from '../../gridErrorShape';
@@ -172,11 +172,8 @@ export const DevTools: Story = () => {
   // 1) get Layout (cloned) from catalog
   const layout = getLayoutFromCatalog(category, layoutKey );
 
-  // 2) Layout -> LayoutWithTx (theme optional)
-  const layoutWithTx = layoutToTx(layout, diagnostics /*, theme? */);
-
-  // 3) LayoutWithTx -> LayoutAbsolute
-  const layoutAbsolute = CSSLayout({ layoutWithTx, diagnostics });
+  // 2) Layout -> LayoutAbsolute (layoutToTx is now handled internally by CSSLayout)
+  const layoutAbsolute = CSSLayout({ layout, diagnostics });
 
   // optional: build per-node content overlays
   const layoutRendering: LayoutRenderingOverride<any, any> = {};
