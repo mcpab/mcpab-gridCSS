@@ -59,7 +59,8 @@ export type {
   BoxTransformations,
   NodeRenderConfig,
   SectionsInLayoutWithTx,
-  BlocksInLayoutWithTx
+  BlocksInLayoutWithTx,
+  Layout
 } from './boxLayout';
 
 // Box positioning and transformation functions

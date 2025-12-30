@@ -273,4 +273,4 @@ declare const getDefaultTheme: <L extends Layout>(layout: L) => {
  */
 declare function typedKeys<T extends object>(obj: T): Array<keyof T>;
 
-export { BREAKPOINTS, BlocksIDs, BlocksInLayoutWithTx, CSSLayout, Coordinate, DiagnosticEntry, GridBox, LayoutAbsolute, LayoutWithTx, SectionIDs, SectionsInLayoutWithTx, addCoordinates, getDefaultTheme, subtractCoordinates, typedKeys };
+export { BREAKPOINTS, BlocksIDs, BlocksInLayoutWithTx, CSSLayout, Coordinate, DiagnosticEntry, GridBox, Layout, LayoutAbsolute, LayoutWithTx, SectionIDs, SectionsInLayoutWithTx, addCoordinates, getDefaultTheme, subtractCoordinates, typedKeys };
