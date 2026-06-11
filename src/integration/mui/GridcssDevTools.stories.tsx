@@ -11,11 +11,12 @@ import Tabs from '@mui/material/Tabs';
 import Typography from '@mui/material/Typography';
 import * as React from 'react';
 import { CSSLayout } from '../../boxDesign';
-import { Layout, LayoutRenderingOverride } from '../../boxLayout';
+import { Layout } from '../../boxLayout';
 import { BREAKPOINTS } from '../../breakpoints';
 import { DiagnosticEntry } from '../../gridErrorShape';
 import { CatalogEntries, getCatalogCategoryKeys, getLayoutKeysForCategory, getLayoutFromCatalog } from '../../templates';
 import { GridCssMuiRenderer } from './GridCssMuiRenderer';
+import type { LayoutRenderingOverride } from './renderingTypes';
  
 
  
@@ -182,17 +183,14 @@ export const DevTools: Story = () => {
     layoutRendering[sectionId as any] = {} as any;
 
     for (const bp of BREAKPOINTS) {
-      (layoutRendering as any)[sectionId][bp] = {} as any;
-
       const boxesAtBp = (layoutAbsolute.sections as any)[sectionId].coordinates[bp];
       if (!boxesAtBp) continue;
 
       for (const boxId of Object.keys(boxesAtBp)) {
-        const coords = boxesAtBp[boxId];
-        if (!coords) continue;
+        if (!boxesAtBp[boxId]) continue;
 
         (layoutRendering as any)[sectionId][boxId] = {
-          contentRenderer: ({ sectionId, bp, boxId, coords }: any) => (
+          contentRenderer: ({ sectionId, boxId, coordsByBp }: any) => (
             <Box
               sx={{
                 width: "100%",
@@ -210,14 +208,14 @@ export const DevTools: Story = () => {
             >
               <div>
                 <strong>
-                  {String(sectionId)}_{String(boxId)} @ {bp}
+                  {String(sectionId)}_{String(boxId)}
                 </strong>
               </div>
               <div>
-                origin:[{coords.gridColumnStart}, {coords.gridRowStart}]
+                origin:[{coordsByBp.xs.gridColumnStart}, {coordsByBp.xs.gridRowStart}]
                 <br />
-                diagonal: [{coords.gridColumnEnd - coords.gridColumnStart},{" "}
-                {coords.gridRowEnd - coords.gridRowStart}]
+                diagonal: [{coordsByBp.xs.gridColumnEnd - coordsByBp.xs.gridColumnStart},{" "}
+                {coordsByBp.xs.gridRowEnd - coordsByBp.xs.gridRowStart}]
               </div>
             </Box>
           ),

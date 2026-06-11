@@ -86,9 +86,6 @@ export * from './layoutTheme';
 // General utilities
 export * from './utils';
 
-// Framework integrations (re-export from submodules)
-export * from './integration/mui';
-
 /**
  * Submodule exports for specific integrations
  * 

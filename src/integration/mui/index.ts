@@ -15,4 +15,10 @@ export {
   getNodeDomProps 
 } from './DefaultNodeRender';
 
+export type {
+  NodeRenderConfig,
+  LayoutRenderingOverride,
+  LayoutRenderOverrideFor,
+} from './renderingTypes';
+
  

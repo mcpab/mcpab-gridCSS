@@ -25,9 +25,9 @@ export type {
   BoxesCoordinates,
   LayoutAbsolute,
   
-  // Rendering types
+  // View/layout metadata types
   NodeRenderCtx,
-  NodeRenderConfig,
-  LayoutRenderingOverride,
-  LayoutRenderOverrideFor
+  NodeViewConfig,
+  LayoutViewOverride,
+  LayoutViewOverrideFor
 } from './boxLayoutTypes';

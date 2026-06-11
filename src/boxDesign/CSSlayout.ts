@@ -22,7 +22,6 @@
 import {
   Layout,
   LayoutAbsolute,           // Final layout with absolute CSS coordinates
-  LayoutWithTx,             // Input layout with transformation configurations
 } from "../boxLayout/boxLayoutTypes";
 
 // Responsive breakpoint definitions

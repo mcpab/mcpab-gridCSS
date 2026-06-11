@@ -19,15 +19,18 @@
 
 // MUI core imports - using specific file paths for better tree shaking
 import Box from "@mui/material/Box";
+import type React from "react";
 import { MuiSxProps } from "./muiTypes";
 // Internal type imports for grid system integration
 import { BlocksIDs, SectionIDs } from "../../templates/layoutIDs"; // Template identifier types
 import { DefaultNodeRender } from "./DefaultNodeRender"; // Default node rendering component
 import {
   LayoutAbsolute,
+} from "../../boxLayout"; // Layout types
+import type {
   LayoutRenderingOverride,
   NodeRenderConfig,
-} from "../../boxLayout"; // Layout types
+} from "./renderingTypes"; // MUI rendering types
 import { BPs, BREAKPOINTS } from "../../breakpoints"; // Breakpoint system
 import { gapValueToString, gridUnitValueToString } from "../../cssStringify"; // CSS value utilities
 import {

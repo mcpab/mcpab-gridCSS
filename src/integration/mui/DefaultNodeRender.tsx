@@ -10,28 +10,22 @@
  * - Accessibility support (ARIA attributes, roles, labels)
  * - Flexible visibility controls (hidden, visually hidden)
  * - Data attributes and DOM properties management
- * - Integration with MUI theming and breakpoint system
+ * - Integration with MUI's responsive sx breakpoint system
  * - Customizable content rendering through render props
  * 
  * The renderer converts grid coordinates to CSS Grid properties and applies
  * them responsively using MUI's sx prop system.
  */
 
-'use client';
-
-// MUI core imports - using specific file paths for better tree shaking
-import { useTheme } from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery'; 
-import Box  from '@mui/material/Box';
- import { MuiTheme } from './muiTypes';
+import Box from '@mui/material/Box';
+import type React from 'react';
 import type { MuiSystemStyleObject } from './muiTypes';
-import React from 'react';
 // Internal type imports for grid system integration
-import { BlocksIDs, SectionIDs } from '../../templates/layoutIDs';  // Template identifier types
-import { NodeRenderConfig } from '../../boxLayout';                   // Node rendering configuration
-import { BPs } from '../../breakpoints';                              // Breakpoint types
-import { CSSCoordinates } from '../../gridNodeTypes';                 // CSS Grid coordinate types
-import { GridNodeViewOptions } from '../../nodeViewOptions';          // View configuration options
+import type { NodeRenderConfig } from './renderingTypes'; // Node rendering configuration
+import { BPs } from '../../breakpoints'; // Breakpoint types
+import { CSSCoordinates } from '../../gridNodeTypes'; // CSS Grid coordinate types
+import { GridNodeViewOptions } from '../../nodeViewOptions'; // View configuration options
+import { BlocksIDs, SectionIDs } from '../../templates/layoutIDs'; // Template identifier types
 
 /**
  * CSS styles for visually hiding elements while keeping them accessible to screen readers
@@ -77,7 +71,7 @@ const visuallyHiddenStyle: MuiSystemStyleObject = {
  * @param view - Optional view configuration object
  * @returns MUI sx prop object with computed styles
  */
-export function getNodeSxProps(view?: GridNodeViewOptions): MuiSystemStyleObject  {
+export function getNodeSxProps(view?: GridNodeViewOptions): MuiSystemStyleObject {
   // Use empty object as default if no view options provided
   const v = view ?? {};
 
@@ -96,7 +90,7 @@ export function getNodeSxProps(view?: GridNodeViewOptions): MuiSystemStyleObject
 
     // Stacking order control (only apply if explicitly set)
     ...(v.zIndex != null ? { zIndex: v.zIndex } : {}),
-    
+
     // Mouse interaction control
     pointerEvents: v.pointerEvents ?? 'auto',
 
@@ -167,14 +161,15 @@ type DefaultNodeRenderProps<sectionIDs extends SectionIDs, blockIDs extends Bloc
  * and applies them across all responsive breakpoints.
  * 
  * Key Features:
- * - Responsive CSS Grid positioning using MUI breakpoint system
- * - Automatic breakpoint detection and coordinate application
+ * - Responsive CSS Grid positioning using MUI's sx breakpoint system
+ * - Applies coordinates for every breakpoint without runtime viewport detection
  * - Accessibility attribute management
  * - Flexible content rendering through render props
- * - Integration with MUI theming
+ * - Integration with MUI styling
  * 
- * The component uses MUI's useMediaQuery to detect the current breakpoint and
- * applies the appropriate CSS Grid coordinates for that breakpoint.
+ * The component emits responsive CSS for all breakpoint coordinates. The browser
+ * chooses the active rules through CSS media queries, so this renderer does not
+ * need to know the current viewport breakpoint.
  * 
  * @template sectionIDs - Union type of valid section identifiers
  * @template blockIDs - Union type of valid block/box identifiers
@@ -190,20 +185,6 @@ export function DefaultNodeRender<sectionIDs extends SectionIDs, blockIDs extend
   // Generate styling and DOM properties from view configuration
   const nodeSx = getNodeSxProps(content.view);
   const domProps = getNodeDomProps(content.view);
-
-  // Access MUI theme for breakpoint detection
-  const theme = useTheme();
-
-  // Use MUI's breakpoint system to detect current screen size
-  // These hooks return true if screen is at or above the specified breakpoint
-  const upSm = useMediaQuery(theme.breakpoints.up('sm'));
-  const upMd = useMediaQuery(theme.breakpoints.up('md'));
-  const upLg = useMediaQuery(theme.breakpoints.up('lg'));
-  const upXl = useMediaQuery(theme.breakpoints.up('xl'));
-
-  // Determine current breakpoint using waterfall logic
-  // Checks from largest to smallest breakpoint
-  const bp = upXl ? 'xl' : upLg ? 'lg' : upMd ? 'md' : upSm ? 'sm' : 'xs';
 
   return (
     <Box
@@ -253,14 +234,13 @@ export function DefaultNodeRender<sectionIDs extends SectionIDs, blockIDs extend
       }}
     >
       {/* Render content using the provided content renderer */}
-      {/* The renderer receives context about the current breakpoint and coordinates */}
+      {/* The renderer receives the full responsive coordinate set. */}
       {content.contentRenderer
-        ? content.contentRenderer({ 
-            sectionId: section, 
-            bp, 
-            boxId, 
-            coords: cssCoordinateBPs[bp] 
-          })
+        ? content.contentRenderer({
+          sectionId: section,
+          boxId,
+          coordsByBp: cssCoordinateBPs
+        })
         : null}
     </Box>
   );

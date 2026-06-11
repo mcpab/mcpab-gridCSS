@@ -8,7 +8,7 @@
 
 import { GridBox } from "../../src/box/gridBoxTypes";
 import { BoxMovesProps } from "../boxTransformations/boxTransformationsProps";
-import { BPs, Breakpoint } from "../breakpoints";
+import { BPs } from "../breakpoints";
 import { CSSCoordinates } from "../gridNodeTypes";
 import { GridNodeViewOptions } from "../nodeViewOptions";
 import { BlocksIDs, NodeID, SectionIDs } from "../templates/layoutIDs";
@@ -515,37 +515,33 @@ export type LayoutAbsolute<
 
 /**
  * Context provided to node renderers.
- * Contains all the information needed to render a specific block at a specific breakpoint.
+ * Contains the section and block identity plus the full responsive coordinate
+ * set for the rendered node. Renderers receive every breakpoint because layout
+ * is expressed as responsive CSS rather than as a single runtime-selected
+ * breakpoint.
  *
  * @template sectionID - The section identifier type
  * @template blockIDs - The block identifier type
- * @template BP - The breakpoint type (defaults to all breakpoints)
  *
  * @example
  * ```typescript
- * const renderContext: NodeRenderCtx<'header', 'block_1', 'md'> = {
+ * const renderContext: NodeRenderCtx<'header', 'block_1'> = {
  *   sectionId: 'header',
- *   bp: 'md',
  *   boxId: 'block_1',
- *   coords: {
- *     left: '0px',
- *     top: '0px',
- *     width: '50%',
- *     height: '100px'
+ *   coordsByBp: {
+ *     xs: { gridColumnStart: 1, gridColumnEnd: 5, gridRowStart: 1, gridRowEnd: 3 },
+ *     sm: { gridColumnStart: 1, gridColumnEnd: 5, gridRowStart: 1, gridRowEnd: 3 },
+ *     md: { gridColumnStart: 2, gridColumnEnd: 8, gridRowStart: 1, gridRowEnd: 3 },
+ *     lg: { gridColumnStart: 2, gridColumnEnd: 8, gridRowStart: 1, gridRowEnd: 3 },
+ *     xl: { gridColumnStart: 2, gridColumnEnd: 8, gridRowStart: 1, gridRowEnd: 3 }
  *   }
  * };
  *
  * // Usage in a renderer
  * function MyRenderer(ctx: NodeRenderCtx<'header', 'block_1'>) {
  *   return (
- *     <div style={{
- *       position: 'absolute',
- *       left: ctx.coords.left,
- *       top: ctx.coords.top,
- *       width: ctx.coords.width,
- *       height: ctx.coords.height
- *     }}>
- *       Content for {ctx.sectionId} - {ctx.boxId} at {ctx.bp}
+ *     <div>
+ *       Content for {ctx.sectionId} - {ctx.boxId}
  *     </div>
  *   );
  * }
@@ -557,30 +553,21 @@ export type NodeRenderCtx<
 
 > = {
   sectionId: sectionID;
-  bp: Breakpoint;
   boxId: blockIDs;
-  coords: CSSCoordinates;
+  coordsByBp: BPs<CSSCoordinates>;
 };
 
 /**
- * Configuration for rendering individual nodes.
- * Allows customization of both content and visual styling for specific blocks.
+ * Server-safe view configuration for individual nodes.
+ * Allows customization of visual styling for specific blocks without coupling
+ * the core layout model to any rendering framework.
  *
  * @template sectionID - The section identifier type
  * @template blockIDs - The block identifier type
  *
  * @example
  * ```typescript
- * const renderConfig: NodeRenderConfig<'header', 'block_1' | 'block_2'> = {
- *   contentRenderer: (ctx) => {
- *     if (ctx.boxId === 'block_1') {
- *       return <h1>Header Title</h1>;
- *     }
- *     if (ctx.boxId === 'block_2') {
- *       return <nav>Navigation Menu</nav>;
- *     }
- *     return null;
- *   },
+ * const viewConfig: NodeViewConfig = {
  *   view: {
  *     showGridLines: true,
  *     showBoxLabels: true,
@@ -593,75 +580,60 @@ export type NodeRenderCtx<
  * };
  * ```
  */
-export type NodeRenderConfig<
-  sectionID extends SectionIDs,
-  blockIDs extends BlocksIDs
-> = {
-  contentRenderer?: (
-    ctx: NodeRenderCtx<sectionID, blockIDs>
-  ) => React.ReactNode;
+export type NodeViewConfig = {
   view?: GridNodeViewOptions;
 };
 
 /**
- * Rendering overrides for customizing layout appearance.
- * Allows selective customization of rendering behavior for specific sections,
- * breakpoints, and blocks. All levels are optional, providing fine-grained control.
+ * View overrides for customizing layout appearance.
+ * Allows selective customization of view behavior for specific sections and
+ * blocks. All levels are optional, providing fine-grained control.
  *
  * @template sectionID - The section identifier type
  * @template blockIDs - The block identifier type
  *
  * @example
  * ```typescript
- * const renderOverrides: LayoutRenderingOverride<'header' | 'main', 'block_1' | 'block_2'> = {
+ * const viewOverrides: LayoutViewOverride<'header' | 'main', 'block_1' | 'block_2'> = {
  *   // Override header section only
  *   header: {
- *     // Only for medium and large breakpoints
- *     md: {
- *       // Only for block_1
- *       block_1: {
- *         contentRenderer: (ctx) => <h1>Custom Header</h1>,
- *         view: {
- *           showGridLines: false,
- *           backgroundColor: '#f0f0f0'
- *         }
+ *     // Only for block_1
+ *     block_1: {
+ *       view: {
+ *         showGridLines: false,
+ *         backgroundColor: '#f0f0f0'
  *       }
  *     },
- *     lg: {
- *       block_1: {
- *         contentRenderer: (ctx) => <h1>Large Screen Header</h1>
- *       },
- *       block_2: {
- *         view: {
- *           highlightOnHover: true
- *         }
+ *     block_2: {
+ *       view: {
+ *         highlightOnHover: true
  *       }
  *     }
  *   },
  *   // Main section overrides
  *   main: {
- *     xs: {
- *       block_1: {
- *         contentRenderer: (ctx) => <div>Mobile Content</div>
+ *     block_1: {
+ *       view: {
+ *         highlightOnHover: true
  *       }
  *     }
  *   }
  * };
  * ```
  */
-export type LayoutRenderingOverride<
+export type LayoutViewOverride<
   sectionID extends SectionIDs,
   blockIDs extends BlocksIDs
-> = Partial<Record<sectionID, Partial<Record<blockIDs, NodeRenderConfig<sectionID, blockIDs>>>>>;
+> = Partial<Record<sectionID, Partial<Record<blockIDs, NodeViewConfig>>>>;
 
 type SEC<L extends Layout<any, any>> = Extract<keyof L, SectionIDs>;
 type BLK<L extends Layout<any, any>, S extends SEC<L>> =
   Extract<keyof NonNullable<L[S]>, BlocksIDs>;
 
-export type LayoutRenderOverrideFor<L extends Layout<any, any>> = Partial<{
+export type LayoutViewOverrideFor<L extends Layout<any, any>> = Partial<{
   [S in SEC<L>]: Partial<
     Partial<{
-      [B in BLK<L, S>]: NodeRenderConfig<S, B>;
+      [B in BLK<L, S>]: NodeViewConfig;
     }>> }>;
 
 
@@ -1250,44 +1222,57 @@ const localLayout: LayoutSectionLocal<
 // NodeRenderCtx examples
 const renderContext: NodeRenderCtx<"header", "block_1"> = {
   sectionId: "header",
-  bp: "md",
   boxId: "block_1",
-  coords: {
-    gridColumnEnd: 1,
-    gridColumnStart: 0,
-    gridRowEnd: 2,
-    gridRowStart: 0,
+  coordsByBp: {
+    xs: {
+      gridColumnEnd: 1,
+      gridColumnStart: 0,
+      gridRowEnd: 2,
+      gridRowStart: 0,
+    },
+    lg: {
+      gridColumnEnd: 1,
+      gridColumnStart: 0,
+      gridRowEnd: 2,
+      gridRowStart: 0,
+    },
+    md: {
+      gridColumnEnd: 1,
+      gridColumnStart: 0,
+      gridRowEnd: 2,
+      gridRowStart: 0,
+    },
+    sm: {
+      gridColumnEnd: 1,
+      gridColumnStart: 0,
+      gridRowEnd: 2,
+      gridRowStart: 0,
+    },
+    xl: {
+      gridColumnEnd: 1,
+      gridColumnStart: 0,
+      gridRowEnd: 2,
+      gridRowStart: 0,
+    }
   },
 };
 
-// NodeRenderConfig examples
-const renderConfig: NodeRenderConfig<"header", "block_1" | "block_2"> = {
-  contentRenderer: (ctx) => {
-    if (ctx.boxId === "block_1") {
-      return "<h1>Header Title</h1>";
-    }
-    if (ctx.boxId === "block_2") {
-      return "<nav>Navigation Menu</nav>";
-    }
-    return null;
-  },
+// NodeViewConfig examples
+const viewConfig: NodeViewConfig = {
   view: {
     alignSelf: "center",
   },
 };
 
-// LayoutRenderingOverride examples
-const renderOverrides: LayoutRenderingOverride<
+// LayoutViewOverride examples
+const viewOverrides: LayoutViewOverride<
   "header" | "main",
   "block_1" | "block_2"
 > = {
   // Override header section only
   header: {
-    // Only for medium and large breakpoints
-
     // Only for block_1
     block_1: {
-      contentRenderer: (ctx) => "<h1>Custom Header</h1>",
       view: {
         justifySelf: "center",
       },
@@ -1298,8 +1283,9 @@ const renderOverrides: LayoutRenderingOverride<
   main: {
 
     block_1: {
-      contentRenderer: (ctx) => "<div>Mobile Content</div>",
-
+      view: {
+        alignSelf: "start",
+      },
     },
   },
 };
